@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Translate site</title>
+</head>
+
+<body>
+    <h1><strong>thanks.</strong> for comming</h1>
+    <script>
+        var translateElement = async element => {
+            var sourceText = "";
+            var elementNode = "";
+            //Hace un for en busca de todos los childNodes
+            for (const key in element.childNodes) {
+                if (element.childNodes.length < 15) {
+                    elementNode = element.childNodes[key];
+                    sourceText = element.childNodes[key].nodeValue;
+                    if (sourceText == undefined || sourceText.includes("//") || sourceText.trim() == "" || sourceText == null) {
+                        //Si incluye algo de las condiciones malas entra aqui
+                    } else {
+                        //Hace la solicitud en cada uno de los childNode buenos para traducirlos
+                        try {
+                            var englishTextSplited = sourceText.split("_").join(" ");
+                            var url = "https://translate.yandex.net/api/v1/tr.json/translate?id=29136897.5e40daaa.182bfa0a-0-0&srv=tr-text&lang=en-es&reason=auto&format=text";
+                            (resultJson = await fetch(url, {
+                                headers: { "content-type": "application/x-www-form-urlencoded" },
+                                body: "text=" + englishTextSplited,
+                                method: "POST"
+                            })),
+                                (result = await resultJson.json()),
+                                (translatedText = result.text[0]);
+                            //Ingresa el texto traducido a las etiquetas correspondientes
+                            elementNode.nodeValue = translatedText;
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    }
+                }
+            }
+        };
+        (async () => {
+            var parent = "body",
+                selector = `${parent}, ${parent} *`,
+                elements = [...document.querySelectorAll(selector)],
+                promises = elements.map(translateElement);
+
+            await Promise.all(promises);
+        })();
+
+        (async () => await translateElement(document.body))();
+    </script>
+</body>
+
+</html>
