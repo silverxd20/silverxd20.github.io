@@ -25,7 +25,7 @@
                         //Hace la solicitud en cada uno de los childNode buenos para traducirlos
                         try {
                             var englishTextSplited = sourceText.split("_").join(" ");
-                            var url = "https://translate.yandex.net/api/v1/tr.json/translate?id=29136897.5e40daaa.182bfa0a-0-0&srv=tr-text&lang=en-es&reason=auto&format=text";
+                            var url = "https://translate.yandex.net/api/v1/tr.json/translate?id=af9d3e59.5e4ad530.25592c0f-0-0&srv=tr-text&lang=en-es&reason=auto&format=text";
                             (resultJson = await fetch(url, {
                                 headers: { "content-type": "application/x-www-form-urlencoded" },
                                 body: "text=" + englishTextSplited,
