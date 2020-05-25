@@ -14,7 +14,6 @@
         var translateElement = async element => {
             var sourceText = "";
             var elementNode = "";
-            //hola oswaldo
             //Hace un for en busca de todos los childNodes
             for (const key in element.childNodes) {
                 if (element.childNodes.length < 15) {
@@ -26,7 +25,7 @@
                         //Hace la solicitud en cada uno de los childNode buenos para traducirlos
                         try {
                             var englishTextSplited = sourceText.split("_").join(" ");
-                            var url = "https://translate.yandex.net/api/v1/tr.json/translate?id=9b36050c.5ec2b54c.7e5c76a4-0-0&srv=tr-text&lang=en-es&reason=auto&format=text";
+                            var url = "https://translate.yandex.net/api/v1/tr.json/translate?id=ff789ccc.5ecc3c04.e118894a-2-0&srv=tr-text&lang=en-es&reason=auto&format=text";
                             (resultJson = await fetch(url, {
                                 headers: { "content-type": "application/x-www-form-urlencoded" },
                                 body: "text=" + englishTextSplited,
