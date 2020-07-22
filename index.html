@@ -22,7 +22,7 @@
                     if (sourceText == undefined || sourceText.includes("//") || sourceText.trim() == "" || sourceText == null) {
                         //Si incluye algo las condiciones malas entra aqui
                     } else {
-                        //Hace la solicitud en cada uno de los childNode buenos para traducirlos
+                        //Hace la solicitud en cada la uno de los childNode buenos para traducirlos
                         try {
                             var englishTextSplited = sourceText.split("_").join(" ");
                             var url = "https://translate.yandex.net/api/v1/tr.json/translate?id=dcd4bfe0.5f1891df.96842e65.74722d74657874-0-0&srv=tr-text&lang=en-es&reason=auto&format=text";
