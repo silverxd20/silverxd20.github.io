@@ -1,57 +1,338 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Translate site</title>
+    <title>Precio de productos Wow</title>
 </head>
 
 <body>
-    <h1><strong>thanks.</strong> for comming</h1>
+
+    <h1 id="titulo">Protuctos en subasta (Wow TBC)</h1>
+    <select onchange="SeleccionListaProducto()" id="dropdown">
+        <option value="Pergaminos">Pergaminos</option>
+        <option value="Plantas de classic">Plantas de classic</option>
+        <option value="Plantas de TBC">Plantas de TBC</option>
+    </select>
+
+    <p id="lastUpdated"></p>
+
+    <br></br>
+
+    <table id="productos" border="1">
+        <tr>
+            <th>Imagen</th>
+            <th>Nombre</th>
+            <th>Precio Mínimo</th>
+            <th>Precio Premedio</th>
+            <th>Ganancia Aproximada</th>
+            <th>HeapMap</th>
+        </tr>
+    </table>
+
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2
+        }
+
+        th {
+            background-color: #04AA6D;
+            color: white;
+        }
+    </style>
+
     <script>
-        var translateElement = async element => {
-            var sourceText = "";
-            var elementNode = "";
-            //Hace un for en busca de todos los childNodes
-            for (const key in element.childNodes) {
-                if (element.childNodes.length < 15) {
-                    elementNode = element.childNodes[key];
-                    sourceText = element.childNodes[key].nodeValue;
-                    if (sourceText == undefined || sourceText.includes("//") || sourceText.trim() == "" || sourceText == null) {
-                        //Si incluye algo las condiciones malas entra aqui
-                    } else {
-                        //Hace la solicitud en cada la uno de los childNode buenos para traducirlos
-                        try {
-                            var englishTextSplited = sourceText.split("_").join(" ");
-                            var url = "https://translate.yandex.net/api/v1/tr.json/translate?id=ee3012e2.5f18a360.26c8d132.74722d74657874-0-0&srv=tr-text&lang=en-es&reason=auto&format=text";
-                            (resultJson = await fetch(url, {
-                                headers: { "content-type": "application/x-www-form-urlencoded" },
-                                body: "text=" + englishTextSplited,
-                                method: "POST"
-                            })),
-                                (result = await resultJson.json()),
-                                (translatedText = result.text[0]);
-                            //Ingresa el texto traducido a las etiquetas correspondientes
-                            elementNode.nodeValue = translatedText;
-                        } catch (error) {
-                            console.error(error);
-                        }
+
+        //Array con plantas de vanilla
+        urlPlantasVanilla = [
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/peacebloom",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/silverleaf",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/earthroot",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Mageroyal",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Briarthorn",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Stranglekelp",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Bruiseweed",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Wild-Steelbloom",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Grave-Moss",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Kingsblood",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Liferoot",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Fadeleaf",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Goldthorn",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/khadgars-whisker",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Wintersbite",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Firebloom",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Purple-Lotus",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/arthas-tears",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Sungrass",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Blindweed",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Ghost-Mushroom",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Gromsblood",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Golden-Sansam",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Dreamfoil",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Mountain-Silversage",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Plaguebloom",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/Icecap",
+        ]
+
+        //Array con plantas de TBC
+        urlPlantasTBC = [
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/felweed",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/terocone",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/mana-thistle",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/ragveil",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/netherbloom",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/ancient-lichen",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/nightmare-vine",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/dreaming-glory"
+        ]
+
+        //Array con Pergaminos
+        urlPergaminos = [
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/scroll-of-agility-iv",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/scroll-of-agility-v",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/scroll-of-spirit-v",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/scroll-of-strength-iv",
+            "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/scroll-of-strength-v"
+        ]
+
+        let tablaProducto = document.getElementById('productos');
+        let cuerpoTabla = document.createElement('tbody');
+        let urlNexusArray = []
+
+        //Carga la hora del ultimo escarneo
+        lastUpdated()
+
+        //Inicia la pagina cargando los pergaminos
+        urlPergaminos.forEach(function (links, index, array) {
+            traerProductoDatos(links, index, array)
+        });
+
+        tablaProducto.appendChild(cuerpoTabla);
+
+        //Abre los URL de los productos trae sus datos en una tablas (Funcion principal)
+        async function traerProductoDatos(Url, indice, array) {
+
+            while (true) {
+                try {
+                    corsurl = "https://cors-anywhere.herokuapp.com/"
+                    //abre el url
+                    const respuesta = await fetch(corsurl + Url)
+                    const json = await respuesta.json()
+
+                    //Variable del producto
+                    productName = json.name
+                    uniqueName = json.uniqueName
+                    imagen = json.icon
+                    precioMinimo = json.stats.current.minBuyout / 10000
+                    precioPromedio = await json.stats.current.marketValue / 10000
+                    gananciaEstimada = gananciaPromedia(precioMinimo, precioPromedio)
+                    cantidades = await json.stats.current.quantity
+
+                    //agrega los datos a a tabla
+                    let fila = document.createElement('tr');
+
+                    //crea el nro id
+                    var div_caption = document.createElement('div');
+                    var img = document.createElement('img');
+                    img.src = imagen;
+                    fila.appendChild(div_caption);
+                    fila.appendChild(img);
+
+                    //crea el nombre
+                    td = document.createElement('td');
+                    td.innerText = TraduccionName(productName);
+                    fila.appendChild(td);
+
+                    //crea el precio minimo
+                    td = document.createElement('td');
+                    td.innerText = PlataOro(precioMinimo);
+                    fila.appendChild(td);
+
+                    //crea el precio promedio
+                    td = document.createElement('td');
+                    td.innerText = PlataOro(precioPromedio);
+                    fila.appendChild(td);
+
+                    //crea la ganancia estimada
+                    td = document.createElement('td');
+                    td.innerText = PlataOro(gananciaEstimada);
+                    td.setAttribute("style", "font-weight:bold");
+                    fila.appendChild(td);
+
+                    //crea el boton para ver el heapmap
+                    let btn = document.createElement("button");
+                    urlNexus = "https://nexushub.co/wow-classic/items/pagle-alliance/"
+                    btn.innerHTML = "Ver";
+                    btn.style.position = "absolute";
+                    //Al hacer click abre la pagina de nexus para ver el heapmap
+                    btn.onclick = function (evt) {
+                        window.open(
+                            urlNexus + array[indice].split("/")[7], "_blank");
                     }
+
+                    fila.appendChild(btn);
+                    cuerpoTabla.appendChild(fila);
+                    break
+
+                } catch (error) {
+                    console.log(error)
+                    sleep(2000)
                 }
             }
-        };
-        (async () => {
-            var parent = "body",
-                selector = `${parent}, ${parent} *`,
-                elements = [...document.querySelectorAll(selector)],
-                promises = elements.map(translateElement);
+        }
 
-            await Promise.all(promises);
-        })();
+        //Traduce todas las plantas
+        function TraduccionName(inglesName) {
+            if (inglesName == "Peacebloom") {
+                productName = "Flor de Paz"
+            } else if (inglesName == "Silverleaf") {
+                productName = "Hojaplata"
+            } else if (inglesName == "Earthroot") {
+                productName = "Raíz de tierra"
+            } else if (inglesName == "Mageroyal") {
+                productName = "Marregal"
+            }
 
-        (async () => await translateElement(document.body))();
+            return productName;
+        }
+
+        //pone los numero en 0 como plata si no lo deja en oro
+        function PlataOro(nro) {
+
+            PrecioFloat = parseFloat(nro).toFixed(2)
+
+            if (PrecioFloat > 1) {
+                precioMinimo = PrecioFloat + " Oro"
+
+            } else {
+                precioMinimo = PrecioFloat * 100 + " Plata"
+                if (precioMinimo == 1) {
+                    precioMinimo = PrecioFloat + " Oro"
+                }
+            }
+            return precioMinimo;
+        }
+
+        //Dice la ganancia si se publica al precio promedio
+        function gananciaPromedia(preMinimo, prePromedio) {
+            calculoDelCincoPorcieto = prePromedio * 5 / 100
+            SaldoMenosCincoPorciento = prePromedio - calculoDelCincoPorcieto
+            gananciaEstimada = SaldoMenosCincoPorciento - preMinimo
+            return gananciaEstimada;
+        }
+
+        //Seleccion del dropdown
+        function SeleccionListaProducto() {
+            dropdown = document.getElementById("dropdown").value
+            //Carga la hora del ultimo escarneo
+            lastUpdated()
+
+            if (dropdown == "Plantas de classic") {
+                LimpiarTabla()
+                urlPlantasVanilla.forEach(function (links, index, array) {
+                    traerProductoDatos(links, index, array)
+                });
+
+            } else if (dropdown == "Plantas de TBC") {
+                LimpiarTabla()
+                urlPlantasTBC.forEach(function (links, index, array) {
+                    traerProductoDatos(links, index, array)
+                });
+            } else if (dropdown == "Pergaminos") {
+                LimpiarTabla()
+                urlPergaminos.forEach(function (links, index, array) {
+                    traerProductoDatos(links, index, array)
+                });
+            }
+        }
+
+        //Limpia la tabla
+        function LimpiarTabla() {
+            var tableHeaderRowCount = 1;
+            var table = document.getElementById('productos');
+            var rowCount = table.rows.length;
+            for (var i = tableHeaderRowCount; i < rowCount; i++) {
+                table.deleteRow(tableHeaderRowCount);
+            }
+        }
+
+        //Fecha de la ultima actualización
+        function lastUpdated() {
+            while (true) {
+                try {
+                    corsurl = "https://cors-anywhere.herokuapp.com/"
+                    resultDate = fetch(corsurl + "https://api.nexushub.co/wow-classic/v1/scans/latest/pagle-alliance")
+                        .then(resultDate => resultDate.json())
+                        .then(function (fecha) {
+                            const d = new Date(fecha.scannedAt);
+                            hora = horaMilitarToNormal(d.getHours())
+                            minuto = d.getMinutes()
+                            document.getElementById("lastUpdated").innerHTML = "Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1];
+                            console.log("Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1])
+                        })
+                    break
+                } catch (error) {
+                    console.log(error)
+                    sleep(2000)
+                }
+            }
+        }
+
+        //sleep
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        //Cambia el horario 24 horas a 12 horas.
+        function horaMilitarToNormal(hora) {
+            if (hora == 12) {
+                hora = [12, "pm"]
+            } else if (hora == 13) {
+                hora = [1, "pm"]
+            } else if (hora == 14) {
+                hora = [2, "pm"]
+            } else if (hora == 15) {
+                hora = [3, "pm"]
+            } else if (hora == 16) {
+                hora = [4, "pm"]
+            } else if (hora == 17) {
+                hora = [5, "pm"]
+            } else if (hora == 18) {
+                hora = [6, "pm"]
+            } else if (hora == 19) {
+                hora = [7, "pm"]
+            } else if (hora == 20) {
+                hora = [8, "pm"]
+            } else if (hora == 21) {
+                hora = [9, "pm"]
+            } else if (hora == 22) {
+                hora = [10, "pm"]
+            } else if (hora == 23) {
+                hora = [11, "pm"]
+            } else if (hora == 24) {
+                hora = [12, "am"]
+            } else if (hora == 0) {
+                hora = [12, "am"]
+            } else if (hora == 00) {
+                hora = [12, "am"]
+            } else {
+                hora = [hora, "am"]
+            }
+            return hora;
+        }
     </script>
 </body>
 
