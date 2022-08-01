@@ -137,8 +137,9 @@
                     uniqueName = json.uniqueName
                     imagen = json.icon
                     precioMinimo = json.stats.current.minBuyout / 10000
+                    precioMinimoRaw = json.stats.current.minBuyout / 10000
                     precioPromedio = await json.stats.current.marketValue / 10000
-                    gananciaEstimada = gananciaPromedia(precioMinimo, precioPromedio)
+                    gananciaEstimada = gananciaPromedia(precioMinimo, precioPromedio).toFixed(4)
                     cantidades = await json.stats.current.quantity
 
                     //agrega los datos a a tabla
@@ -168,7 +169,9 @@
 
                     //crea la ganancia estimada
                     td = document.createElement('td');
-                    td.innerText = PlataOro(gananciaEstimada);
+                    porcentajeGanancia = gananciaEstimada / precioMinimoRaw * 100
+                    console.log(porcentajeGanancia + " %")
+                    td.innerText = PlataOro(gananciaEstimada) + " (" + parseFloat(porcentajeGanancia).toFixed(2) + " %)";
                     td.setAttribute("style", "font-weight:bold");
                     fila.appendChild(td);
 
@@ -212,15 +215,31 @@
         //pone los numero en 0 como plata si no lo deja en oro
         function PlataOro(nro) {
 
-            PrecioFloat = parseFloat(nro).toFixed(2)
-
+            PrecioFloat = nro
             if (PrecioFloat > 1) {
-                precioMinimo = PrecioFloat + " Oro"
+                //si es positivo y es oro
+                precioMinimo = parseFloat(PrecioFloat).toFixed(2) + " Oro"
 
-            } else {
+            } else if (PrecioFloat > 0.01) {
+                //si es positivo y es plata
                 precioMinimo = PrecioFloat * 100 + " Plata"
                 if (precioMinimo == 1) {
                     precioMinimo = PrecioFloat + " Oro"
+                }
+            }else if (PrecioFloat > 0.001){
+                //si es positivo y es cobre
+                precioMinimo = PrecioFloat * 10000 + " Cobre"
+            }else {
+                //aqui esto es negativo
+                precioMinimo = PrecioFloat * 100
+                
+                if(precioMinimo < -100){
+                    //si esto es negativo y pasa de -100
+                    precioMinimo =parseFloat(precioMinimo /100 ).toFixed(2) + " Oro"
+
+                }else{
+                    //si esto es negativo y es menor a -100
+                    precioMinimo = PrecioFloat*100+ " Plata"
                 }
             }
             return precioMinimo;
