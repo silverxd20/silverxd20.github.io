@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Precio de productos Wow</title>
+    <link rel="icon" href="https://findicons.com/files/icons/679/nx10/128/world_of_warcraft.png">
 </head>
 
 <body>
@@ -341,7 +342,7 @@
                         .then(resultDate => resultDate.json())
                         .then(function (fecha) {
                             const d = new Date(fecha.scannedAt);
-                            hora = horaMilitarToNormal(d.getHours())
+                            hora = hora24a12(d.getHours())
                             minuto = d.getMinutes()
                             document.getElementById("lastUpdated").innerHTML = "Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1];
                             console.log("Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1])
@@ -360,7 +361,7 @@
         }
 
         //Cambia el horario 24 horas a 12 horas.
-        function horaMilitarToNormal(hora) {
+        function hora24a12(hora) {
             if (hora == 12) {
                 hora = [12, "pm"]
             } else if (hora == 13) {
