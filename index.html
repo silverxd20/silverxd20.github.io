@@ -55,7 +55,7 @@
         }
 
         th {
-            background-color: #04AA6D;
+            background-color: #002169;
             color: white;
         }
     </style>
@@ -117,6 +117,7 @@
         let tablaProducto = document.getElementById('productos');
         let cuerpoTabla = document.createElement('tbody');
         let corsBoton = document.getElementById('corsBtn');
+        let positivoNegativo = ""
         //obtiene el valor de ambos dropdown
         dropdownProductosValor = document.getElementById("dropdownProductos").value
         dropdownTraductorValor = document.getElementById("dropdownTraductor").value
@@ -160,7 +161,7 @@
                     //agrega los datos a a tabla
                     let fila = document.createElement('tr');
 
-                    //crea el nro id
+                    //la imagen del producto
                     var div_caption = document.createElement('div');
                     var img = document.createElement('img');
                     img.src = imagen;
@@ -170,6 +171,7 @@
                     //crea el nombre
                     td = document.createElement('td');
                     td.innerText = productName
+                    td.setAttribute("style", "font-weight:bold"); 
                     fila.appendChild(td);
 
                     //crea el precio minimo
@@ -186,7 +188,12 @@
                     td = document.createElement('td');
                     porcentajeGanancia = gananciaEstimada / precioMinimoRaw * 100
                     td.innerText = PlataOro(gananciaEstimada) + " (" + parseFloat(porcentajeGanancia).toFixed(2) + " %)";
-                    td.setAttribute("style", "font-weight:bold");
+                    //agrega color verde si es positivo y rojo si es negativo
+                    if(positivoNegativo == true){
+                        td.setAttribute("style", "color:#008B08");                  
+                    }else{
+                        td.setAttribute("style", "color:red");
+                    }
                     fila.appendChild(td);
 
                     //crea el boton para ver el heapmap
@@ -205,7 +212,7 @@
                     break
 
                 } catch (error) {
-                    
+                        console.log(error.code)
                     //captura el error cuando pide cors y hace visible el boton
                     if(SyntaxError){
                         console.log("Es el error del cors")
@@ -226,6 +233,7 @@
             if (PrecioFloat > 1) {
                 //si es positivo y es oro
                 precioMinimo = parseFloat(PrecioFloat).toFixed(2) + " Oro"
+                positivoNegativo = true
 
             } else if (PrecioFloat > 0.01) {
                 //si es positivo y es plata
@@ -233,12 +241,16 @@
                 if (precioMinimo == 1) {
                     precioMinimo = PrecioFloat + " Oro"
                 }
+                positivoNegativo = true
+
             }else if (PrecioFloat > 0.001){
                 //si es positivo y es cobre
                 precioMinimo = PrecioFloat * 10000 + " Cobre"
+                positivoNegativo = true
             }else {
                 //aqui esto es negativo
                 precioMinimo = PrecioFloat * 100
+                positivoNegativo = false
                 
                 if(precioMinimo < -100){
                     //si esto es negativo y pasa de -100
@@ -485,6 +497,7 @@
 
             return productName;
         }
+
     </script>
 </body>
 
