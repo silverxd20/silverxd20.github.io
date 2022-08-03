@@ -24,7 +24,7 @@
     </select>
 
     <p id="lastUpdated"></p>
-
+    <button style="display:none" onclick="activarCors()" id="corsBtn">Activar Cors</button>
     <br></br>
 
     <table id="productos" border="1">
@@ -116,6 +116,7 @@
 
         let tablaProducto = document.getElementById('productos');
         let cuerpoTabla = document.createElement('tbody');
+        let corsBoton = document.getElementById('corsBtn');
         //obtiene el valor de ambos dropdown
         dropdownProductosValor = document.getElementById("dropdownProductos").value
         dropdownTraductorValor = document.getElementById("dropdownTraductor").value
@@ -204,7 +205,15 @@
                     break
 
                 } catch (error) {
-                    console.log(error)
+                    
+                    //captura el error cuando pide cors y hace visible el boton
+                    if(SyntaxError){
+                        console.log("Es el error del cors")
+                        corsBoton.style.display = "inherit"
+                        break
+                    }else if(TypeError){
+                        "Salio el fail to fetch"
+                    }
                     sleep(2000)
                 }
             }
@@ -375,6 +384,12 @@
                 hora = [hora, "am"]
             }
             return hora;
+        }
+
+        //click al boton para activar cors
+        function activarCors(){
+            urlCors = "https://cors-anywhere.herokuapp.com/corsdemo"                   
+            window.open(urlCors, "_blank");
         }
 
          //Traduce todos los productos
