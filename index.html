@@ -11,10 +11,16 @@
 <body>
 
     <h1 id="titulo">Protuctos en subasta (Wow TBC)</h1>
-    <select onchange="SeleccionListaProducto()" id="dropdown">
+    <select onchange="SeleccionListaProducto()" id="dropdownProductos">
         <option value="Pergaminos">Pergaminos</option>
         <option value="Plantas de classic">Plantas de classic</option>
         <option value="Plantas de TBC">Plantas de TBC</option>
+    </select>
+    
+    <b>Idioma:</b>
+    <select onchange="SeleccionListaTraductor()" id="dropdownTraductor">
+        <option value="Español">Español</option>
+        <option value="Ingles">Ingles</option>
     </select>
 
     <p id="lastUpdated"></p>
@@ -110,6 +116,9 @@
 
         let tablaProducto = document.getElementById('productos');
         let cuerpoTabla = document.createElement('tbody');
+        //obtiene el valor de ambos dropdown
+        dropdownProductosValor = document.getElementById("dropdownProductos").value
+        dropdownTraductorValor = document.getElementById("dropdownTraductor").value
         let urlNexusArray = []
 
         //Carga la hora del ultimo escarneo
@@ -117,13 +126,13 @@
 
         //Inicia la pagina cargando los pergaminos
         urlPergaminos.forEach(function (links, index, array) {
-            traerProductoDatos(links, index, array)
+            traerProductoDatos(links, index, array, dropdownTraductorValor)
         });
 
         tablaProducto.appendChild(cuerpoTabla);
 
         //Abre los URL de los productos trae sus datos en una tablas (Funcion principal)
-        async function traerProductoDatos(Url, indice, array) {
+        async function traerProductoDatos(Url, indice, array, idioma) {
 
             while (true) {
                 try {
@@ -142,6 +151,11 @@
                     gananciaEstimada = gananciaPromedia(precioMinimo, precioPromedio).toFixed(4)
                     cantidades = await json.stats.current.quantity
 
+                    //Verifica si el idioma es español
+                    if(idioma == "Español"){
+                        productName = TraduccionName(productName);
+                    }
+
                     //agrega los datos a a tabla
                     let fila = document.createElement('tr');
 
@@ -154,7 +168,7 @@
 
                     //crea el nombre
                     td = document.createElement('td');
-                    td.innerText = TraduccionName(productName);
+                    td.innerText = productName
                     fila.appendChild(td);
 
                     //crea el precio minimo
@@ -170,7 +184,6 @@
                     //crea la ganancia estimada
                     td = document.createElement('td');
                     porcentajeGanancia = gananciaEstimada / precioMinimoRaw * 100
-                    console.log(porcentajeGanancia + " %")
                     td.innerText = PlataOro(gananciaEstimada) + " (" + parseFloat(porcentajeGanancia).toFixed(2) + " %)";
                     td.setAttribute("style", "font-weight:bold");
                     fila.appendChild(td);
@@ -195,21 +208,6 @@
                     sleep(2000)
                 }
             }
-        }
-
-        //Traduce todas las plantas
-        function TraduccionName(inglesName) {
-            if (inglesName == "Peacebloom") {
-                productName = "Flor de Paz"
-            } else if (inglesName == "Silverleaf") {
-                productName = "Hojaplata"
-            } else if (inglesName == "Earthroot") {
-                productName = "Raíz de tierra"
-            } else if (inglesName == "Mageroyal") {
-                productName = "Marregal"
-            }
-
-            return productName;
         }
 
         //pone los numero en 0 como plata si no lo deja en oro
@@ -253,29 +251,55 @@
             return gananciaEstimada;
         }
 
-        //Seleccion del dropdown
+        //Seleccion del dropdown de productos
         function SeleccionListaProducto() {
-            dropdown = document.getElementById("dropdown").value
+            dropdownProductosValor = document.getElementById("dropdownProductos").value
+            dropdownTraductorValor = document.getElementById("dropdownTraductor").value
             //Carga la hora del ultimo escarneo
             lastUpdated()
+            LimpiarTabla()
 
-            if (dropdown == "Plantas de classic") {
-                LimpiarTabla()
-                urlPlantasVanilla.forEach(function (links, index, array) {
-                    traerProductoDatos(links, index, array)
-                });
+            if (dropdownProductosValor == "Plantas de classic") {
+                    urlPlantasVanilla.forEach(function (links, index, array) {
+                        traerProductoDatos(links, index, array, dropdownTraductorValor)
+                    });
 
-            } else if (dropdown == "Plantas de TBC") {
-                LimpiarTabla()
+            } else if (dropdownProductosValor == "Plantas de TBC") {
                 urlPlantasTBC.forEach(function (links, index, array) {
-                    traerProductoDatos(links, index, array)
+                    traerProductoDatos(links, index, array, dropdownTraductorValor)
                 });
-            } else if (dropdown == "Pergaminos") {
-                LimpiarTabla()
+            } else if (dropdownProductosValor == "Pergaminos") {
                 urlPergaminos.forEach(function (links, index, array) {
-                    traerProductoDatos(links, index, array)
+                    traerProductoDatos(links, index, array, dropdownTraductorValor)
                 });
             }
+        }
+
+        //selecion del dropdown traductor español ingles
+        function SeleccionListaTraductor(){
+            //obtiene el valor de ambos dropdown
+            dropdownProductosValor = document.getElementById("dropdownProductos").value
+            dropdownTraductorValor = document.getElementById("dropdownTraductor").value
+
+            //Carga la hora del ultimo escarneo y se limpia la tabla
+            lastUpdated()
+            LimpiarTabla()
+
+                //Se verifica cual producto esta seleccionado también
+                if (dropdownProductosValor == "Plantas de classic") {
+                urlPlantasVanilla.forEach(function (links, index, array) {
+                    traerProductoDatos(links, index, array, dropdownTraductorValor)
+                });
+
+                } else if (dropdownProductosValor == "Plantas de TBC") {
+                urlPlantasTBC.forEach(function (links, index, array) {
+                    traerProductoDatos(links, index, array, dropdownTraductorValor)
+                });
+                } else if (dropdownProductosValor == "Pergaminos") {
+                urlPergaminos.forEach(function (links, index, array) {
+                    traerProductoDatos(links, index, array, dropdownTraductorValor)
+                }); 
+            }           
         }
 
         //Limpia la tabla
@@ -351,6 +375,100 @@
                 hora = [hora, "am"]
             }
             return hora;
+        }
+
+         //Traduce todos los productos
+         function TraduccionName(inglesName) {
+            //Traduccion plantas classic
+            if (inglesName == "Peacebloom") {
+                productName = "Flor de Paz"
+            } else if (inglesName == "Silverleaf") {
+                productName = "Hojaplata"
+            } else if (inglesName == "Earthroot") {
+                productName = "Raíz de tierra"
+            } else if (inglesName == "Mageroyal") {
+                productName = "Marregal"
+            } else if (inglesName == "Briarthorn") {
+                productName = "Brezospina"
+            } else if (inglesName == "Stranglekelp") {
+                productName = "Alga estranguladora"
+            } else if (inglesName == "Bruiseweed") {
+                productName = "Hierba cardenal"
+            } else if (inglesName == "Wild Steelbloom") {
+                productName = "Acérita salvaje"
+            }else if (inglesName == "Grave Moss") {
+                productName = "Musgo de tumba"
+            }else if (inglesName == "Kingsblood") {
+                productName = "Sangrerregia"
+            }else if (inglesName == "Liferoot") {
+                productName = "Vidarraíz"
+            }else if (inglesName == "Fadeleaf") {
+                productName = "Pálida"
+            }else if (inglesName == "Goldthorn") {
+                productName = "Espina de oro"
+            }else if (inglesName == "Wintersbite") {
+                productName = "Ivernalia"
+            }else if (inglesName == "Khadgar's Whisker") {
+                productName = "Mostacho de Khadgar"
+            }else if (inglesName == "Purple Lotus") {
+                productName = "Loto cárdeno"
+            }else if (inglesName == "Firebloom") {
+                productName = "Flor de Fuego"
+            }else if (inglesName == "Arthas' Tears") {
+                productName = "Lágrimas de Arthas"
+            }else if (inglesName == "Golden Sansam") {
+                productName = "Sansam dorado"
+            }else if (inglesName == "Sungrass") {
+                productName = "Solea"
+            }else if (inglesName == "Blindweed") {
+                productName = "Carolina"
+            }else if (inglesName == "Dreamfoil") {
+                productName = "Hojasueño"
+            }else if (inglesName == "Mountain Silversage") {
+                productName = "Salviargenta de montaña"
+            }else if (inglesName == "Gromsblood") {
+                productName = "Gromsanguina"
+            }else if (inglesName == "Ghost Mushroom") {
+                productName = "Champiñón fantasma"
+            }else if (inglesName == "Plaguebloom") {
+                productName = "Flor de peste"
+            }else if (inglesName == "Icecap") {
+                productName = "Setelo"
+            }
+
+            //Plantas de TBC
+            else if (inglesName == "Felweed") {
+                productName = "Hierba vil"
+            }else if (inglesName == "Ragveil") {
+                productName = "Velada"
+            }else if (inglesName == "Netherbloom") {
+                productName = "Flor abisal"
+            }else if (inglesName == "Terocone") {
+                productName = "Teropiña"
+            }else if (inglesName == "Mana Thistle") {
+                productName = "Cardo de maná"
+            }else if (inglesName == "Ancient Lichen") {
+                productName = "Liquen antiguo"
+            }else if (inglesName == "Nightmare Vine") {
+                productName = "Vid pesadilla"
+            }else if (inglesName == "Dreaming Glory") {
+                productName = "Gloria de ensueño"
+            }
+
+            //Pergaminos
+            else if (inglesName == "Scroll of Agility IV") {
+                productName = "Pergamino de Agilidad IV"
+            }else if (inglesName == "Scroll of Strength IV") {
+                productName = "Pergamino de Fuerza IV"
+            }else if (inglesName == "Scroll of Strength V") {
+                productName = "Pergamino de Fuerza V"
+            }else if (inglesName == "Scroll of Agility V") {
+                productName = "Pergamino de Agilidad V"
+            }else if (inglesName == "Scroll of Spirit V") {
+                productName = "Pergamino de espíritu V"
+            }
+
+            return productName;
         }
     </script>
 </body>
