@@ -139,7 +139,7 @@
 
             while (true) {
                 try {
-                    corsurl = "https://cors-anywhere.herokuapp.com/"
+                    corsurl = "https://developers.cloudflare.com/workers/examples/cors-header-proxy/"
                     //abre el url
                     const respuesta = await fetch(corsurl + Url)
                     const json = await respuesta.json()
@@ -337,7 +337,7 @@
         function lastUpdated() {
             while (true) {
                 try {
-                    corsurl = "https://cors-anywhere.herokuapp.com/"
+                    corsurl = "https://developers.cloudflare.com/workers/examples/cors-header-proxy/"
                     resultDate = fetch(corsurl + "https://api.nexushub.co/wow-classic/v1/scans/latest/pagle-alliance")
                         .then(resultDate => resultDate.json())
                         .then(function (fecha) {
