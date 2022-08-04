@@ -33,6 +33,7 @@
             <th>Imagen</th>
             <th>Nombre</th>
             <th>Precio Mínimo</th>
+            <th>Compra hasta el 15%</th>
             <th>Precio Premedio</th>
             <th>Ganancia Aproximada</th>
             <th>HeapMap</th>
@@ -152,6 +153,7 @@
                     precioMinimoRaw = json.stats.current.minBuyout / 10000
                     precioPromedio = await json.stats.current.marketValue / 10000
                     gananciaEstimada = gananciaPromedia(precioMinimo, precioPromedio).toFixed(4)
+                    porcentajeGanancia = gananciaEstimada / precioMinimoRaw * 100
                     cantidades = await json.stats.current.quantity
 
                     //Verifica si el idioma es español
@@ -177,17 +179,29 @@
 
                     //crea el precio minimo
                     td = document.createElement('td');
+                    td.setAttribute("style", "font-weight:bold");
                     td.innerText = PlataOro(precioMinimo);
+                    fila.appendChild(td);
+
+                    //crea el compra hasta el 15%
+                    td = document.createElement('td');
+                    let compraMaxima = CompraMaxima(precioPromedio, porcentajeGanancia)
+                    if(compraMaxima == "-"){
+                        td.innerText = compraMaxima;
+                    }else{
+                        td.innerText = PlataOro(compraMaxima);
+                    }
+                    td.setAttribute("style", "font-weight:bold");
                     fila.appendChild(td);
 
                     //crea el precio promedio
                     td = document.createElement('td');
                     td.innerText = PlataOro(precioPromedio);
+                    td.setAttribute("style", "font-weight:bold");
                     fila.appendChild(td);
 
                     //crea la ganancia estimada
                     td = document.createElement('td');
-                    porcentajeGanancia = gananciaEstimada / precioMinimoRaw * 100
                     td.innerText = PlataOro(gananciaEstimada) + " (" + parseFloat(porcentajeGanancia).toFixed(2) + " %)";
                     //agrega color verde si es positivo y rojo si es negativo
                     if(positivoNegativo == true){
@@ -213,9 +227,9 @@
                     break
 
                 } catch (error) {
-                        console.log(error.code)
                     //captura el error cuando pide cors y hace visible el boton
                     if(SyntaxError){
+                        console.log(SyntaxError)
                         console.log("Es el error del cors")
                         corsBoton.style.display = "inherit"                        
                     }else if(TypeError){
@@ -237,7 +251,7 @@
 
             } else if (PrecioFloat > 0.01) {
                 //si es positivo y es plata
-                precioMinimo = PrecioFloat * 100 + " Plata"
+                precioMinimo = parseFloat(PrecioFloat).toFixed(4) * 100 + " Plata"
                 if (precioMinimo == 1) {
                     precioMinimo = PrecioFloat + " Oro"
                 }
@@ -353,6 +367,26 @@
                     sleep(2000)
                 }
             }
+        }
+
+        //sugiere comprar hasta el 15% si la ganancia es mayor al 20%
+        function CompraMaxima(prePromedio, porcentajeGanancia){
+
+            console.log(porcentajeGanancia)
+            porcentajeEsperado = 20
+            if(porcentajeGanancia >= porcentajeEsperado){
+                console.log("es mayor a 20")
+                calculoDelCincoPorcieto1 = prePromedio * 5 / 100
+                SaldoPromedioMenosCincoPorciento = prePromedio - calculoDelCincoPorcieto1
+                //
+                saldoCompraHasta15 = SaldoPromedioMenosCincoPorciento * 0.85
+            }else{ 
+                console.log("NO LLEGA A 20")
+                saldoCompraHasta15 = "-"
+            }
+
+            return saldoCompraHasta15
+            
         }
 
         //sleep
@@ -500,5 +534,4 @@
 
     </script>
 </body>
-
 </html>
