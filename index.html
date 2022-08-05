@@ -17,7 +17,7 @@
         <option value="Plantas de classic">Plantas de classic</option>
         <option value="Plantas de TBC">Plantas de TBC</option>
     </select>
-    
+
     <b>Idioma:</b>
     <select onchange="SeleccionListaTraductor()" id="dropdownTraductor">
         <option value="Español">Español</option>
@@ -36,6 +36,7 @@
             <th>Compra hasta el 15%</th>
             <th>Precio Premedio</th>
             <th>Ganancia Aproximada</th>
+            <th id="porcentaje">%</th>
             <th>HeapMap</th>
         </tr>
     </table>
@@ -59,6 +60,7 @@
         th {
             background-color: #002169;
             color: white;
+            cursor: pointer;
         }
     </style>
 
@@ -155,9 +157,8 @@
                     gananciaEstimada = gananciaPromedia(precioMinimo, precioPromedio).toFixed(4)
                     porcentajeGanancia = gananciaEstimada / precioMinimoRaw * 100
                     cantidades = await json.stats.current.quantity
-
                     //Verifica si el idioma es español
-                    if(idioma == "Español"){
+                    if (idioma == "Español") {
                         productName = TraduccionName(productName);
                     }
 
@@ -172,43 +173,59 @@
                     fila.appendChild(img);
 
                     //crea el nombre
+                    td = document.createElement('tr');
                     td = document.createElement('td');
                     td.innerText = productName
-                    td.setAttribute("style", "font-weight:bold"); 
+                    td.setAttribute("style", "font-weight:bold");
                     fila.appendChild(td);
 
                     //crea el precio minimo
+                    td = document.createElement('tr');
                     td = document.createElement('td');
                     td.setAttribute("style", "font-weight:bold");
                     td.innerText = PlataOro(precioMinimo);
                     fila.appendChild(td);
 
                     //crea el compra hasta el 15%
+                    td = document.createElement('tr');
                     td = document.createElement('td');
                     let compraMaxima = CompraMaxima(precioPromedio, porcentajeGanancia)
-                    if(compraMaxima == "-"){
+                    if (compraMaxima == "-") {
                         td.innerText = compraMaxima;
-                    }else{
+                    } else {
                         td.innerText = PlataOro(compraMaxima);
                     }
                     td.setAttribute("style", "font-weight:bold");
                     fila.appendChild(td);
 
                     //crea el precio promedio
+                    td = document.createElement('tr');
                     td = document.createElement('td');
                     td.innerText = PlataOro(precioPromedio);
                     td.setAttribute("style", "font-weight:bold");
                     fila.appendChild(td);
 
                     //crea la ganancia estimada
+                    td = document.createElement('tr');
                     td = document.createElement('td');
-                    td.innerText = PlataOro(gananciaEstimada) + " (" + parseFloat(porcentajeGanancia).toFixed(2) + " %)";
+                    td.innerText = PlataOro(gananciaEstimada);
                     //agrega color verde si es positivo y rojo si es negativo
-                    if(positivoNegativo == true){
-                        td.setAttribute("style", "color:#045900");                  
-                    }else{
+                    if (positivoNegativo == true) {
+                        td.setAttribute("style", "color:#045900");
+                    } else {
                         td.setAttribute("style", "color:red");
                     }
+                    fila.appendChild(td);
+
+                    //crea el % de ganancia
+                    td = document.createElement('tr');
+                    td = document.createElement('td');
+                    if (positivoNegativo == true) {
+                        td.setAttribute("style", "color:#045900");
+                    } else {
+                        td.setAttribute("style", "color:red");
+                    }
+                    td.innerText = parseFloat(porcentajeGanancia).toFixed(2) + " %";
                     fila.appendChild(td);
 
                     //crea el boton para ver el heapmap
@@ -228,11 +245,11 @@
 
                 } catch (error) {
                     //captura el error cuando pide cors y hace visible el boton
-                    if(SyntaxError){
+                    if (SyntaxError) {
                         console.log(SyntaxError)
                         console.log("Es el error del cors")
-                        corsBoton.style.display = "inherit"                        
-                    }else if(TypeError){
+                        corsBoton.style.display = "inherit"
+                    } else if (TypeError) {
                         "Salio el fail to fetch"
                     }
                     sleep(2000)
@@ -257,22 +274,22 @@
                 }
                 positivoNegativo = true
 
-            }else if (PrecioFloat > 0.001){
+            } else if (PrecioFloat > 0.001) {
                 //si es positivo y es cobre
                 precioMinimo = PrecioFloat * 10000 + " Cobre"
                 positivoNegativo = true
-            }else {
+            } else {
                 //aqui esto es negativo
                 precioMinimo = PrecioFloat * 100
                 positivoNegativo = false
-                
-                if(precioMinimo < -100){
-                    //si esto es negativo y pasa de -100
-                    precioMinimo =parseFloat(precioMinimo /100 ).toFixed(2) + " Oro"
 
-                }else{
+                if (precioMinimo < -100) {
+                    //si esto es negativo y pasa de -100
+                    precioMinimo = parseFloat(precioMinimo / 100).toFixed(2) + " Oro"
+
+                } else {
                     //si esto es negativo y es menor a -100
-                    precioMinimo = PrecioFloat*100+ " Plata"
+                    precioMinimo = PrecioFloat * 100 + " Plata"
                 }
             }
             return precioMinimo;
@@ -295,9 +312,9 @@
             LimpiarTabla()
 
             if (dropdownProductosValor == "Plantas de classic") {
-                    urlPlantasVanilla.forEach(function (links, index, array) {
-                        traerProductoDatos(links, index, array, dropdownTraductorValor)
-                    });
+                urlPlantasVanilla.forEach(function (links, index, array) {
+                    traerProductoDatos(links, index, array, dropdownTraductorValor)
+                });
 
             } else if (dropdownProductosValor == "Plantas de TBC") {
                 urlPlantasTBC.forEach(function (links, index, array) {
@@ -311,7 +328,7 @@
         }
 
         //selecion del dropdown traductor español ingles
-        function SeleccionListaTraductor(){
+        function SeleccionListaTraductor() {
             //obtiene el valor de ambos dropdown
             dropdownProductosValor = document.getElementById("dropdownProductos").value
             dropdownTraductorValor = document.getElementById("dropdownTraductor").value
@@ -320,21 +337,21 @@
             lastUpdated()
             LimpiarTabla()
 
-                //Se verifica cual producto esta seleccionado también
-                if (dropdownProductosValor == "Plantas de classic") {
+            //Se verifica cual producto esta seleccionado también
+            if (dropdownProductosValor == "Plantas de classic") {
                 urlPlantasVanilla.forEach(function (links, index, array) {
                     traerProductoDatos(links, index, array, dropdownTraductorValor)
                 });
 
-                } else if (dropdownProductosValor == "Plantas de TBC") {
+            } else if (dropdownProductosValor == "Plantas de TBC") {
                 urlPlantasTBC.forEach(function (links, index, array) {
                     traerProductoDatos(links, index, array, dropdownTraductorValor)
                 });
-                } else if (dropdownProductosValor == "Pergaminos") {
+            } else if (dropdownProductosValor == "Pergaminos") {
                 urlPergaminos.forEach(function (links, index, array) {
                     traerProductoDatos(links, index, array, dropdownTraductorValor)
-                }); 
-            }           
+                });
+            }
         }
 
         //Limpia la tabla
@@ -352,10 +369,10 @@
             while (true) {
                 try {
                     corsurl = "https://cors-anywhere.herokuapp.com/"
-                    resultDate = fetch(corsurl + "https://api.nexushub.co/wow-classic/v1/scans/latest/pagle-alliance")
+                    resultDate = fetch(corsurl + "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/scroll-of-agility-iv")
                         .then(resultDate => resultDate.json())
                         .then(function (fecha) {
-                            const d = new Date(fecha.scannedAt);
+                            const d = new Date(fecha.stats.lastUpdated);
                             hora = hora24a12(d.getHours())
                             minuto = d.getMinutes()
                             document.getElementById("lastUpdated").innerHTML = "Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1];
@@ -370,23 +387,22 @@
         }
 
         //sugiere comprar hasta el 15% si la ganancia es mayor al 20%
-        function CompraMaxima(prePromedio, porcentajeGanancia){
+        function CompraMaxima(prePromedio, porcentajeGanancia) {
 
             console.log(porcentajeGanancia)
             porcentajeEsperado = 20
-            if(porcentajeGanancia >= porcentajeEsperado){
-                console.log("es mayor a 20")
+            if (porcentajeGanancia >= porcentajeEsperado) {
+
                 calculoDelCincoPorcieto1 = prePromedio * 5 / 100
                 SaldoPromedioMenosCincoPorciento = prePromedio - calculoDelCincoPorcieto1
                 //
                 saldoCompraHasta15 = SaldoPromedioMenosCincoPorciento * 0.85
-            }else{ 
-                console.log("NO LLEGA A 20")
+            } else {
                 saldoCompraHasta15 = "-"
             }
 
             return saldoCompraHasta15
-            
+
         }
 
         //sleep
@@ -433,13 +449,53 @@
         }
 
         //click al boton para activar cors
-        function activarCors(){
-            urlCors = "https://cors-anywhere.herokuapp.com/corsdemo"                   
+        function activarCors() {
+            urlCors = "https://cors-anywhere.herokuapp.com/corsdemo"
             window.open(urlCors, "_blank");
         }
 
-         //Traduce todos los productos
-         function TraduccionName(inglesName) {
+        //ordena la tabla de mayor a menor
+        function compareValues(a, b) {
+            // return -1/0/1 based on what you "know" a and b
+            // are here. Numbers, text, some custom case-insensitive
+            // and natural number ordering, etc. That's up to you.
+            // A typical "do whatever JS would do" is:
+            return (a > b) ? -1 : (a < b) ? 1 : 0;
+        }
+
+        function sortTable(colnum) {
+            let tbody = tablaProducto.querySelector(`tbody`);
+            let rows = Array.from(tablaProducto.querySelectorAll(`tr`));
+            console.log(rows)
+            // but ignore the heading row:
+            rows = rows.slice(1);
+            posicion = colnum + 2
+            // set up the queryselector for getting the indicated
+            // column from a row, so we can compare using its value:
+            let qs = `td:nth-child(${posicion})`;
+
+            // and then just... sort the rows:
+            rows.sort((r1, r2) => {
+                // get each row's relevant column
+                let t1 = r1.querySelector(qs);
+                let t2 = r2.querySelector(qs);
+
+                console.log(parseFloat(t1.textContent))
+                console.log(parseFloat(t2.textContent))
+                // and then effect sorting by comparing their content:
+                return compareValues(t1.textContent, t2.textContent);
+            });
+
+            // and then the magic part that makes the sorting appear on-page:
+            rows.forEach(row => tbody.appendChild(row));
+        }
+        tablaProducto.querySelectorAll(`th`).forEach((th, position) => {
+            th.addEventListener(`click`, evt => sortTable(position));
+
+        });
+
+        //Traduce todos los productos
+        function TraduccionName(inglesName) {
             //Traduccion plantas classic
             if (inglesName == "Peacebloom") {
                 productName = "Flor de Paz"
@@ -457,75 +513,75 @@
                 productName = "Hierba cardenal"
             } else if (inglesName == "Wild Steelbloom") {
                 productName = "Acérita salvaje"
-            }else if (inglesName == "Grave Moss") {
+            } else if (inglesName == "Grave Moss") {
                 productName = "Musgo de tumba"
-            }else if (inglesName == "Kingsblood") {
+            } else if (inglesName == "Kingsblood") {
                 productName = "Sangrerregia"
-            }else if (inglesName == "Liferoot") {
+            } else if (inglesName == "Liferoot") {
                 productName = "Vidarraíz"
-            }else if (inglesName == "Fadeleaf") {
+            } else if (inglesName == "Fadeleaf") {
                 productName = "Pálida"
-            }else if (inglesName == "Goldthorn") {
+            } else if (inglesName == "Goldthorn") {
                 productName = "Espina de oro"
-            }else if (inglesName == "Wintersbite") {
+            } else if (inglesName == "Wintersbite") {
                 productName = "Ivernalia"
-            }else if (inglesName == "Khadgar's Whisker") {
+            } else if (inglesName == "Khadgar's Whisker") {
                 productName = "Mostacho de Khadgar"
-            }else if (inglesName == "Purple Lotus") {
+            } else if (inglesName == "Purple Lotus") {
                 productName = "Loto cárdeno"
-            }else if (inglesName == "Firebloom") {
+            } else if (inglesName == "Firebloom") {
                 productName = "Flor de Fuego"
-            }else if (inglesName == "Arthas' Tears") {
+            } else if (inglesName == "Arthas' Tears") {
                 productName = "Lágrimas de Arthas"
-            }else if (inglesName == "Golden Sansam") {
+            } else if (inglesName == "Golden Sansam") {
                 productName = "Sansam dorado"
-            }else if (inglesName == "Sungrass") {
+            } else if (inglesName == "Sungrass") {
                 productName = "Solea"
-            }else if (inglesName == "Blindweed") {
+            } else if (inglesName == "Blindweed") {
                 productName = "Carolina"
-            }else if (inglesName == "Dreamfoil") {
+            } else if (inglesName == "Dreamfoil") {
                 productName = "Hojasueño"
-            }else if (inglesName == "Mountain Silversage") {
+            } else if (inglesName == "Mountain Silversage") {
                 productName = "Salviargenta de montaña"
-            }else if (inglesName == "Gromsblood") {
+            } else if (inglesName == "Gromsblood") {
                 productName = "Gromsanguina"
-            }else if (inglesName == "Ghost Mushroom") {
+            } else if (inglesName == "Ghost Mushroom") {
                 productName = "Champiñón fantasma"
-            }else if (inglesName == "Plaguebloom") {
+            } else if (inglesName == "Plaguebloom") {
                 productName = "Flor de peste"
-            }else if (inglesName == "Icecap") {
+            } else if (inglesName == "Icecap") {
                 productName = "Setelo"
             }
 
             //Plantas de TBC
             else if (inglesName == "Felweed") {
                 productName = "Hierba vil"
-            }else if (inglesName == "Ragveil") {
+            } else if (inglesName == "Ragveil") {
                 productName = "Velada"
-            }else if (inglesName == "Netherbloom") {
+            } else if (inglesName == "Netherbloom") {
                 productName = "Flor abisal"
-            }else if (inglesName == "Terocone") {
+            } else if (inglesName == "Terocone") {
                 productName = "Teropiña"
-            }else if (inglesName == "Mana Thistle") {
+            } else if (inglesName == "Mana Thistle") {
                 productName = "Cardo de maná"
-            }else if (inglesName == "Ancient Lichen") {
+            } else if (inglesName == "Ancient Lichen") {
                 productName = "Liquen antiguo"
-            }else if (inglesName == "Nightmare Vine") {
+            } else if (inglesName == "Nightmare Vine") {
                 productName = "Vid pesadilla"
-            }else if (inglesName == "Dreaming Glory") {
+            } else if (inglesName == "Dreaming Glory") {
                 productName = "Gloria de ensueño"
             }
 
             //Pergaminos
             else if (inglesName == "Scroll of Agility IV") {
                 productName = "Pergamino de Agilidad IV"
-            }else if (inglesName == "Scroll of Strength IV") {
+            } else if (inglesName == "Scroll of Strength IV") {
                 productName = "Pergamino de Fuerza IV"
-            }else if (inglesName == "Scroll of Strength V") {
+            } else if (inglesName == "Scroll of Strength V") {
                 productName = "Pergamino de Fuerza V"
-            }else if (inglesName == "Scroll of Agility V") {
+            } else if (inglesName == "Scroll of Agility V") {
                 productName = "Pergamino de Agilidad V"
-            }else if (inglesName == "Scroll of Spirit V") {
+            } else if (inglesName == "Scroll of Spirit V") {
                 productName = "Pergamino de espíritu V"
             }
 
@@ -534,4 +590,5 @@
 
     </script>
 </body>
+
 </html>
