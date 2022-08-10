@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar items</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <div>
+            <div>
+                <h2>Agregar nuevos productos</h2>
+            </div><br>
+            <form>
+
+                <div class="form-group">
+
+                    <div class="form-group col-md-4">
+                        <label for="input">URL:</label>
+                        <input type="text" class="form-control" id="inputEmail4" placeholder="Link del producto">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress">Traducción:</label>
+                        <input type="text" class="form-control" id="inputAddress" placeholder="Nombre en español">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress">Nombre único:</label>
+                        <input type="text" class="form-control" id="inputAddress" placeholder="Ejemplo: scroll-of-agility-iv">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="inputAddress2">Categoría:</label>
+                        <select id="selectCategoria" class="form-control">
+                        </select>
+                        <div>
+                            <br>
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="gridCheck">
+                                    <label class="form-check-label" for="gridCheck">
+                                        Selecciona si es una nueva categoría
+                                    </label>
+                                </div>
+                            </div>
+                            <input disabled type="text" class="form-control" id="inputAddress" placeholder="Agregar una nueva">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="inputAddress2">Expansion:</label>
+                    <select id="selectExpansion" class="form-control">
+                        <option selected>Classic</option>
+                        <option selected>Tbc</option>
+                        <option selected>Wotlk</option>
+                    </select>
+                    <br>
+            </form>
+
+            <div class="d-flex p-2 justify-content-center">
+                <input type="button" id="btnAgregar" class="btn btn-primary" value="Agregar"></button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script type="module" src="panel.js"></script>
+</body>
+
+</html>
