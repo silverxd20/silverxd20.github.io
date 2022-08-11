@@ -241,7 +241,7 @@
 
             while (true) {
                 try {
-                    var corsurl = "https://cors-anywhere.herokuapp.com/"
+                    var corsurl = "https://api.codetabs.com/v1/proxy?quest="
                     //abre el url
                     const respuesta = await fetch(corsurl + urlProductos)
                     const json = await respuesta.json()
@@ -510,7 +510,7 @@
         function lastUpdated() {
             while (true) {
                 try {
-                    var corsurl = "https://cors-anywhere.herokuapp.com/"
+                    var corsurl = "https://api.codetabs.com/v1/proxy?quest="
                     var resultDate = fetch(corsurl + "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/scroll-of-agility-iv")
                         .then(resultDate => resultDate.json())
                         .then(function (fecha) {
@@ -647,7 +647,7 @@
             }
 
             LimpiarTablaVerificacion()
-            var corsurl = "https://cors-anywhere.herokuapp.com/"
+            var corsurl = "https://api.codetabs.com/v1/proxy?quest="
             var Url = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/" + uniqueName + "/prices"
 
             const respuesta = await fetch(corsurl + Url)
