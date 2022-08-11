@@ -25,7 +25,6 @@ let selectExpansion = document.getElementById("selectExpansion")
 leerDatos()
 
 document.getElementById('btnAgregar').onclick = function () {
-    console.log("ejecutando pues vale")
     agregarProducto()
 }
 

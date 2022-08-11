@@ -61,11 +61,7 @@
         <input type="password" name="" id="campoPassID">
         <input type="button" onclick="btnGo()" id="btnGo" value="Go">
     </div>
-    <select onchange="SeleccionListaProducto()" id="dropdownProductos">
-        <option value="Pergaminos">Pergaminos</option>
-        <option value="Plantas de classic">Plantas de classic</option>
-        <option value="Plantas de TBC">Plantas de TBC</option>
-        <option value="Menas">Menas</option>
+    <select id="dropdownProductos">
     </select>
 
     <b>Idioma:</b>
@@ -115,52 +111,114 @@
         }
     </style>
 
-    <script src="traduccion-url.js"></script>
+    <script type="module">
+        //firestore imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js"
+        import { collection, getDocs, addDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js";
 
-    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4a33fFr6SgUAXjZ6FeFB_XDGL6SKuCuY",
+            authDomain: "wowprices-74a82.firebaseapp.com",
+            projectId: "wowprices-74a82",
+            storageBucket: "wowprices-74a82.appspot.com",
+            messagingSenderId: "380944707410",
+            appId: "1:380944707410:web:2f229f9fbf99d96e39148b"
+        };
 
+        const app = initializeApp(firebaseConfig);
+        //variables para firestore
+        let infoProductosArray = []
+
+        //id elementos html
         let tablaProducto = document.getElementById('productos');
         let cuerpoTabla = document.createElement('tbody');
         let corsBoton = document.getElementById('corsBtn');
         let ventanaTituloId = document.getElementById("ventanaTitulo")
         let monedaNombreId = document.getElementById("monedaId")
+        let selectProductos = document.createElement('dropdownProductos');
         let positivoNegativo = ""
+
+        //eventos
+        document.getElementById('dropdownProductos').addEventListener('change', function () {
+            SeleccionListaProducto()
+        });
 
         //VARIABLES DEL LA VENTANITA
         let tablaVerificacion = document.getElementById('tablaVerificacion');
         let tbody = document.createElement('tbody');
-        campoTextPrecioVentaID = document.getElementById("PventaId")
+        let campoTextPrecioVentaID = document.getElementById("PventaId")
         let campoTextoValor = document.getElementById("PventaId").value
-        PrecioVenta = parseFloat(campoTextoValor) * 10000
-        diaSemana = ""
-        diaSemanaAnterior = "Sat"
-        cantidades = 0
+        let PrecioVenta = parseFloat(campoTextoValor) * 10000
+        let diaSemana = ""
+        let diaSemanaAnterior = "Sat"
+        let cantidades = 0
 
         //obtiene el valor de ambos dropdown
-        dropdownProductosValor = document.getElementById("dropdownProductos").value
-        dropdownTraductorValor = document.getElementById("dropdownTraductor").value
+        let dropdownProductosValor = document.getElementById("dropdownProductos").value
+        let dropdownTraductorValor = document.getElementById("dropdownTraductor").value
         let urlNexusArray = []
         let NombreProductoArray = new Array()
 
         //Carga la hora del ultimo escarneo
-        lastUpdated()
+        //lastUpdated()
+
+        //Inicia tratendo los datos y categorias del la base de datos
+        leerDatos()
 
         //Inicia la pagina cargando los pergaminos
-        urlPergaminos.forEach(function (links, index, array) {
-            traerProductoDatos(links, index, array, dropdownTraductorValor)
-        });
+        /* urlPergaminos.forEach(function (links, index, array) {
+             traerProductoDatos(links, index, array, dropdownTraductorValor)
+         });*/
 
         tablaVerificacion.appendChild(tbody);
         tablaProducto.appendChild(cuerpoTabla);
 
+        //LEE LOS DATOS DE FIREBASE
+        async function leerDatos() {
+            // Inicializa Firebase si no esta inicializado
+            const app = initializeApp(firebaseConfig);
+
+            const db = getFirestore(app);
+            const colRef = collection(db, "data");
+            const docsSnap = await getDocs(colRef);
+            docsSnap.forEach(doc => {
+                console.log(doc.data().infoProducts);
+
+                //agrega las categorias al dropdown
+                for (const key in doc.data().tipo) {
+                    const element = doc.data().tipo[key];
+                    let daySelect = document.getElementById('dropdownProductos');
+                    daySelect.options[daySelect.options.length] = new Option(element, element);
+                }
+
+                //guarda el json de los productos agregados
+                for (const key in doc.data().infoProducts) {
+                    let urlProductos = doc.data().infoProducts[key].url
+                    let NombreEspañol = doc.data().infoProducts[key].traduccion
+                    let categoria = doc.data().infoProducts[key].categoria
+                    let expansion = doc.data().infoProducts[key].expansion
+                    console.log(urlProductos)
+                    console.log(NombreEspañol)
+                    console.log(categoria)
+                    console.log(expansion)
+                    //console.log(doc.data().infoProducts[key])
+                    infoProductosArray.push(doc.data().infoProducts[key])
+                    //traerProductoDatos(urlProductos, key, doc.data().infoProducts, dropdownTraductorValor, NombreEspañol)
+                }
+            })
+            console.log(infoProductosArray)
+        }
+
         //Abre los URL de los productos trae sus datos en una tablas (Funcion principal)
-        async function traerProductoDatos(Url, indice, array, idioma) {
+        async function traerProductoDatos(urlProductos, indice, array, idioma, NombreEspañol) {
 
             while (true) {
                 try {
                     corsurl = "https://cors-anywhere.herokuapp.com/"
                     //abre el url
-                    const respuesta = await fetch(corsurl + Url)
+                    const respuesta = await fetch(corsurl + urlProductos)
                     const json = await respuesta.json()
                     //Variable del producto
                     productName = json.name
@@ -174,7 +232,7 @@
                     cantidades = await json.stats.current.quantity
                     //Verifica si el idioma es español
                     if (idioma == "Español") {
-                        productName = TraduccionName(productName);
+                        productName = NombreEspañol
                     }
 
                     //agrega los datos a a tabla
@@ -364,30 +422,21 @@
         }
 
         //Seleccion del dropdown de productos
-        function SeleccionListaProducto() {
-            dropdownProductosValor = document.getElementById("dropdownProductos").value
-            dropdownTraductorValor = document.getElementById("dropdownTraductor").value
+        function SeleccionListaProducto(event) {
+            let dropdownProductosValue = document.getElementById("dropdownProductos").value
+            let dropdownTraductorValue = document.getElementById("dropdownTraductor").value
             //Carga la hora del ultimo escarneo
-            lastUpdated()
+            //lastUpdated()
             LimpiarTabla()
+            for (const key in infoProductosArray) {
 
-            if (dropdownProductosValor == "Plantas de classic") {
-                urlPlantasVanilla.forEach(function (links, index, array) {
-                    traerProductoDatos(links, index, array, dropdownTraductorValor)
-                });
-
-            } else if (dropdownProductosValor == "Plantas de TBC") {
-                urlPlantasTBC.forEach(function (links, index, array) {
-                    traerProductoDatos(links, index, array, dropdownTraductorValor)
-                });
-            } else if (dropdownProductosValor == "Pergaminos") {
-                urlPergaminos.forEach(function (links, index, array) {
-                    traerProductoDatos(links, index, array, dropdownTraductorValor)
-                });
-            } else if (dropdownProductosValor == "Menas") {
-                urlMenas.forEach(function (links, index, array) {
-                    traerProductoDatos(links, index, array, dropdownTraductorValor)
-                });
+                if (dropdownProductosValue == infoProductosArray[key].categoria) {
+                    let urlProductos = infoProductosArray[key].url
+                    let NombreEspañol = infoProductosArray[key].traduccion
+                    let categoria = infoProductosArray[key].categoria
+                    let expansion = infoProductosArray[key].expansion
+                    //traerProductoDatos(urlProductos, key, infoProductosArray, dropdownProductosValue, NombreEspañol)
+                }
             }
         }
 
@@ -506,8 +555,6 @@
             } else if (hora == 24) {
                 hora = [12, "am"]
             } else if (hora == 0) {
-                hora = [12, "am"]
-            } else if (hora == 00) {
                 hora = [12, "am"]
             } else {
                 hora = [hora, "am"]
