@@ -21,7 +21,7 @@
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div id="modalId" class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="ventanaTitulo"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -31,7 +31,7 @@
                     <!-- Todo dentro de la ventanita -->
                     <div id="divForm" class="divForm">
                         <form action="">
-                            <label for="fname">Precio de venta:</label><br>
+                            <label id="PventaLabel" for="fname">Precio de venta:</label><br>
                             <input type="number" class="Pventa" id="PventaId" name="fname">
                             <b for="moneda" id="monedaId"></b>
                             <br><br>
@@ -64,7 +64,7 @@
     <select id="dropdownProductos">
     </select>
 
-    <b>Idioma:</b>
+    <b id="idiomaLabel">Idioma:</b>
     <select onchange="SeleccionListaTraductor()" id="dropdownTraductor">
         <option value="Español">Español</option>
     </select>
@@ -88,6 +88,16 @@
     </table>
 
     <style>
+        body {
+            background-color: #242424;
+        }
+        #titulo, #PventaLabel, #idiomaLabel, #ventanaTitulo, #lastUpdated{
+            color: bisque;
+        }
+        #modalId {
+            background-color: #242424;
+        }
+
         table {
             border-collapse: collapse;
             width: 100%;
@@ -97,14 +107,15 @@
         td {
             text-align: left;
             padding: 8px;
+            color : burlywood
         }
 
         tr:nth-child(even) {
-            background-color: #f2f2f2
+            background-color: rgb(51, 51, 51)
         }
 
         th {
-            background-color: #002169;
+            background-color: #091e4d;
             color: white;
             cursor: pointer;
         }
@@ -293,7 +304,7 @@
                     td.innerText = PlataOro(gananciaEstimada);
                     //agrega color verde si es positivo y rojo si es negativo
                     if (positivoNegativo == true) {
-                        td.setAttribute("style", "color:#045900");
+                        td.setAttribute("style", "color:green");
                     } else {
                         td.setAttribute("style", "color:red");
                     }
