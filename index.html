@@ -256,7 +256,7 @@
 
                     }, 1000)
                     //abre el url
-                    const respuesta = await fetch(corsurl+urlProductos)
+                    const respuesta = await fetch(urlProductos)
                     console.log(respuesta)
                     const json = await respuesta.json()
                     //Variable del producto
@@ -523,7 +523,7 @@
             while (true) {
                 try {
                     var corsurl = "https://api.codetabs.com/v1/proxy?quest="
-                    var resultDate = fetch(corsurl+"https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/scroll-of-agility-iv")
+                    var resultDate = fetch("https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/scroll-of-agility-iv")
                         .then(resultDate => resultDate.json())
                         .then(function (fecha) {
                             const d = new Date(fecha.stats.lastUpdated);
@@ -663,7 +663,7 @@
             var corsurl = "https://api.codetabs.com/v1/proxy?quest="
             var Url = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/" + uniqueName + "/prices"
 
-            const respuesta = await fetch(corsurl + Url)
+            const respuesta = await fetch(Url)
             const jsonResultado = await respuesta.json()
             for (var index = 0; index < jsonResultado.data.length; index++) {
 
