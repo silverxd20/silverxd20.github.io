@@ -61,12 +61,23 @@
         <input type="password" name="" id="campoPassID">
         <input type="button" id="btnGo" value="Go">
     </div>
+    <b id="idiomaLabel">Categoría:</b>
     <select id="dropdownProductos">
     </select>
 
-    <b id="idiomaLabel">Idioma:</b>
-    <select onchange="SeleccionListaTraductor()" id="dropdownTraductor">
-        <option value="Español">Español</option>
+    <b id="idiomaLabel">Expansion:</b>
+    <select id="dropdownExpansion">
+        <option value="Todos">Todos</option>
+        <option value="Classic">Classic</option>
+        <option value="Tbc">Tbc</option>
+        <option value="Wotlk">Wotlk</option>
+    </select>
+
+    <b id="servidorLabel">Servidor:</b>
+    <select id="dropdownServidor">
+        <option value="Pagle-alliance">Pagle Alianza</option>
+        <option value="Whitemane-horde">Whitemane Horda</option>
+
     </select>
 
     <p id="lastUpdated"></p>
@@ -86,47 +97,10 @@
             <th>Herramienta</th>
         </tr>
     </table>
-
-    <style>
-        body {
-            background-color: #242424;
-        }
-
-        #titulo,
-        #PventaLabel,
-        #idiomaLabel,
-        #ventanaTitulo,
-        #lastUpdated,
-        #monedaId {
-            color: bisque;
-        }
-
-        #modalId {
-            background-color: #242424;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 8px;
-            color: burlywood
-        }
-
-        tr:nth-child(even) {
-            background-color: rgb(51, 51, 51)
-        }
-
-        th {
-            background-color: #091e4d;
-            color: white;
-            cursor: pointer;
-        }
-    </style>
+    <br>
+    <div class="d-flex">
+        <h1 id="sinProductosId"></h1>
+    </div>
 
     <script type="module">
         //firestore imports
@@ -153,9 +127,12 @@
         var divId = document.getElementById("divPassId")
         var cuerpoTabla = document.createElement('tbody');
         var corsBoton = document.getElementById('corsBtn');
+        var sinProductosLabel = document.getElementById("sinProductosId")
         var ventanaTituloId = document.getElementById("ventanaTitulo")
         var monedaNombreId = document.getElementById("monedaId")
         var selectProductos = document.createElement('dropdownProductos');
+        var dropdownServidor = document.getElementById('dropdownServidor')
+        var dropdownExpansion = document.getElementById("dropdownExpansion")
         var positivoNegativo = ""
 
         //eventos
@@ -163,6 +140,17 @@
         //cuando cambia el dropdown select producto
         document.getElementById('dropdownProductos').addEventListener('change', function () {
             SeleccionListaProducto()
+        });
+
+        //cuando cambia el dropdown de expansion
+        document.getElementById('dropdownExpansion').addEventListener('change', function () {
+            SeleccionListaExpansion()
+        });
+
+        //cuando cambia el dropdown de servidor
+        document.getElementById('dropdownServidor').addEventListener('change', function (event) {
+            console.log("cambiado: " + event.value)
+            SeleccionListaServidor()
         });
 
         //cuando haces click en el boton cambiar de la ventanita
@@ -199,7 +187,6 @@
 
         //obtiene el valor de ambos dropdown
         var dropdownProductosValor = document.getElementById("dropdownProductos").value
-        var dropdownTraductorValor = document.getElementById("dropdownTraductor").value
         var urlNexusArray = []
         var NombreProductoArray = new Array()
 
@@ -231,23 +218,25 @@
 
                 //guarda el json de los productos agregados
                 for (const key in doc.data().infoProducts) {
-                    var urlProductos = doc.data().infoProducts[key].url
+                    var urlNormal = doc.data().infoProducts[key].url
+                    var urlProductos = obtenerUrlConServer(urlNormal, dropdownServidor.value)
                     var NombreEspañol = doc.data().infoProducts[key].traduccion
                     var categoria = doc.data().infoProducts[key].categoria
                     var expansion = doc.data().infoProducts[key].expansion
                     var nombreUnicoProduct = doc.data().infoProducts[key].nombreUnico
+                    var ExpansionValue = dropdownExpansion.value
 
                     infoProductosArray.push(doc.data().infoProducts[key])
                     if ("Pergaminos" == categoria) {
 
-                        traerProductoDatos(urlProductos, key, doc.data().infoProducts, dropdownTraductorValor, NombreEspañol, nombreUnicoProduct)
+                        traerProductoDatos(urlProductos, key, doc.data().infoProducts, "Español", NombreEspañol, nombreUnicoProduct, ExpansionValue)
                     }
                 }
             })
         }
 
         //Abre los URL de los productos trae sus datos en una tablas (Funcion principal)
-        async function traerProductoDatos(urlProductos, indice, array, idioma, NombreEspañol, nombreUnicoProduct) {
+        async function traerProductoDatos(urlProductos, indice, array, idioma, NombreEspañol, nombreUnicoProduct, ExpansionValue) {
 
             for (let i = 0; i <= 8; i++) {
                 try {
@@ -394,6 +383,98 @@
             }
         }
 
+        //Filtra la lista por la expansion del juego
+        function SeleccionListaExpansion() {
+            console.log(dropdownServidor.value)
+            var dropdownProductosValue = document.getElementById("dropdownProductos").value
+            var dropdownExpansionValue = dropdownExpansion.value
+            var dropdownServidorValue = dropdownServidor.value
+
+            //Carga la hora del ultimo escarneo
+            lastUpdated()
+            LimpiarTabla()
+
+            for (const key in infoProductosArray) {
+
+                var urlNormal = infoProductosArray[key].url
+                var urlProductos = obtenerUrlConServer(urlNormal, dropdownServidor.value)
+                var NombreEspañol = infoProductosArray[key].traduccion
+                var categoria = infoProductosArray[key].categoria
+                var expansion = infoProductosArray[key].expansion
+                var nombreUnicoProducto = infoProductosArray[key].nombreUnico
+                sinProductosLabel.innerText = ""
+
+                if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == infoProductosArray[key].expansion) {
+                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto)
+                
+                }else if(dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == "Todos"){
+                    console.log("TODOS")
+                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto)
+                }
+            }
+        }
+
+        //Filtra la lista por el servidor elejido
+        function SeleccionListaServidor() {
+            console.log(dropdownServidor.value)
+            var dropdownProductosValue = document.getElementById("dropdownProductos").value
+            var dropdownExpansionValue = dropdownExpansion.value
+            var dropdownServidorValue = dropdownServidor.value
+
+            //Carga la hora del ultimo escarneo
+            lastUpdated()
+            LimpiarTabla()
+
+            for (const key in infoProductosArray) {
+
+                var urlNormal = infoProductosArray[key].url
+                var urlProductos = obtenerUrlConServer(urlNormal, dropdownServidor.value)
+                var NombreEspañol = infoProductosArray[key].traduccion
+                var categoria = infoProductosArray[key].categoria
+                var expansion = infoProductosArray[key].expansion
+                var nombreUnicoProducto = infoProductosArray[key].nombreUnico
+                sinProductosLabel.innerText = ""
+
+                if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == infoProductosArray[key].expansion) {
+                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto)
+                }else if(dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == "Todos"){
+                    console.log("TODOS")
+                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto)
+                }
+            }
+        }
+
+        //Seleccion del dropdown de productos
+        function SeleccionListaProducto(event) {
+            var dropdownProductosValue = document.getElementById("dropdownProductos").value
+            var dropdownExpansionValue = dropdownExpansion.value
+            var dropdownServidorValue = dropdownServidor.value
+
+            //Carga la hora del ultimo escarneo
+            lastUpdated()
+            LimpiarTabla()
+            for (const key in infoProductosArray) {
+
+                var urlNormal = infoProductosArray[key].url
+                var urlProductos = obtenerUrlConServer(urlNormal, dropdownServidorValue)
+                var NombreEspañol = infoProductosArray[key].traduccion
+                var categoria = infoProductosArray[key].categoria
+                var expansion = infoProductosArray[key].expansion
+                var nombreUnicoProducto = infoProductosArray[key].nombreUnico
+                sinProductosLabel.innerText = ""
+
+                if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == infoProductosArray[key].expansion) {
+                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto)
+                    
+                }else if(dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == "Todos"){
+                    console.log("TODOS")
+                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto)
+                }
+                
+            }
+        }
+
+
         //abre el panel
         function abrirOpciones() {
             divId.setAttribute("style", "display: visible")
@@ -454,58 +535,6 @@
             var SaldoMenosCincoPorciento = prePromedio - calculoDelCincoPorcieto
             var gananciaEstimada = SaldoMenosCincoPorciento - preMinimo
             return gananciaEstimada;
-        }
-
-        //Seleccion del dropdown de productos
-        function SeleccionListaProducto(event) {
-            var dropdownProductosValue = document.getElementById("dropdownProductos").value
-            var dropdownTraductorValue = document.getElementById("dropdownTraductor").value
-
-            //Carga la hora del ultimo escarneo
-            lastUpdated()
-            LimpiarTabla()
-            for (const key in infoProductosArray) {
-
-                if (dropdownProductosValue == infoProductosArray[key].categoria) {
-                    var urlProductos = infoProductosArray[key].url
-                    var NombreEspañol = infoProductosArray[key].traduccion
-                    var categoria = infoProductosArray[key].categoria
-                    var expansion = infoProductosArray[key].expansion
-                    var nombreUnicoProducto = infoProductosArray[key].nombreUnico
-                    traerProductoDatos(urlProductos, key, infoProductosArray, dropdownTraductorValue, NombreEspañol, nombreUnicoProducto)
-                }
-            }
-        }
-
-        //selecion del dropdown traductor español ingles
-        function SeleccionListaTraductor() {
-            //obtiene el valor de ambos dropdown
-            dropdownProductosValor = document.getElementById("dropdownProductos").value
-            dropdownTraductorValor = document.getElementById("dropdownTraductor").value
-
-            //Carga la hora del ultimo escarneo y se limpia la tabla
-            lastUpdated()
-            LimpiarTabla()
-
-            //Se verifica cual producto esta seleccionado también
-            if (dropdownProductosValor == "Plantas de classic") {
-                urlPlantasVanilla.forEach(function (links, index, array) {
-                    traerProductoDatos(links, index, array, dropdownTraductorValor)
-                });
-
-            } else if (dropdownProductosValor == "Plantas de TBC") {
-                urlPlantasTBC.forEach(function (links, index, array) {
-                    traerProductoDatos(links, index, array, dropdownTraductorValor)
-                });
-            } else if (dropdownProductosValor == "Pergaminos") {
-                urlPergaminos.forEach(function (links, index, array) {
-                    traerProductoDatos(links, index, array, dropdownTraductorValor)
-                });
-            } else if (dropdownProductosValor == "Menas") {
-                urlMenas.forEach(function (links, index, array) {
-                    traerProductoDatos(links, index, array, dropdownTraductorValor)
-                });
-            }
         }
 
         //Limpia la tabla
@@ -659,7 +688,7 @@
             }
 
             LimpiarTablaVerificacion()
-            
+
             var corsurl = "https://api.codetabs.com/v1/proxy?quest="
             var Url = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/" + uniqueName + "/prices"
 
@@ -751,6 +780,14 @@
             }
         }
 
+        //obtiene el url con el server seleccionado del dropdown
+        function obtenerUrlConServer(urlNormal, serverSelected) {
+            var urlSplit = urlNormal.split("/")
+            var serverFaccionSplit = urlSplit[6].toString().split("-")
+            var urlProductosConServerSelect = urlSplit[0] + "//" + urlSplit[2] + "/" + urlSplit[3] + "/" + urlSplit[4] + "/" + urlSplit[5] + "/" + serverSelected+ "/" + urlSplit[7]
+            return urlProductosConServerSelect
+        }
+
         //traduccion de dia de la semana
         function TraducirDiaSemana(diaSemana) {
             if (diaSemana == "Mon") {
@@ -775,6 +812,52 @@
         var aja = "abrete"
 
     </script>
+
+    <style>
+        body {
+            background-color: #242424;
+        }
+
+        #titulo,
+        #PventaLabel,
+        #idiomaLabel,
+        #ventanaTitulo,
+        #lastUpdated,
+        #servidorLabel,
+        #monedaId {
+            color: bisque;
+        }
+
+        #sinProductosId {
+            color: maroon;
+        }
+
+        #modalId {
+            background-color: #242424;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 8px;
+            color: burlywood
+        }
+
+        tr:nth-child(even) {
+            background-color: rgb(51, 51, 51)
+        }
+
+        th {
+            background-color: #091e4d;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
 
 </body>
 
