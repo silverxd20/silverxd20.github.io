@@ -78,7 +78,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-app.js";
         import { getFirestore } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js"
-        import { collection, getDocs, addDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js";
+        import { collection, getDocs, addDoc, doc, setDoc, updateDoc  } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js";
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -156,9 +156,6 @@
             }
 
             if (indicadorDeEnvio == true) {
-                console.log("campoNombre: " + campoUnicoNombre.value)
-                console.log("campoUrl: " + campoUrl.value)
-                console.log("campoTraduccion: " + campoTraduccion.value)
 
                 //Antes de enviar comprueba si todos los campos estan llenos
                 if (campoUrl.value == "" || campoTraduccion.value == "" || campoUnicoNombre.value == "") {
@@ -174,7 +171,9 @@
                                 "traduccion": campoTraduccion.value,
                                 "categoria": selectCategoria.value,
                                 "nombreUnico": campoUnicoNombre.value,
-                                "expansion": selectExpansion.value
+                                "expansion": selectExpansion.value,
+                                "precioActualizado": 0,
+                                "FechaActualizada": "1660503906"
                             }
                         }
                     }, { merge: true }).then(resp => {
