@@ -624,66 +624,66 @@
 
             for (let indice = 0; indice < 5; indice++) {
 
-                    var dropdownProductosValue = document.getElementById("dropdownProductos").value
-                    var dropdownExpansionValue = dropdownExpansion.value
-                    var dropdownServidorValue = dropdownServidor.value
+                var dropdownProductosValue = document.getElementById("dropdownProductos").value
+                var dropdownExpansionValue = dropdownExpansion.value
+                var dropdownServidorValue = dropdownServidor.value
 
-                    //Inicia trayendo los datos del json subido a Filestacks
-                    const respuesta = await fetch(url)
-                    const respuestaArchivoJson = await respuesta.json()
-                    console.log("Archivo escaneado (2/4)")
-                    var fechaUltimoScan = respuestaArchivoJson.FechaUltimoScan //Fecha ultimo escaneo
+                //Inicia trayendo los datos del json subido a Filestacks
+                const respuesta = await fetch(url)
+                const respuestaArchivoJson = await respuesta.json()
+                console.log("Archivo escaneado (2/4)")
+                var fechaUltimoScan = respuestaArchivoJson.FechaUltimoScan //Fecha ultimo escaneo
 
-                    //Recorre todos los productos del archivo json
-                    for (const key in respuestaArchivoJson.Productos) {
+                //Recorre todos los productos del archivo json
+                for (const key in respuestaArchivoJson.Productos) {
 
-                       var nombreNormalJson = respuestaArchivoJson.Productos[key].nombre //Nombre
-                       var nombreSinAcentoMinusculasJson = nombreNormalJson.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                       
-                       for (let index = 0; index < infoProductosArray.length; index++) {
-                           
-                           var NombreEspañolBaseDatosMinuscula = infoProductosArray[index].traduccion.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                            
-                           //Si existe entonces procede a guardarlo un nuevo array
-                            if (NombreEspañolBaseDatosMinuscula == nombreSinAcentoMinusculasJson) {
-                                console.log("nombre BD dentro for : "+ NombreEspañolBaseDatosMinuscula)
-                                var urlNormal = infoProductosArray[index].url
-                                var urlProductos = obtenerUrlConServer(urlNormal, dropdownServidorValue)
-                                var NombreEspañol = infoProductosArray[index].traduccion
-                                var categoria = infoProductosArray[index].categoria
-                                var expansion = infoProductosArray[index].expansion
-                                var nombreUnicoProducto = infoProductosArray[index].nombreUnico
-                                var precioActualizado = respuestaArchivoJson.Productos[key].Precio //Precio
-                                console.log(precioActualizado)
+                    var nombreNormalJson = respuestaArchivoJson.Productos[key].nombre //Nombre
+                    var nombreSinAcentoMinusculasJson = nombreNormalJson.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 
-                                infoProductosActualizadosJson.infoProducts[nombreUnicoProducto] = {
-                                    "url": urlProductos,
-                                    "traduccion": nombreNormalJson,
-                                    "categoria": categoria,
-                                    "nombreUnico": nombreUnicoProducto,
-                                    "expansion": expansion,
-                                    "precioActualizado": precioActualizado,
-                                    "FechaActualizada": fechaUltimoScan
-                                };
-                            }
+                    for (let index = 0; index < infoProductosArray.length; index++) {
+
+                        var NombreEspañolBaseDatosMinuscula = infoProductosArray[index].traduccion.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+
+                        //Si existe entonces procede a guardarlo un nuevo array
+                        if (NombreEspañolBaseDatosMinuscula == nombreSinAcentoMinusculasJson) {
+                            console.log("nombre BD dentro for : " + NombreEspañolBaseDatosMinuscula)
+                            var urlNormal = infoProductosArray[index].url
+                            var urlProductos = obtenerUrlConServer(urlNormal, dropdownServidorValue)
+                            var NombreEspañol = infoProductosArray[index].traduccion
+                            var categoria = infoProductosArray[index].categoria
+                            var expansion = infoProductosArray[index].expansion
+                            var nombreUnicoProducto = infoProductosArray[index].nombreUnico
+                            var precioActualizado = respuestaArchivoJson.Productos[key].Precio //Precio
+                            console.log(precioActualizado)
+
+                            infoProductosActualizadosJson.infoProducts[nombreUnicoProducto] = {
+                                "url": urlProductos,
+                                "traduccion": nombreNormalJson,
+                                "categoria": categoria,
+                                "nombreUnico": nombreUnicoProducto,
+                                "expansion": expansion,
+                                "precioActualizado": precioActualizado,
+                                "FechaActualizada": fechaUltimoScan
+                            };
                         }
                     }
+                }
 
-                    console.log(infoProductosActualizadosJson)
-                    console.log("Nuevo array creado (3/4)")
+                console.log(infoProductosActualizadosJson)
+                console.log("Nuevo array creado (3/4)")
 
-                    //Ahora lo subimos a firestore
+                //Ahora lo subimos a firestore
 
-                    await setDoc(doc(db, "data", "datos"), infoProductosActualizadosJson).then(resp => {
-                        console.log("Se han guardado los datos")
+                await setDoc(doc(db, "data", "datos"), infoProductosActualizadosJson).then(resp => {
+                    console.log("Se han guardado los datos")
 
-                        alert("Agregado correctamente!")
-                    }).catch(function (reason) {
-                        console.log(reason)
-                    });
-                    break
-                    //FALTA HACER QUE CREE UN JSON IGUALITO AL DE FIREBASE PARA ACTUALIZARLO!!!!!
-            
+                    alert("Agregado correctamente!")
+                }).catch(function (reason) {
+                    console.log(reason)
+                });
+                break
+                //FALTA HACER QUE CREE UN JSON IGUALITO AL DE FIREBASE PARA ACTUALIZARLO!!!!!
+
             }
 
         }
@@ -720,6 +720,9 @@
                     leerJsonSubido(urlJsonSubido)
                     console.log("El archivo se ah subido! (1/4)")
                     console.log("Url: " + urlJsonSubido)
+                }, onFileSelected: file => {
+
+                    console.log(file)
                 }
             };
             //Abre el subidor de archivos
@@ -847,8 +850,8 @@
                         var hora = hora24a12(d.getHours())
                         var minuto = d.getMinutes()
                         var ultimoScanHora = "Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1]
-                        
-                        var escaneo = document.getElementById("lastUpdated").innerHTML = ultimoScanHora +" - "+ fechaCompleta; 
+
+                        var escaneo = document.getElementById("lastUpdated").innerHTML = ultimoScanHora + " - " + fechaCompleta;
                         console.log(escaneo)
 
                     } else if (RadioValorSelected == "radioNexus") {
@@ -867,7 +870,7 @@
                                 var hora = hora24a12(d.getHours())
                                 var minuto = d.getMinutes()
                                 var ultimoScanHora = "Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1]
-                                var escaneo = document.getElementById("lastUpdated").innerHTML = ultimoScanHora +" - "+ fechaCompleta;
+                                var escaneo = document.getElementById("lastUpdated").innerHTML = ultimoScanHora + " - " + fechaCompleta;
                                 console.log(escaneo)
                             })
                     }
@@ -998,7 +1001,7 @@
 
             var corsurl = "https://api.codetabs.com/v1/proxy?quest="
             var Url = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/" + uniqueName + "/prices"
-            const respuesta = await fetch(corsurl+Url)
+            const respuesta = await fetch(corsurl + Url)
             const jsonResultado = await respuesta.json()
             for (var index = 0; index < jsonResultado.data.length; index++) {
 

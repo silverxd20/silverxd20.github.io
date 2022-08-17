@@ -24,19 +24,14 @@
                 <div class="form-group">
 
                     <div class="form-group col-md-4">
-                        <label for="input">URL:</label>
-                        <input type="text" class="form-control" id="campoUrl" placeholder="Link del producto">
+                        <label for="inputAddress">Nombre único:</label>
+                        <input type="text" class="form-control" id="campoUnicoNombre"
+                            placeholder="Ejemplo: scroll-of-agility-iv">
                     </div>
 
                     <div class="form-group col-md-4">
                         <label for="inputAddress">Traducción:</label>
                         <input type="text" class="form-control" id="campoTraduccion" placeholder="Nombre en español">
-                    </div>
-
-                    <div class="form-group col-md-4">
-                        <label for="inputAddress">Nombre único:</label>
-                        <input type="text" class="form-control" id="campoUnicoNombre"
-                            placeholder="Ejemplo: scroll-of-agility-iv">
                     </div>
 
                     <div class="form-group col-md-4">
@@ -93,7 +88,6 @@
         const app = initializeApp(firebaseConfig);
 
         var infoProductosArray = []
-        var campoUrl = document.getElementById("campoUrl")
         var campoTraduccion = document.getElementById("campoTraduccion")
         var campoUnicoNombre = document.getElementById("campoUnicoNombre")
         var campoCategoria = document.getElementById("campoCategoria")
@@ -103,7 +97,6 @@
         leerDatos()
 
         document.getElementById('btnAgregar').addEventListener('click', function () {
-            console.log("click")
             agregarProducto()
         });
 
@@ -116,7 +109,6 @@
             const colRef = collection(db, "data");
             const docsSnap = await getDocs(colRef);
             docsSnap.forEach(doc => {
-                console.log(doc.data().infoProducts);
 
                 //agrega las categorias al al dropdown
                 for (const key in doc.data().tipo) {
@@ -130,13 +122,11 @@
                     //console.log(doc.data().infoProducts[key])
                     infoProductosArray.push(doc.data().infoProducts[key])
                 }
-                //infoProductosArray.push(doc.data().infoProducts)
             })
-            console.log(infoProductosArray)
+            //console.log(infoProductosArray)
         }
 
         async function agregarProducto() {
-            console.log("click")
             // Inicializa Firebase si no esta inicializado
             if (!firebase.apps.length) {
                 const app = initializeApp(firebaseConfig);
@@ -144,12 +134,13 @@
             var indicadorDeEnvio = true
             var nombreUnicoTitulo = campoUnicoNombre.value
             const db = getFirestore(app);
+            var urlDelProducto = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/"+campoUnicoNombre.value
 
             //Comprobamos el url del producto ya esta en la base de datos
             for (var index = 0; index < infoProductosArray.length; index++) {
-                if (infoProductosArray[index].url == campoUrl.value) {
+                if (infoProductosArray[index].url == urlDelProducto) {
                     indicadorDeEnvio = false
-                    console.log("este producto ya existe, indidador es: " + indicadorDeEnvio)
+                    console.log("este producto ya existe : " + urlDelProducto)
                     alert("Este producto ya EXISTE!")
                     break
                 }
@@ -158,16 +149,15 @@
             if (indicadorDeEnvio == true) {
 
                 //Antes de enviar comprueba si todos los campos estan llenos
-                if (campoUrl.value == "" || campoTraduccion.value == "" || campoUnicoNombre.value == "") {
+                if (campoTraduccion.value == "" || campoUnicoNombre.value == "") {
                     alert("Hay campos vacíos, debe llenarlos todos antes de enviar.")
-                    console.log("entro en if")
+
                 } else {
-                    console.log("entro en else")
                     //Si no existen el url del producto se procede a enviar el nuevo producto
                     await setDoc(doc(db, "data", "datos"), {
                         "infoProducts": {
                             [nombreUnicoTitulo]: {
-                                "url": campoUrl.value,
+                                "url": urlDelProducto,
                                 "traduccion": campoTraduccion.value,
                                 "categoria": selectCategoria.value,
                                 "nombreUnico": campoUnicoNombre.value,
@@ -179,7 +169,6 @@
                     }, { merge: true }).then(resp => {
                         console.log("Se han guardado los datos")
                         //Luego de guardar los datos limpiamos los campos de texto
-                        campoUrl.value = ""
                         campoTraduccion.value = ""
                         campoUnicoNombre.value = ""
                         alert("Agregado correctamente!")
