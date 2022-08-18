@@ -841,7 +841,7 @@
                     //Si el proveeedor es del archivo pone la fecha del archivo
                     if (RadioValorSelected == "radioLocalJson") {
 
-                        const d = new Date(fechaActualizada);
+                        const d = new Date(fechaActualizada * 1000);
                         var Dia = d.toString().split(" ")[2]
                         var Mes = mesEnEspañol(d.toString().split(" ")[1])
                         var Año = d.toString().split(" ")[3]
