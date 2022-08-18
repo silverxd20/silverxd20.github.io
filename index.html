@@ -366,15 +366,15 @@
                     var expansion = doc.data().infoProducts[key].expansion
                     var nombreUnicoProduct = doc.data().infoProducts[key].nombreUnico
                     var ExpansionValue = dropdownExpansion.value
-                    
+
                     if (dropdownServidor.value == "Pagle-alliance") {
                         precioActualizado = doc.data().infoProducts[key].servidor.pagle.precioActualizado
                         fechaActualizada = doc.data().infoProducts[key].servidor.pagle.FechaActualizada
-                     
+
                     } else if (dropdownServidor.value == "Whitemane-horde") {
                         precioActualizado = doc.data().infoProducts[key].servidor.whitemane.precioActualizado
                         fechaActualizada = doc.data().infoProducts[key].servidor.whitemane.FechaActualizada
-                        
+
                     }
 
                     infoProductosArray.push(doc.data().infoProducts[key])
@@ -908,7 +908,7 @@
                         var fechaCompleta = "Fecha: " + Dia + " de " + Mes + " del " + Año
 
                         var hora = hora24a12(d.getHours())
-                        var minuto = d.getMinutes()
+                        var minuto = minutosConCero(d.getMinutes())
                         var ultimoScanHora = "Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1]
 
                         var escaneo = document.getElementById("lastUpdated").innerHTML = ultimoScanHora + " - " + fechaCompleta;
@@ -927,7 +927,7 @@
                                 var fechaCompleta = "Fecha: " + Dia + " de " + Mes + " del " + Año
 
                                 var hora = hora24a12(d.getHours())
-                                var minuto = d.getMinutes()
+                                var minuto = minutosConCero(d.getMinutes())
                                 var ultimoScanHora = "Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1]
                                 var escaneo = document.getElementById("lastUpdated").innerHTML = ultimoScanHora + " - " + fechaCompleta;
                             })
@@ -943,6 +943,31 @@
             }
         }
 
+        function minutosConCero(min) {
+            var minuto = 0
+            if (min == 1) {
+                minuto = 01
+            } else if (min == 2) {
+                minuto = 02
+            } else if (min == 3) {
+                minuto = 03
+            } else if (min == 2) {
+                minuto = 04
+            } else if (min == 4) {
+                minuto = 05
+            } else if (min == 5) {
+                minuto = 05
+            } else if (min == 6) {
+                minuto = 06
+            } else if (min == 7) {
+                minuto = 07
+            } else if (min == 8) {
+                minuto = 08
+            }else if(min == 9){
+                minuto = 09
+            }
+            return minuto
+        }
         //sugiere comprar hasta el 15% si la ganancia es mayor al 20%
         function CompraMaxima(prePromedio, porcentajeGanancia) {
 
@@ -1065,7 +1090,7 @@
 
                 const d = new Date(jsonResultado.data[index].scannedAt);
                 var hora = hora24a12(d.getHours())
-                var minuto = d.getMinutes()
+                var minuto = minutosConCero(d.getMinutes())
                 var horaMinutos = hora[0] + ":" + minuto + " " + hora[1]
                 var diaSemana = d.toString().split(" ")[0]
                 var precioCompra = jsonResultado.data[index].minBuyout
