@@ -218,6 +218,12 @@
         var precioActualizado = ""
         var fechaActualizada = ""
 
+        //variables de precios y fechas por servidores
+        var precioPagle = 0
+        var fechaPagle = 0
+        var precioWhitemane = 0
+        var fechaWhitemane = 0
+
         //id elementos html
         var tablaProducto = document.getElementById('productos');
         var divId = document.getElementById("divPassId")
@@ -235,6 +241,7 @@
         var RadioNexusVar = document.getElementById("radioCheckNexus")
         var positivoNegativo = ""
         var RadioValorSelected = ""
+        var server = ""
 
         //eventos
 
@@ -250,7 +257,6 @@
 
         //cuando cambia el dropdown de servidor
         document.getElementById('dropdownServidor').addEventListener('change', function (event) {
-            console.log("cambiado: " + event.value)
             SeleccionListaServidor()
         });
 
@@ -283,6 +289,14 @@
         //cuando haces click en el boton go para abrir el panel de agregar productos
         document.getElementById('btnGo').addEventListener('click', function () {
             btnGo()
+        });
+        //al presionar enter en el campo de texto de password
+        document.getElementById("campoPassID").addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                // Trigger the button element with a click
+                btnGo()
+            }
         });
 
         //variables del html principal
@@ -352,8 +366,16 @@
                     var expansion = doc.data().infoProducts[key].expansion
                     var nombreUnicoProduct = doc.data().infoProducts[key].nombreUnico
                     var ExpansionValue = dropdownExpansion.value
-                    precioActualizado = doc.data().infoProducts[key].precioActualizado
-                    fechaActualizada = doc.data().infoProducts[key].FechaActualizada
+                    
+                    if (dropdownServidor.value == "Pagle-alliance") {
+                        precioActualizado = doc.data().infoProducts[key].servidor.pagle.precioActualizado
+                        fechaActualizada = doc.data().infoProducts[key].servidor.pagle.FechaActualizada
+                     
+                    } else if (dropdownServidor.value == "Whitemane-horde") {
+                        precioActualizado = doc.data().infoProducts[key].servidor.whitemane.precioActualizado
+                        fechaActualizada = doc.data().infoProducts[key].servidor.whitemane.FechaActualizada
+                        
+                    }
 
                     infoProductosArray.push(doc.data().infoProducts[key])
                     if ("Pergaminos" == categoria) {
@@ -375,7 +397,7 @@
 
                     }, 1000)
                     //abre el url
-                    const respuesta = await fetch(urlProductos)
+                    const respuesta = await fetch(corsurl + urlProductos)
                     const json = await respuesta.json()
                     //Variable del producto
                     var productName = json.name
@@ -536,30 +558,32 @@
                 var categoria = infoProductosArray[key].categoria
                 var expansion = infoProductosArray[key].expansion
                 var nombreUnicoProducto = infoProductosArray[key].nombreUnico
-                var precioActual = infoProductosArray[key].precioActualizado
-                var FechaScanActual = infoProductosArray[key].FechaActualizada
                 sinProductosLabel.innerText = ""
-                console.log(RadioValorSelected)
+
+                if (dropdownServidor.value == "Pagle-alliance") {
+                    precioActualizado = infoProductosArray[key].servidor.pagle.precioActualizado
+                    fechaActualizada = infoProductosArray[key].servidor.pagle.FechaActualizada
+
+                } else if (dropdownServidor.value == "Whitemane-horde") {
+                    precioActualizado = infoProductosArray[key].servidor.whitemane.precioActualizado
+                    fechaActualizada = infoProductosArray[key].servidor.whitemane.FechaActualizada
+                }
 
                 if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == infoProductosArray[key].expansion) {
-                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActual)
+                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado)
 
                 } else if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == "Todos") {
-                    console.log("TODOS")
-                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActual)
+                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado)
                 }
             }
         }
 
         //Filtra la lista por el servidor elejido
         function SeleccionListaServidor() {
-            console.log(dropdownServidor.value)
             var dropdownProductosValue = document.getElementById("dropdownProductos").value
             var dropdownExpansionValue = dropdownExpansion.value
             var dropdownServidorValue = dropdownServidor.value
 
-            //Carga la hora del ultimo escarneo
-            lastUpdated()
             LimpiarTabla()
 
             for (const key in infoProductosArray) {
@@ -570,19 +594,25 @@
                 var categoria = infoProductosArray[key].categoria
                 var expansion = infoProductosArray[key].expansion
                 var nombreUnicoProducto = infoProductosArray[key].nombreUnico
-                var precioActual = infoProductosArray[key].precioActualizado
-                var FechaScanActual = infoProductosArray[key].FechaActualizada
                 sinProductosLabel.innerText = ""
 
-                console.log(RadioValorSelected)
+                if (dropdownServidorValue == "Pagle-alliance") {
+                    precioActualizado = infoProductosArray[key].servidor.pagle.precioActualizado
+                    fechaActualizada = infoProductosArray[key].servidor.pagle.FechaActualizada
+
+                } else if (dropdownServidorValue == "Whitemane-horde") {
+                    precioActualizado = infoProductosArray[key].servidor.whitemane.precioActualizado
+                    fechaActualizada = infoProductosArray[key].servidor.whitemane.FechaActualizada
+                }
 
                 if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == infoProductosArray[key].expansion) {
-                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActual)
+                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado)
                 } else if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == "Todos") {
-                    console.log("TODOS")
-                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActual)
+                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado)
                 }
             }
+            //Carga la hora del ultimo escarneo
+            lastUpdated()
         }
 
         //Seleccion del dropdown de productos
@@ -590,10 +620,9 @@
             var dropdownProductosValue = document.getElementById("dropdownProductos").value
             var dropdownExpansionValue = dropdownExpansion.value
             var dropdownServidorValue = dropdownServidor.value
-
-            //Carga la hora del ultimo escarneo
-            lastUpdated()
             LimpiarTabla()
+
+
             for (const key in infoProductosArray) {
 
                 var urlNormal = infoProductosArray[key].url
@@ -602,17 +631,25 @@
                 var categoria = infoProductosArray[key].categoria
                 var expansion = infoProductosArray[key].expansion
                 var nombreUnicoProducto = infoProductosArray[key].nombreUnico
-                var precioActual = infoProductosArray[key].precioActualizado
-                var FechaScanActual = infoProductosArray[key].FechaActualizada
                 sinProductosLabel.innerText = ""
 
-                if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == infoProductosArray[key].expansion) {
-                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActual)
+                if (dropdownServidor.value == "Pagle-alliance") {
+                    precioActualizado = infoProductosArray[key].servidor.pagle.precioActualizado
+                    fechaActualizada = infoProductosArray[key].servidor.pagle.FechaActualizada
 
-                } else if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == "Todos") {
-                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActual)
+                } else if (dropdownServidor.value == "Whitemane-horde") {
+                    precioActualizado = infoProductosArray[key].servidor.whitemane.precioActualizado
+                    fechaActualizada = infoProductosArray[key].servidor.whitemane.FechaActualizada
                 }
 
+                if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == infoProductosArray[key].expansion) {
+                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado)
+
+                } else if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == "Todos") {
+                    traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado)
+                }
+                //Carga la hora del ultimo escarneo
+                lastUpdated()
             }
         }
 
@@ -620,7 +657,7 @@
         async function leerJsonSubido(url) {
             const db = getFirestore(app);
             const Ref = doc(db, "data", "datos");
-            console.log(RadioValorSelected)
+
 
             for (let indice = 0; indice < 5; indice++) {
 
@@ -633,6 +670,8 @@
                 const respuestaArchivoJson = await respuesta.json()
                 console.log("Archivo escaneado (2/4)")
                 var fechaUltimoScan = respuestaArchivoJson.FechaUltimoScan //Fecha ultimo escaneo
+                server = respuestaArchivoJson.servidor.toString().toLowerCase()
+                console.log("servidor: " + server)
 
                 //Recorre todos los productos del archivo json
                 for (const key in respuestaArchivoJson.Productos) {
@@ -644,9 +683,8 @@
 
                         var NombreEspañolBaseDatosMinuscula = infoProductosArray[index].traduccion.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 
-                        //Si existe entonces procede a guardarlo un nuevo array
+                        //Si el nombre existe en nuestra BD entonces guarda solo ese producto en un nuevo objeto json
                         if (NombreEspañolBaseDatosMinuscula == nombreSinAcentoMinusculasJson) {
-                            console.log("nombre BD dentro for : " + NombreEspañolBaseDatosMinuscula)
                             var urlNormal = infoProductosArray[index].url
                             var urlProductos = obtenerUrlConServer(urlNormal, dropdownServidorValue)
                             var NombreEspañol = infoProductosArray[index].traduccion
@@ -654,7 +692,25 @@
                             var expansion = infoProductosArray[index].expansion
                             var nombreUnicoProducto = infoProductosArray[index].nombreUnico
                             var precioActualizado = respuestaArchivoJson.Productos[key].Precio //Precio
-                            console.log(precioActualizado)
+
+                            //si es pagle o whitemane pone un precio u otro
+                            if (server == "pagle") {
+
+                                precioPagle = respuestaArchivoJson.Productos[key].Precio
+                                fechaPagle = respuestaArchivoJson.FechaUltimoScan
+
+                                precioWhitemane = infoProductosArray[index].servidor.whitemane.precioActualizado
+                                fechaWhitemane = infoProductosArray[index].servidor.whitemane.FechaActualizada
+
+                            } else if (server == "whitemane") {
+
+                                precioWhitemane = respuestaArchivoJson.Productos[key].Precio
+                                fechaWhitemane = respuestaArchivoJson.FechaUltimoScan
+
+                                precioPagle = infoProductosArray[index].servidor.pagle.precioActualizado
+                                fechaPagle = infoProductosArray[index].servidor.pagle.FechaActualizada
+
+                            }
 
                             infoProductosActualizadosJson.infoProducts[nombreUnicoProducto] = {
                                 "url": urlProductos,
@@ -662,8 +718,16 @@
                                 "categoria": categoria,
                                 "nombreUnico": nombreUnicoProducto,
                                 "expansion": expansion,
-                                "precioActualizado": precioActualizado,
-                                "FechaActualizada": fechaUltimoScan
+                                "servidor": {
+                                    "pagle": {
+                                        "precioActualizado": precioPagle,
+                                        "FechaActualizada": fechaPagle
+                                    },
+                                    "whitemane": {
+                                        "precioActualizado": precioWhitemane,
+                                        "FechaActualizada": fechaWhitemane
+                                    }
+                                }
                             };
                         }
                     }
@@ -675,15 +739,14 @@
                 //Ahora lo subimos a firestore
 
                 await setDoc(doc(db, "data", "datos"), infoProductosActualizadosJson).then(resp => {
-                    console.log("Se han guardado los datos")
 
                     alert("Agregado correctamente!")
+                    console.log("Se han guardado los datos")
+                    // window.location.reload(true);
                 }).catch(function (reason) {
                     console.log(reason)
                 });
                 break
-                //FALTA HACER QUE CREE UN JSON IGUALITO AL DE FIREBASE PARA ACTUALIZARLO!!!!!
-
             }
 
         }
@@ -693,14 +756,14 @@
         function CheckNexusSelected() {
             RadioValorSelected = RadioNexusVar.value
             btnSubir.style.visibility = "hidden";
-            SeleccionListaProducto()
+            SeleccionListaServidor()
         }
 
         //funcion cuando se selecciona el radio de nexus
         function CheckArchivoSelected() {
             var RadioArchivoValor = RadioArchivo.value
             btnSubir.style.visibility = "visible";
-            SeleccionListaProducto()
+            SeleccionListaServidor()
             //leerJsonSubido()
         }
 
@@ -720,9 +783,6 @@
                     leerJsonSubido(urlJsonSubido)
                     console.log("El archivo se ah subido! (1/4)")
                     console.log("Url: " + urlJsonSubido)
-                }, onFileSelected: file => {
-
-                    console.log(file)
                 }
             };
             //Abre el subidor de archivos
@@ -852,7 +912,6 @@
                         var ultimoScanHora = "Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1]
 
                         var escaneo = document.getElementById("lastUpdated").innerHTML = ultimoScanHora + " - " + fechaCompleta;
-                        console.log(escaneo)
 
                     } else if (RadioValorSelected == "radioNexus") {
 
@@ -871,7 +930,6 @@
                                 var minuto = d.getMinutes()
                                 var ultimoScanHora = "Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1]
                                 var escaneo = document.getElementById("lastUpdated").innerHTML = ultimoScanHora + " - " + fechaCompleta;
-                                console.log(escaneo)
                             })
                     }
                     break

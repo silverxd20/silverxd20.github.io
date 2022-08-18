@@ -162,8 +162,16 @@
                                 "categoria": selectCategoria.value,
                                 "nombreUnico": campoUnicoNombre.value,
                                 "expansion": selectExpansion.value,
-                                "precioActualizado": 0,
-                                "FechaActualizada": "1660503906"
+                                "servidor": {
+                                    "pagle": {
+                                        "precioActualizado": 0,
+                                        "FechaActualizada": 0
+                                    },
+                                    "whitemane": {
+                                        "precioActualizado": 0,
+                                        "FechaActualizada": 0
+                                    }
+                                }
                             }
                         }
                     }, { merge: true }).then(resp => {
