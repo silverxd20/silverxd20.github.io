@@ -13,55 +13,77 @@
 </head>
 
 <body>
-    <div class="container">
 
-        <div>
-            <div>
-                <h2>Agregar nuevos productos</h2>
+    <style>
+        h2 {
+            color: darkgoldenrod;
+        }
+
+        label {
+            color: bisque;
+        }
+
+        body {
+            background-image: url("https://images4.alphacoders.com/801/thumb-1920-80134.jpg");
+            background-repeat: no-repeat;
+        }
+
+        #divFormId {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        #div2 {
+            width: 500px;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 10px 5px rgba(107, 107, 107, 0.2);
+            background-color: #242424;
+            opacity: 0.90;
+        }
+    </style>
+
+    <div id="divParent" class="container d-flex justify-content-center ">
+
+        <div id="div2" class="">
+            <div class="d-flex justify-content-center ">
+                <h2>Agregador de Productos</h2>
             </div><br>
-            <form>
 
-                <div class="form-group">
+            <div id="divFormId">
+                <form>
+                    <div class="form-group ">
 
-                    <div class="form-group col-md-4">
-                        <label for="inputAddress">Nombre único:</label>
-                        <input type="text" class="form-control" id="campoUnicoNombre"
-                            placeholder="Ejemplo: scroll-of-agility-iv">
-                    </div>
-
-                    <div class="form-group col-md-4">
-                        <label for="inputAddress">Traducción:</label>
-                        <input type="text" class="form-control" id="campoTraduccion" placeholder="Nombre en español">
-                    </div>
-
-                    <div class="form-group col-md-4">
-                        <label for="inputAddress2">Categoría:</label>
-                        <select id="selectCategoria" class="form-control">
-                        </select>
-                        <div>
-                            <br>
-                            <div class="form-group">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="gridCheck">
-                                    <label class="form-check-label" for="gridCheck">
-                                        Selecciona si es una nueva categoría
-                                    </label>
-                                </div>
-                            </div>
-                            <input disabled type="text" class="form-control" id="campoCategoria"
-                                placeholder="Agregar una nueva">
+                        <div class="form-group col-md-12">
+                            <label for="inputAddress">Nombre único:</label>
+                            <input type="text" class="form-control" id="campoUnicoNombre"
+                                placeholder="Ejemplo: scroll-of-agility-iv">
                         </div>
-                    </div>
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="inputAddress2">Expansion:</label>
-                    <select id="selectExpansion" class="form-control">
-                        <option selected>Classic</option>
-                        <option selected>Tbc</option>
-                        <option selected>Wotlk</option>
-                    </select>
-                    <br>
-            </form>
+
+                        <div class="form-group col-md-12">
+                            <label for="inputAddress">Traducción:</label>
+                            <input type="text" class="form-control" id="campoTraduccion"
+                                placeholder="Nombre en español">
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label for="inputAddress2">Categoría:</label>
+                            <select id="selectCategoria" class="form-control">
+                            </select>
+                            <div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="inputAddress2">Expansion:</label>
+                            <select id="selectExpansion" class="form-control">
+                                <option selected>Classic</option>
+                                <option selected>Tbc</option>
+                                <option selected>Wotlk</option>
+                            </select>
+                            <br>
+                </form>
+            </div>
 
             <div class="d-flex p-2 justify-content-center">
                 <input type="button" id="btnAgregar" class="btn btn-primary" value="Agregar"></button>
@@ -73,7 +95,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-app.js";
         import { getFirestore } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js"
-        import { collection, getDocs, addDoc, doc, setDoc, updateDoc  } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js";
+        import { collection, getDocs, addDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js";
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -134,7 +156,7 @@
             var indicadorDeEnvio = true
             var nombreUnicoTitulo = campoUnicoNombre.value
             const db = getFirestore(app);
-            var urlDelProducto = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/"+campoUnicoNombre.value
+            var urlDelProducto = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/" + campoUnicoNombre.value
 
             //Comprobamos el url del producto ya esta en la base de datos
             for (var index = 0; index < infoProductosArray.length; index++) {
@@ -150,7 +172,7 @@
 
                 //Antes de enviar comprueba si todos los campos estan llenos
                 if (campoTraduccion.value == "" || campoUnicoNombre.value == "") {
-                    alert("Hay campos vacíos, debe llenarlos todos antes de enviar.")
+                    alert("Hay campos vacíos, debe llenarlos todos antes de agregar.")
 
                 } else {
                     //Si no existen el url del producto se procede a enviar el nuevo producto
