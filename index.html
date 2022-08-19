@@ -22,6 +22,11 @@
             background-color: #242424;
         }
 
+        #divTablaId {
+            background-color: #242424;
+            opacity: 0.95;
+        }
+
         #titulo,
         #PventaLabel,
         #idiomaLabel,
@@ -120,78 +125,76 @@
         </div>
     </div>
 
+
     <!-- ************************* HTML PRINCIPAL *************************** -->
-    <div class="d-flex justify-content-center">
-        <h1 id="titulo">Protuctos en subasta (Wow TBC)</h1>
-    </div>
-    <div id="idContenedor">
-
-        <div class="row align-items-center">
-            <!-- Columna 1 del row* -->
-            <div class="columnas col-6">
-                <input type="button" id="abrirCampoTextoBtn" value=">"></input>
-                <div style="display: none;" id="divPassId">
-                    <input type="password" name="" id="campoPassID">
-                    <input type="button" id="btnGo" value="Go">
-                </div>
-                <b id="idiomaLabel">Categoría:</b>
-                <select id="dropdownProductos">
-                </select>
-
-                <b id="idiomaLabel">Expansion:</b>
-                <select id="dropdownExpansion">
-                    <option value="Todos">Todos</option>
-                    <option value="Classic">Classic</option>
-                    <option value="Tbc">Tbc</option>
-                    <option value="Wotlk">Wotlk</option>
-                </select>
-
-                <b id="servidorLabel">Servidor:</b>
-                <select id="dropdownServidor">
-                    <option value="Pagle-alliance">Pagle Alianza</option>
-                    <option value="Whitemane-horde">Whitemane Horda</option>
-                </select>
-
-            </div>
-            <!-- Columna 2 del row* -->
-            <div class="columnas col-6">
-                <b id="letras" id="servidorLabel">Selecciona el proveedor de precios:</b><br>
-                <div class="form-check">
-                    <input id="radioCheckNexus" class="form-check-input" type="radio" value="radioNexus"
-                        name="flexRadioDisabled" id="flexRadioDisabled" checked>
-                    <label id="letras" class="form-check-label" for="flexRadioDisabled">
-                        Datos Online
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input id="radioCheckArchivo" class="form-check-input" type="radio" value="radioLocalJson"
-                        name="flexRadioDisabled">
-                    <label id="letras" class="form-check-label" for="flexRadioCheckedDisabled">
-                        Datos de escaneo Local
-                    </label>
-                    <button id="BtnSubirArchivo" type="button" class="btn btn-primary">Subir Archivo</button>
-                </div>
-            </div>
-            <p id="lastUpdated"></p>
+    <div id="idDivOpacity">
+        <div class="d-flex justify-content-center">
+            <h1 id="titulo">Protuctos en subasta (Wow TBC)</h1>
         </div>
-    </div>
+        <div id="idContenedor">
 
-    <table id="productos" border="1">
-        <tr>
-            <th>Imagen</th>
-            <th>Nombre</th>
-            <th>Precio Compra</th>
-            <th>Compra hasta el 15%</th>
-            <th>Precio de venta</th>
-            <th>Ganancia Aproximada</th>
-            <th id="porcentaje">%</th>
-            <th>HeapMap</th>
-            <th>Herramienta</th>
-        </tr>
-    </table>
-    <br>
-    <div class="d-flex">
-        <h1 id="sinProductosId"></h1>
+            <div class="row align-items-center">
+                <!-- Columna 1 del row* -->
+                <div class="columnas col-7">
+                    <b id="idiomaLabel">Categoría:</b>
+                    <select id="dropdownProductos">
+                    </select>
+
+                    <b id="idiomaLabel">Expansion:</b>
+                    <select id="dropdownExpansion">
+                        <option value="Todos">Todos</option>
+                        <option value="Classic">Classic</option>
+                        <option value="Tbc">Tbc</option>
+                        <option value="Wotlk">Wotlk</option>
+                    </select>
+                    <b id="servidorLabel">Servidor:</b>
+                    <select id="dropdownServidor">
+                        <option value="Pagle-alliance">Pagle Alianza</option>
+                        <option value="Whitemane-horde">Whitemane Horda</option>
+                    </select>
+                </div>
+                <!-- Columna 2 del row* -->
+                <div class="columnas col-5">
+                    <b id="letras" id="servidorLabel">Selecciona el proveedor de precios:</b><br>
+                    <div class="form-check">
+                        <input id="radioCheckNexus" class="form-check-input" type="radio" value="radioNexus"
+                            name="flexRadioDisabled" id="flexRadioDisabled" checked>
+                        <label id="letras" class="form-check-label" for="flexRadioDisabled">
+                            Datos Online
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input id="radioCheckArchivo" class="form-check-input" type="radio" value="radioLocalJson"
+                            name="flexRadioDisabled">
+                        <label id="letras" class="form-check-label" for="flexRadioCheckedDisabled">
+                            Datos de escaneo Local
+                        </label>
+                        <button id="BtnSubirArchivo" type="button" class="btn btn-primary">Subir Archivo</button>
+                    </div>
+                </div>
+                <p id="lastUpdated"></p>
+            </div>
+        </div>
+        <div id="divTablaId">
+            <table id="productos" border="1">
+                <tr>
+                    <th>Imagen</th>
+                    <th>Nombre</th>
+                    <th>Precio Compra</th>
+                    <th>Compra hasta el 15%</th>
+                    <th>Precio de venta</th>
+                    <th>Ganancia Aproximada</th>
+                    <th id="porcentaje">%</th>
+                    <th>HeapMap</th>
+                    <th>Herramienta</th>
+                </tr>
+            </table>
+        </div>
+
+        <br>
+        <div class="d-flex">
+            <h1 id="sinProductosId"></h1>
+        </div>
     </div>
 
 
@@ -245,6 +248,13 @@
 
         //eventos
 
+        //Abre el panel para agregar productos
+        document.addEventListener('keydown', function (event) {
+            if (event.ctrlKey && event.key === 'z') {
+                window.open("dashboard/panel.html", "_blank");
+            }
+        });
+
         //cuando cambia el dropdown select producto
         document.getElementById('dropdownProductos').addEventListener('change', function () {
             SeleccionListaProducto()
@@ -279,24 +289,6 @@
         //cuando haces click en el boton subir archivo
         document.getElementById('BtnSubirArchivo').addEventListener('click', function () {
             subirArchivoJson()
-        });
-
-        //cuando haces click en el boton para mostrar el campo de texto
-        document.getElementById('abrirCampoTextoBtn').addEventListener('click', function () {
-            abrirOpciones()
-        });
-
-        //cuando haces click en el boton go para abrir el panel de agregar productos
-        document.getElementById('btnGo').addEventListener('click', function () {
-            btnGo()
-        });
-        //al presionar enter en el campo de texto de password
-        document.getElementById("campoPassID").addEventListener("keypress", function (event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                // Trigger the button element with a click
-                btnGo()
-            }
         });
 
         //variables del html principal
@@ -465,7 +457,7 @@
                     td.innerText = PlataOro(gananciaEstimada);
                     //agrega color verde si es positivo y rojo si es negativo
                     if (positivoNegativo == true) {
-                        td.setAttribute("style", "color:green");
+                        td.setAttribute("style", "color:#00af1d");
                     } else {
                         td.setAttribute("style", "color:red");
                     }
@@ -475,7 +467,7 @@
                     td = document.createElement('tr');
                     td = document.createElement('td');
                     if (positivoNegativo == true) {
-                        td.setAttribute("style", "color:green");
+                        td.setAttribute("style", "color:#00af1d");
                     } else {
                         td.setAttribute("style", "color:red");
                     }
@@ -789,22 +781,6 @@
             var oro = client.picker(options).open()
         }
 
-        //abre el panel
-        function abrirOpciones() {
-            divId.setAttribute("style", "display: visible")
-        }
-
-        //el boton Go
-        function btnGo() {
-            var campiIdPass = document.getElementById("campoPassID")
-
-            if (campiIdPass.value == aja) {
-                window.open("dashboard/panel.html", "_blank");
-                campiIdPass.value = ""
-                divId.setAttribute("style", "display: none")
-            }
-        }
-
         //pone los numero en 0 como plata si no lo deja en oro
         function PlataOro(nro) {
 
@@ -963,11 +939,11 @@
                 minuto = "07"
             } else if (min == 8) {
                 minuto = "08"
-            }else if(min == 9){
+            } else if (min == 9) {
                 minuto = "09"
-            }else if(min == 0){
+            } else if (min == 0) {
                 minuto = "00"
-            }else {
+            } else {
                 minuto = min
             }
             return minuto
