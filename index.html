@@ -468,11 +468,18 @@
                     td = document.createElement('tr');
                     td = document.createElement('td');
                     if (positivoNegativo == true) {
-                        td.setAttribute("style", "color:#00af1d");
+
+                        if (porcentajeGanancia.toFixed(2) < 20 && porcentajeGanancia.toFixed(2) > 0) {
+                            
+                            td.setAttribute("style", "color:#dfdb00");
+                        }else if (porcentajeGanancia.toFixed(2) > 20){
+                            //color verde si es mayor a 20%
+                            td.setAttribute("style", "color:#00af1d");
+                        }
                     } else {
                         td.setAttribute("style", "color:red");
                     }
-                    td.innerText = parseFloat(porcentajeGanancia).toFixed(2) + " %";
+                    td.innerText = porcentajeGanancia.toFixed(2) + " %"
                     fila.appendChild(td);
 
                     //crea el boton para ver el heapmap
@@ -522,6 +529,7 @@
 
                     cuerpoTabla.appendChild(fila);
                     vueltasBucle = 0
+                    sortTable()
                     break
                 } catch (error) {
                     console.log(error)
@@ -1014,24 +1022,25 @@
             // are here. Numbers, text, some custom case-insensitive
             // and natural number ordering, etc. That's up to you.
             // A typical "do whatever JS would do" is:
+              a = parseFloat(a.split(" ")[0])
+              b = parseFloat(b.split(" ")[0])
             return (a > b) ? -1 : (a < b) ? 1 : 0;
         }
 
-        function sortTable(colnum) {
+        function sortTable() {
             var tbody = tablaProducto.querySelector(`tbody`);
             var rows = Array.from(tablaProducto.querySelectorAll(`tr`));
             // but ignore the heading row:
             rows = rows.slice(1);
-            var posicion = colnum + 2
+            var posicion = 8
             // set up the queryselector for getting the indicated
             // column from a row, so we can compare using its value:
             var qs = `td:nth-child(${posicion})`;
-
             // and then just... sort the rows:
             rows.sort((r1, r2) => {
                 // get each row's relevant column
-                var t1 = r1.querySelector(qs);
                 var t2 = r2.querySelector(qs);
+                var t1 = r1.querySelector(qs);
                 // and then effect sorting by comparing their content:
                 return compareValues(t1.textContent, t2.textContent);
             });
