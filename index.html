@@ -84,7 +84,6 @@
         th {
             background-color: #091e4d;
             color: white;
-            cursor: pointer;
         }
     </style>
 
@@ -1048,10 +1047,6 @@
             // and then the magic part that makes the sorting appear on-page:
             rows.forEach(row => tbody.appendChild(row));
         }
-        tablaProducto.querySelectorAll(`th`).forEach((th, position) => {
-            th.addEventListener(`click`, evt => sortTable(position));
-        });
-
 
         //******************************* JS DE LA VENTANA **********************************
 
