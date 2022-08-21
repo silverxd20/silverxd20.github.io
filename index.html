@@ -396,7 +396,7 @@
 
                     }, 1000)
                     //abre el url
-                    const respuesta = await fetch(corsurl + urlProductos)
+                    const respuesta = await fetch(urlProductos)
                     console.log('Status code: ', respuesta.status);
                     const json = await respuesta.json()
                     //Variable del producto
