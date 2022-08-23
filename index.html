@@ -13,6 +13,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- JavaScript Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
 
 <body>
@@ -32,13 +33,17 @@
         #titulo,
         #PventaLabel,
         #idiomaLabel,
-        #ventanaTitulo,
         #lastUpdated,
         #servidorLabel,
         #monedaId,
         #letras,
         #lastFecha {
             color: bisque;
+        }
+
+        #ventanaTitulo {
+            color: bisque;
+            margin-left: 10px;
         }
 
         #idContenedor {
@@ -95,15 +100,27 @@
             height: 10px;
             background-color: green;
         }
+
+        #btnHeatmap {
+            margin-left: 90px;
+        }
+
+        .modal-header {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            background-color: rgb(51, 51, 51);
+        }
     </style>
 
     <!-- ************************** HTML MODAL *************************** -->
 
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    <div class="modal fade" id="staticBackdrop" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div id="modalId" class="modal-content">
                 <div class="modal-header">
+                    <img id="imgVentanita" src="" alt="">
                     <h5 class="modal-title" id="ventanaTitulo"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -115,8 +132,9 @@
                             <label id="PventaLabel" for="fname">Precio de venta:</label><br>
                             <input type="number" class="Pventa" id="PventaId" name="fname">
                             <b for="moneda" id="monedaId"></b>
+                            <button class="btn btn-danger" id="btnHeatmap" value="heatmap">Mapa caliente ></button>
                             <br><br>
-                            <input id="btnCambiar" type="button" value="Cambiar">
+                            <input class="btn btn-success" id="btnCambiar" type="button" value="Cambiar">
                         </form>
                     </div>
                     <br>
@@ -197,7 +215,7 @@
                     <th>Precio de venta</th>
                     <th>Ganancia Aproximada</th>
                     <th id="porcentaje">%</th>
-                    <th>HeapMap</th>
+                    <th>Cantidad</th>
                     <th>Herramienta</th>
                 </tr>
             </table>
@@ -258,6 +276,21 @@
         var RadioValorSelected = ""
         var server = ""
 
+        //VARIABLES DEL LA VENTANITA
+        var tablaVerificacion = document.getElementById('tablaVerificacion');
+        var tbody = document.createElement('tbody');
+        var campoTextPrecioVentaID = document.getElementById("PventaId")
+        var campoTextoValor = document.getElementById("PventaId").value
+        var precioVentaEnTablaNro = 0
+        var tipoMonedaOroPlataBronce = ""
+        var nombreUnico = ""
+        var PrecioVenta = parseFloat(campoTextoValor) * 10000
+        var diaSemana = ""
+        var precioMinimo = ""
+        var diaSemanaAnterior = "Sat"
+        var cantidades = 0
+        var urlNexus = "https://nexushub.co/wow-classic/items/pagle-alliance/"
+
         //eventos
 
         //Abre el panel para agregar productos
@@ -270,6 +303,12 @@
         //cuando cambia el dropdown select producto
         document.getElementById('dropdownProductos').addEventListener('change', function () {
             SeleccionListaProducto()
+        });
+
+        //cuando haces click en el Heatmap
+        document.getElementById('btnHeatmap').addEventListener('click', function (e) {
+            e.preventDefault()
+            window.open(urlNexus + nombreUnico, "_blank");
         });
 
         //cuando cambia el dropdown de expansion
@@ -305,20 +344,6 @@
 
         //variables del html principal
         var vueltasBucle = 0
-
-        //VARIABLES DEL LA VENTANITA
-        var tablaVerificacion = document.getElementById('tablaVerificacion');
-        var tbody = document.createElement('tbody');
-        var campoTextPrecioVentaID = document.getElementById("PventaId")
-        var campoTextoValor = document.getElementById("PventaId").value
-        var precioVentaEnTablaNro = 0
-        var tipoMonedaOroPlataBronce = ""
-        var nombreUnico = ""
-        var PrecioVenta = parseFloat(campoTextoValor) * 10000
-        var diaSemana = ""
-        var precioMinimo = ""
-        var diaSemanaAnterior = "Sat"
-        var cantidades = 0
 
         //obtiene el valor de ambos dropdown
         var dropdownProductosValor = document.getElementById("dropdownProductos").value
@@ -389,7 +414,7 @@
                         infoProductosArray.push(doc.data().infoProducts[key])
                         if ("Pergaminos" == categoria) {
                             //Barra de progreso
-                            count =  ProgressBar(count)
+                            count = ProgressBar(count)
                             //trae los productos
                             traerProductoDatos(urlProductos, key, doc.data().infoProducts, "Español", NombreEspañol, nombreUnicoProduct, precioActualizado)
                         }
@@ -505,15 +530,10 @@
                     td.innerText = porcentajeGanancia.toFixed(2) + " %"
                     fila.appendChild(td);
 
-                    //crea el boton para ver el heapmap
+                    //crea las cantidades publicadas
                     td = document.createElement('tr');
                     td = document.createElement("td");
-                    var urlNexus = "https://nexushub.co/wow-classic/items/pagle-alliance/"
-                    td.innerText = "Ver";
-                    td.onclick = function (evt) {
-                        window.open(
-                            urlNexus + nombreUnicoProducto, "_blank");
-                    }
+                    td.innerText = cantidades
                     fila.appendChild(td);
 
                     //crea el boton de la heramienta de venta
@@ -523,12 +543,16 @@
                     td.innerText = "Abrir";
                     td.setAttribute("data-bs-toggle", "modal")
                     td.setAttribute("data-bs-target", "#staticBackdrop")
+                    td.setAttribute("style", "cursor: pointer")
                     td.onclick = function (evt) {
                         //agarra el texto de la tabla y lo coloca en la ventana segun el producto
                         campoTextPrecioVentaID = document.getElementById("PventaId")
                         //pone el nombre del producto en el titulo de la ventanita
                         var NombreProductoClickeado = evt.path[1].childNodes[2].innerHTML
                         ventanaTituloId.innerText = NombreProductoClickeado
+                        //pone la imagen del producto en el titulo de la ventanita
+                        var imagenProductoClickado = evt.path[1].childNodes[1].currentSrc
+                        document.getElementById("imgVentanita").src = imagenProductoClickado
 
                         //obtiene el valor del precio de venta sugerido en la tabla
                         var precioVentaEnTablaTexto = evt.path[1].childNodes[5].innerHTML
@@ -550,9 +574,18 @@
                     }
                     fila.appendChild(td);
 
+                    //doble click en la fila
+                    fila.ondblclick = function (evt) {
+
+                        copiarNombreProducto(NombreEspañol)
+                    }
+
                     cuerpoTabla.appendChild(fila);
                     vueltasBucle = 0
+
+                    // filtra la tabla por mayor %% cada vez q se agregan a la tabla
                     sortTable()
+
                     break
                 } catch (error) {
                     console.log(error)
@@ -598,10 +631,10 @@
                     }
 
                     if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == infoProductosArray[key].expansion) {
-                        count =  ProgressBar(count)
+                        count = ProgressBar(count)
                         traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado)
                     } else if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == "Todos") {
-                        count =  ProgressBar(count)
+                        count = ProgressBar(count)
                         traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado)
                     }
                     var count = count + 1
@@ -643,10 +676,10 @@
                     }
 
                     if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == infoProductosArray[key].expansion) {
-                        count =  ProgressBar(count)
+                        count = ProgressBar(count)
                         traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado)
                     } else if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == "Todos") {
-                        count =  ProgressBar(count)
+                        count = ProgressBar(count)
                         traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado)
                     }
                     var count = count + 1
@@ -689,7 +722,7 @@
                     }
 
                     if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == infoProductosArray[key].expansion) {
-                        count =  ProgressBar(count)
+                        count = ProgressBar(count)
                         traerProductoDatos(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado)
 
                     } else if (dropdownProductosValue == infoProductosArray[key].categoria && dropdownExpansionValue == "Todos") {
@@ -1248,8 +1281,36 @@
             return diaSemana;
         }
 
+        //copia el nombre del producto al que se le da doble click
+        function copiarNombreProducto(NombreEspañol) {
+            // Copia el nombre del producto
+            navigator.clipboard.writeText(NombreEspañol);
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": true,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "200",
+                "timeOut": "3000",
+                "extendedTimeOut": "500",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr.success(NombreEspañol, "Nombre copiado: ")
+        }
+
     </script>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!--Toastr-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
 </body>
 
 </html>
