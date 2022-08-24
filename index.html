@@ -13,6 +13,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- JavaScript Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!--jquery 3-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!--Toastr-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
 
 </head>
 
@@ -37,7 +42,8 @@
         #servidorLabel,
         #monedaId,
         #letras,
-        #lastFecha {
+        #lastFecha,
+        h5 {
             color: bisque;
         }
 
@@ -68,7 +74,7 @@
             color: maroon;
         }
 
-        #modalId {
+        #modalContent {
             background-color: #242424;
         }
 
@@ -101,51 +107,92 @@
             background-color: green;
         }
 
-        #btnHeatmap {
-            margin-left: 90px;
-        }
-
         .modal-header {
             position: sticky;
             top: 0;
             z-index: 999;
             background-color: rgb(51, 51, 51);
         }
+
+        #divForm {
+            margin-top: 10px;
+            padding-left: 5px;
+        }
+
+        #PventaId {
+            width: 120px;
+            margin-left: 37px;
+            text-align: center;
+        }
+
+        #btnCambiar {
+            margin-top: 5px;
+        }
     </style>
 
     <!-- ************************** HTML MODAL *************************** -->
 
-    <div class="modal fade" id="staticBackdrop" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal fade" id="staticBackdrop" id="Modal" data-bs-backdrop="static"
+        data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <div id="modalId" class="modal-content">
+            <div id="modalContent" class="modal-content">
                 <div class="modal-header">
                     <img id="imgVentanita" src="" alt="">
-                    <h5 class="modal-title" id="ventanaTitulo"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="ventanaTitulo"></h5><br>
+                    <h5 class="" id="precioTitulo"></h5>
+                    <button id="cerrarModalId" type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
 
                     <!-- Todo dentro de la ventanita -->
-                    <div id="divForm" class="divForm">
-                        <form action="">
-                            <label id="PventaLabel" for="fname">Precio de venta:</label><br>
-                            <input type="number" class="Pventa" id="PventaId" name="fname">
-                            <b for="moneda" id="monedaId"></b>
-                            <button class="btn btn-danger" id="btnHeatmap" value="heatmap">Mapa caliente ></button>
-                            <br><br>
-                            <input class="btn btn-success" id="btnCambiar" type="button" value="Cambiar">
-                        </form>
+
+                    <!--Definir las tabs-->
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a href="#DiaDeVentaTabHref" class="nav-link active" id="DiaDeVentaTabId" data-bs-toggle="tab"
+                                data-bs-target="#home" type="button" role="tab" aria-controls="home"
+                                aria-selected="true">Dias de
+                                venta</a>
+                        </li>
+                        <li class="nav-item" role="presentation" focus>
+                            <button class="nav-link" id="MapaCalienteTab" data-bs-toggle="tab"
+                                data-bs-target="#profile" type="button" role="tab" aria-controls="profile"
+                                aria-selected="false">Mapa
+                                caliente</button>
+                        </li>
+                    </ul>
+                    <!--contenidos de las tabs-->
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                            <div id="divForm" class="divForm d-flex justify-content-center">
+                                <form action="">
+                                    <div class="d-flex justify-content-center">
+                                        <h6 id="PventaLabel" for="fname">Precio de venta:</h6><br>
+                                    </div>
+                                    <input type="number" class="Pventa" id="PventaId" name="fname">
+                                    <b for="moneda" id="monedaId"></b>
+                                    <br>
+                                    <div class="d-flex justify-content-center">
+                                        <input class="btn btn-success" id="btnCambiar" type="button" value="Cambiar ▼">
+                                    </div>
+                                </form>
+                            </div>
+                            <br>
+                            <table id="tablaVerificacion" border="1">
+                                <tr>
+                                    <th>Día</th>
+                                    <th>#</th>
+                                    <th>Precio alcanzado</th>
+                                    <th>Hora</th>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                            <iframe id="iframeId" height="550px" width="480px" src="" frameborder="0"></iframe>
+                        </div>
                     </div>
-                    <br>
-                    <table id="tablaVerificacion" border="1">
-                        <tr>
-                            <th>Día</th>
-                            <th>#</th>
-                            <th>Precio alcanzado</th>
-                            <th>Hora</th>
-                        </tr>
-                    </table>
+
                     <!-- FIN DE Todo dentro de la ventanita -->
                 </div>
             </div>
@@ -265,6 +312,7 @@
         var sinProductosLabel = document.getElementById("sinProductosId")
         var ultimaFecha = document.getElementById("lastFecha")
         var ventanaTituloId = document.getElementById("ventanaTitulo")
+        var precioTituloId = document.getElementById("precioTitulo")
         var monedaNombreId = document.getElementById("monedaId")
         var btnSubir = document.getElementById('BtnSubirArchivo');
         var selectProductos = document.createElement('dropdownProductos');
@@ -286,11 +334,12 @@
         var nombreUnico = ""
         var PrecioVenta = parseFloat(campoTextoValor) * 10000
         var diaSemana = ""
+        var NombreProductoClickeado = ""
         var precioMinimo = ""
         var diaSemanaAnterior = "Sat"
         var cantidades = 0
+        var MismaVentana = false
         var urlNexus = "https://nexushub.co/wow-classic/items/pagle-alliance/"
-
         //eventos
 
         //Abre el panel para agregar productos
@@ -300,15 +349,41 @@
             }
         });
 
+        //click en la tab de Dias de venta
+        try {
+            document.getElementById("DiaDeVentaTabId").addEventListener("click", function (params) {
+                if (MismaVentana == true) {
+                    precioTituloId.innerText = ""
+                }
+            })
+        } catch (error) {
+        }
+
+        //click en la tab de mapa caliente
+        try {
+            document.getElementById("MapaCalienteTab").addEventListener("click", function (params) {
+                if (MismaVentana == false) {
+                    document.getElementById("iframeId").src = urlNexus + nombreUnico
+                    MismaVentana = true
+                    precioTituloId.innerText = "Precio de venta: " + precioVentaEnTablaNro + " " + tipoMonedaOroPlataBronce
+                } else if (MismaVentana == true) {
+                    precioTituloId.innerText = "Precio de venta: " + precioVentaEnTablaNro + " " + tipoMonedaOroPlataBronce
+                }
+            })
+        } catch (error) {
+        }  
+
+        //Click al cerrar el modal
+        document.getElementById("cerrarModalId").addEventListener("click", function (params) {
+            MismaVentana = false
+            document.getElementById("iframeId").src = ""
+            ventanaTituloId.innerText = ""
+            precioTituloId.innerText = ""
+        })
+
         //cuando cambia el dropdown select producto
         document.getElementById('dropdownProductos').addEventListener('change', function () {
             SeleccionListaProducto()
-        });
-
-        //cuando haces click en el Heatmap
-        document.getElementById('btnHeatmap').addEventListener('click', function (e) {
-            e.preventDefault()
-            window.open(urlNexus + nombreUnico, "_blank");
         });
 
         //cuando cambia el dropdown de expansion
@@ -548,7 +623,7 @@
                         //agarra el texto de la tabla y lo coloca en la ventana segun el producto
                         campoTextPrecioVentaID = document.getElementById("PventaId")
                         //pone el nombre del producto en el titulo de la ventanita
-                        var NombreProductoClickeado = evt.path[1].childNodes[2].innerHTML
+                        NombreProductoClickeado = evt.path[1].childNodes[2].innerHTML
                         ventanaTituloId.innerText = NombreProductoClickeado
                         //pone la imagen del producto en el titulo de la ventanita
                         var imagenProductoClickado = evt.path[1].childNodes[1].currentSrc
@@ -558,7 +633,6 @@
                         var precioVentaEnTablaTexto = evt.path[1].childNodes[5].innerHTML
                         precioVentaEnTablaNro = evt.path[1].childNodes[5].innerHTML.split(" ")[0]
                         tipoMonedaOroPlataBronce = evt.path[1].childNodes[5].innerHTML.split(" ")[1]
-
                         //pone el precio obtenido de la tabla "precio venta" en el campo de texto
                         campoTextPrecioVentaID.value = precioVentaEnTablaNro
 
@@ -567,6 +641,9 @@
 
                         //Nombre del producto con guion ejemp: scroll-of-agility-iv
                         nombreUnico = nombreUnicoProducto
+
+                        //Al abrir pone la tab en la primera
+                        $('a[href="#DiaDeVentaTabHref"]').tab('show');
 
                         //inicia la consulta
                         SolicitarDatos(precioVentaEnTablaNro, tipoMonedaOroPlataBronce, nombreUnico)
@@ -1306,11 +1383,6 @@
         }
 
     </script>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!--Toastr-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
 </body>
 
 </html>
