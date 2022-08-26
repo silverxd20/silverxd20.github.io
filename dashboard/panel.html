@@ -71,8 +71,11 @@
                             <label for="inputAddress2">Categoría:</label>
                             <select id="selectCategoria" class="form-control">
                             </select>
-                            <div>
-                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="inputAddress2">Categoría de crafting</label>
+                            <select id="selectCategoriaCrafting" class="form-control">
+                            </select>
                         </div>
                         <div class="form-group col-md-12">
                             <label for="inputAddress2">Expansion:</label>
@@ -114,6 +117,7 @@
         var campoUnicoNombre = document.getElementById("campoUnicoNombre")
         var campoCategoria = document.getElementById("campoCategoria")
         var selectCategoria = document.getElementById("selectCategoria")
+        var selectCategoriaCrafting = document.getElementById("selectCategoriaCrafting")
         var selectExpansion = document.getElementById("selectExpansion")
 
         leerDatos()
@@ -132,11 +136,18 @@
             const docsSnap = await getDocs(colRef);
             docsSnap.forEach(doc => {
 
-                //agrega las categorias al al dropdown
+                //agrega las categorias al dropdown
                 for (const key in doc.data().tipo) {
                     const element = doc.data().tipo[key];
                     var daySelect = document.getElementById('selectCategoria');
                     daySelect.options[daySelect.options.length] = new Option(element, element);
+                }
+
+                  //agrega las categorias de crafting al dropdown
+                  for (const key in doc.data().crafting) {
+                    const elementCate = doc.data().crafting[key];
+                    var crafCategory = document.getElementById('selectCategoriaCrafting');
+                    crafCategory.options[crafCategory.options.length] = new Option(elementCate, elementCate);
                 }
 
                 //guarda el json de los productos agregados
@@ -184,6 +195,7 @@
                                 "categoria": selectCategoria.value,
                                 "nombreUnico": campoUnicoNombre.value,
                                 "expansion": selectExpansion.value,
+                                "craftingCategory": selectCategoriaCrafting.value,
                                 "servidor": {
                                     "pagle": {
                                         "precioActualizado": 0,
