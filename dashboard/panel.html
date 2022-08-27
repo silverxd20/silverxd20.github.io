@@ -67,7 +67,8 @@
                             <input id="inputTxtBusquedaId" class="col-md-8" type="text"
                                 placeholder="Ejemp: Barra de torio">
                             <button id="btnBuscar" class="btn btn-primary" type="button">
-                                <span class="col-md-4 spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                <span class="col-md-4 spinner-grow spinner-grow-sm" role="status"
+                                    aria-hidden="true"></span>
                                 Buscar
                             </button>
 
@@ -142,6 +143,7 @@
         var nombreConGuion = ""
         var arrayComponentes = []
         var arrayProductoBuscado = []
+        var arrayCraftingFinal = []
 
         leerDatos()
 
@@ -217,6 +219,18 @@
                 }
             }
 
+            for (const key in arrayComponentes) {
+                var itemId = arrayComponentes[key].itemId
+                var componenteNombreUnico = arrayComponentes[key].uniqueName
+                var amount = arrayComponentes[key].amount
+                arrayCraftingFinal.push({
+                    "itemId": itemId,
+                    "precioActual": 0,
+                    "cantidad": amount,
+                    "nombreUnico": componenteNombreUnico
+                })
+            }
+
             if (indicadorDeEnvio == true) {
                 console.log("Agregando los productos...")
 
@@ -232,7 +246,7 @@
                             "nombreUnico": unicoNombre,
                             "expansion": selectExpansion.value,
                             "craftingCategory": selectCategoriaCrafting.value,
-                            "craftingComponentes": arrayComponentes,
+                            "craftingComponentes": arrayCraftingFinal,
                             "servidor": {
                                 "pagle": {
                                     "precioActualizado": 0,
