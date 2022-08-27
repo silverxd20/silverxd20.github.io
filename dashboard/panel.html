@@ -141,6 +141,7 @@
         var urlNexusProducto = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/"
         var urlNexusCrafting = "https://api.nexushub.co/wow-classic/v1/crafting/pagle-alliance/"
         var nombreConGuion = ""
+        var iconProductoBuscado = ""
         var arrayComponentes = []
         var arrayProductoBuscado = []
         var arrayCraftingFinal = []
@@ -207,7 +208,6 @@
             }
             var indicadorDeEnvio = true
             const db = getFirestore(app);
-            // var urlDelProducto = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/" + campoUnicoNombre.value
 
             //Comprobamos el url del producto ya esta en la base de datos
             for (var index = 0; index < infoProductosArray.length; index++) {
@@ -223,9 +223,11 @@
                 var itemId = arrayComponentes[key].itemId
                 var componenteNombreUnico = arrayComponentes[key].uniqueName
                 var amount = arrayComponentes[key].amount
+                var iconoImg = arrayComponentes[key].icon
                 arrayCraftingFinal.push({
                     "itemId": itemId,
                     "precioActual": 0,
+                    "icono": iconoImg,
                     "cantidad": amount,
                     "nombreUnico": componenteNombreUnico
                 })
@@ -241,6 +243,7 @@
                         [unicoNombre]: {
                             "url": urlNexusProducto,
                             "urlCrafting": urlNexusCrafting,
+                            "icono": iconProductoBuscado,
                             "traduccion": nombreEspañol,
                             "categoria": selectCategoria.value,
                             "nombreUnico": unicoNombre,
@@ -280,12 +283,12 @@
             var nombreEspañolProducto = inputTxtDeBusqueda.value
             const respuesta = await fetch(corsurl + urlBusquedaWowHeadEspañol + nombreEspañolProducto)
             const json = await respuesta.json()
-
+            console.log(json)
             //recorre el json que da el url de busqueda de wowhead
             for (const key in json.results) {
                 var tipo = json.results[key].typeName
                 var name = json.results[key].name
-
+                iconProductoBuscado = "https://wow.zamimg.com/images/wow/icons/large/"+json.results[key].icon+".jpg"
 
                 //si la busqueda es un objeto
                 if (tipo === "Objeto") {
