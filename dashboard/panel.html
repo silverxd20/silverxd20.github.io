@@ -8,7 +8,8 @@
     <title>Agregar items</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <!--jquery 3-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
 </head>
 
@@ -42,6 +43,10 @@
             background-color: #242424;
             opacity: 0.90;
         }
+
+        #buscarLabed {
+            margin-left: 45px;
+        }
     </style>
 
     <div id="divParent" class="container d-flex justify-content-center ">
@@ -54,17 +59,22 @@
             <div id="divFormId">
                 <form>
                     <div class="form-group ">
+                        <div>
 
-                        <div class="form-group col-md-12">
-                            <label for="inputAddress">Nombre único:</label>
-                            <input type="text" class="form-control" id="campoUnicoNombre"
-                                placeholder="Ejemplo: scroll-of-agility-iv">
+                            <label id="buscarLabed" for="inputAddress">Buscar producto:</label>
                         </div>
+                        <div class="form-group d-flex justify-content-center">
+                            <input id="inputTxtBusquedaId" class="col-md-8" type="text"
+                                placeholder="Ejemp: Barra de torio">
+                            <button id="btnBuscar" class="btn btn-primary" type="button">
+                                <span class="col-md-4 spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                Buscar
+                            </button>
 
+                        </div>
                         <div class="form-group col-md-12">
-                            <label for="inputAddress">Traducción:</label>
-                            <input type="text" class="form-control" id="campoTraduccion"
-                                placeholder="Nombre en español">
+                            <select id="selectBusqueda" class="form-control">
+                            </select>
                         </div>
 
                         <div class="form-group col-md-12">
@@ -119,12 +129,41 @@
         var selectCategoria = document.getElementById("selectCategoria")
         var selectCategoriaCrafting = document.getElementById("selectCategoriaCrafting")
         var selectExpansion = document.getElementById("selectExpansion")
+        var productBusqueda = document.getElementById('selectBusqueda');
+        var inputTxtDeBusqueda = document.getElementById("inputTxtBusquedaId")
+        var unicoNombre = ""
+
+        //variables nuevas
+        var btnBuscar = document.getElementById("btnBuscar")
+        var corsurl = "https://api.codetabs.com/v1/proxy?quest="
+        var urlBusquedaWowHeadEspañol = "https://es.tbc.wowhead.com/search/suggestions-template?q="
+        var urlNexusProducto = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/"
+        var urlNexusCrafting = "https://api.nexushub.co/wow-classic/v1/crafting/pagle-alliance/"
+        var nombreConGuion = ""
+        var arrayComponentes = []
+        var arrayProductoBuscado = []
 
         leerDatos()
 
         document.getElementById('btnAgregar').addEventListener('click', function () {
-            agregarProducto()
+            //agregarProducto()
+            var NameClickedEspañol = productBusqueda.value
+            for (const key in arrayProductoBuscado) {
+                if (arrayProductoBuscado[key].name == NameClickedEspañol) {
+
+                    var id = arrayProductoBuscado[key].id
+                    console.log(NameClickedEspañol)
+                    var urlNexusProductoAqui = urlNexusProducto + id
+                    var urlNexusCraftingAqui = urlNexusCrafting + id
+                    buscarProductoEnNexus(urlNexusProductoAqui, urlNexusCraftingAqui, NameClickedEspañol)
+                }
+            }
         });
+
+        document.getElementById('btnBuscar').addEventListener('click', function () {
+            buscaObjeto()
+        });
+
 
         async function leerDatos() {
             // Inicializa Firebase si no esta inicializado
@@ -143,8 +182,8 @@
                     daySelect.options[daySelect.options.length] = new Option(element, element);
                 }
 
-                  //agrega las categorias de crafting al dropdown
-                  for (const key in doc.data().crafting) {
+                //agrega las categorias de crafting al dropdown
+                for (const key in doc.data().crafting) {
                     const elementCate = doc.data().crafting[key];
                     var crafCategory = document.getElementById('selectCategoriaCrafting');
                     crafCategory.options[crafCategory.options.length] = new Option(elementCate, elementCate);
@@ -159,69 +198,126 @@
             //console.log(infoProductosArray)
         }
 
-        async function agregarProducto() {
+        async function agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponentes) {
             // Inicializa Firebase si no esta inicializado
             if (!firebase.apps.length) {
                 const app = initializeApp(firebaseConfig);
             }
             var indicadorDeEnvio = true
-            var nombreUnicoTitulo = campoUnicoNombre.value
             const db = getFirestore(app);
-            var urlDelProducto = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/" + campoUnicoNombre.value
+            // var urlDelProducto = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/" + campoUnicoNombre.value
 
             //Comprobamos el url del producto ya esta en la base de datos
             for (var index = 0; index < infoProductosArray.length; index++) {
-                if (infoProductosArray[index].url == urlDelProducto) {
+                if (infoProductosArray[index].url == urlNexusProducto) {
                     indicadorDeEnvio = false
-                    console.log("este producto ya existe : " + urlDelProducto)
+                    console.log("este producto ya existe : " + urlNexusProducto)
                     alert("Este producto ya EXISTE!")
                     break
                 }
             }
 
             if (indicadorDeEnvio == true) {
+                console.log("Agregando los productos...")
 
-                //Antes de enviar comprueba si todos los campos estan llenos
-                if (campoTraduccion.value == "" || campoUnicoNombre.value == "") {
-                    alert("Hay campos vacíos, debe llenarlos todos antes de agregar.")
-
-                } else {
-                    //Si no existen el url del producto se procede a enviar el nuevo producto
-                    await setDoc(doc(db, "data", "datos"), {
-                        "infoProducts": {
-                            [nombreUnicoTitulo]: {
-                                "url": urlDelProducto,
-                                "traduccion": campoTraduccion.value,
-                                "categoria": selectCategoria.value,
-                                "nombreUnico": campoUnicoNombre.value,
-                                "expansion": selectExpansion.value,
-                                "craftingCategory": selectCategoriaCrafting.value,
-                                "servidor": {
-                                    "pagle": {
-                                        "precioActualizado": 0,
-                                        "FechaActualizada": 0
-                                    },
-                                    "whitemane": {
-                                        "precioActualizado": 0,
-                                        "FechaActualizada": 0
-                                    }
+                //Si no existen el url del producto se procede a enviar el nuevo producto
+                unicoNombre = nombreConGuion
+                await setDoc(doc(db, "data", "datos"), {
+                    "infoProducts": {
+                        [unicoNombre]: {
+                            "url": urlNexusProducto,
+                            "urlCrafting": urlNexusCrafting,
+                            "traduccion": nombreEspañol,
+                            "categoria": selectCategoria.value,
+                            "nombreUnico": unicoNombre,
+                            "expansion": selectExpansion.value,
+                            "craftingCategory": selectCategoriaCrafting.value,
+                            "craftingComponentes": arrayComponentes,
+                            "servidor": {
+                                "pagle": {
+                                    "precioActualizado": 0,
+                                    "FechaActualizada": 0
+                                },
+                                "whitemane": {
+                                    "precioActualizado": 0,
+                                    "FechaActualizada": 0
                                 }
                             }
                         }
-                    }, { merge: true }).then(resp => {
-                        console.log("Se han guardado los datos")
-                        //Luego de guardar los datos limpiamos los campos de texto
-                        campoTraduccion.value = ""
-                        campoUnicoNombre.value = ""
-                        alert("Agregado correctamente!")
-                    }).catch(function (reason) {
-                        console.log(reason)
-                        alert("Hay campos vacíos, debe llenarlos todos antes de enviar.")
-                    });
-                }
+                    }
+                }, { merge: true }).then(resp => {
+                    console.log("Se han guardado los datos")
+                    //Luego de guardar los datos limpiamos los campos de texto
+
+                    inputTxtDeBusqueda.value = ""
+                    $("selectBusqueda").empty();
+                    alert("Agregado correctamente!")
+                }).catch(function (reason) {
+                    console.log(reason)
+                    alert("Hay campos vacíos, debe llenarlos todos antes de enviar.")
+                });
+
 
             }
         }
+
+        async function buscaObjeto() {
+            $(productBusqueda).empty();
+            var nombreEspañolProducto = inputTxtDeBusqueda.value
+            const respuesta = await fetch(corsurl + urlBusquedaWowHeadEspañol + nombreEspañolProducto)
+            const json = await respuesta.json()
+
+            //recorre el json que da el url de busqueda de wowhead
+            for (const key in json.results) {
+                var tipo = json.results[key].typeName
+                var name = json.results[key].name
+
+
+                //si la busqueda es un objeto
+                if (tipo === "Objeto") {
+
+                    //agrega la busqueda al dropdown
+                    const elementCate = name
+                    console.log(elementCate)
+                    productBusqueda.options[productBusqueda.options.length] = new Option(elementCate, elementCate);
+
+                    arrayProductoBuscado.push(json.results[key])
+
+                }
+            }
+        }
+
+        async function buscarProductoEnNexus(urlNexusProducto, urlNexusCrafting, nombreEspañol) {
+            Promise.all([
+                fetch(urlNexusProducto),
+                fetch(urlNexusCrafting)
+            ]).then(async ([aa, bb]) => {
+                const a = await aa.json();
+                const b = await bb.json();
+                return [a, b]
+            })
+                .then((responseText) => {
+                    nombreConGuion = responseText[0].uniqueName
+                    console.log(nombreConGuion)
+                    try {
+
+                        arrayComponentes = responseText[1].createdBy[0].reagents
+                    } catch (error) {
+                        arrayComponentes["n/a"]
+                    }
+                    console.log(arrayComponentes);
+                    console.log("url: " + urlNexusProducto)
+                    console.log("urlCrafting: " + urlNexusCrafting)
+                    console.log("traduccion: " + nombreEspañol)
+                    console.log("nombreUnico: " + nombreConGuion)
+                    console.log("expansion: " + "classic")
+                    console.log("crafting : " + {
+                        "componentes": arrayComponentes,
+                    })
+                    agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponentes)
+                })
+
+        }  
     </script>
 </body>
 
