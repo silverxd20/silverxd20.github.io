@@ -267,6 +267,7 @@
                     //Luego de guardar los datos limpiamos los campos de texto
 
                     inputTxtDeBusqueda.value = ""
+                    arrayCraftingFinal = []
                     $("selectBusqueda").empty();
                     alert("Agregado correctamente!")
                 }).catch(function (reason) {
@@ -316,11 +317,12 @@
                 .then((responseText) => {
                     nombreConGuion = responseText[0].uniqueName
                     console.log(nombreConGuion)
+                    var arrayComponente = ""
                     try {
 
-                        arrayComponentes = responseText[1].createdBy[0].reagents
+                       arrayComponente = responseText[1].createdBy[0].reagents
                     } catch (error) {
-                        arrayComponentes["n/a"]
+                       arrayComponente["n/a"]
                     }
                     console.log(arrayComponentes);
                     console.log("url: " + urlNexusProducto)
@@ -329,9 +331,9 @@
                     console.log("nombreUnico: " + nombreConGuion)
                     console.log("expansion: " + "classic")
                     console.log("crafting : " + {
-                        "componentes": arrayComponentes,
+                        "componentes": arrayComponente,
                     })
-                    agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponentes)
+                    agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponente)
                 })
 
         }  
