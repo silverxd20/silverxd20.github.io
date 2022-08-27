@@ -141,10 +141,11 @@
         var urlNexusProducto = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/"
         var urlNexusCrafting = "https://api.nexushub.co/wow-classic/v1/crafting/pagle-alliance/"
         var nombreConGuion = ""
-        var iconProductoBuscado = ""
+        var iconProductoBuscado = []
         var arrayComponentes = []
         var arrayProductoBuscado = []
         var arrayCraftingFinal = []
+        var indexSelectedBusqueda = 0
 
         leerDatos()
 
@@ -165,6 +166,11 @@
 
         document.getElementById('btnBuscar').addEventListener('click', function () {
             buscaObjeto()
+        });
+        //cuando cambia el dropdown de items buscados
+        document.getElementById('selectBusqueda').addEventListener('change', function (evt) {
+           indexSelectedBusqueda = $("select[id='selectBusqueda'] option:selected").index()
+           console.log(indexSelectedBusqueda)
         });
 
 
@@ -243,7 +249,7 @@
                         [unicoNombre]: {
                             "url": urlNexusProducto,
                             "urlCrafting": urlNexusCrafting,
-                            "icono": iconProductoBuscado,
+                            "icono": iconProductoBuscado[indexSelectedBusqueda],
                             "traduccion": nombreEspañol,
                             "categoria": selectCategoria.value,
                             "nombreUnico": unicoNombre,
@@ -268,7 +274,7 @@
 
                     inputTxtDeBusqueda.value = ""
                     arrayCraftingFinal = []
-                    $("selectBusqueda").empty();
+                    $(productBusqueda).empty();
                     alert("Agregado correctamente!")
                 }).catch(function (reason) {
                     console.log(reason)
@@ -284,16 +290,15 @@
             var nombreEspañolProducto = inputTxtDeBusqueda.value
             const respuesta = await fetch(corsurl + urlBusquedaWowHeadEspañol + nombreEspañolProducto)
             const json = await respuesta.json()
-            console.log(json)
             //recorre el json que da el url de busqueda de wowhead
             for (const key in json.results) {
                 var tipo = json.results[key].typeName
                 var name = json.results[key].name
-                iconProductoBuscado = "https://wow.zamimg.com/images/wow/icons/large/"+json.results[key].icon+".jpg"
-
+                
                 //si la busqueda es un objeto
                 if (tipo === "Objeto") {
-
+                    //agrega los iconos en un array
+                    iconProductoBuscado.push("https://wow.zamimg.com/images/wow/icons/large/"+json.results[key].icon+".jpg")
                     //agrega la busqueda al dropdown
                     const elementCate = name
                     console.log(elementCate)
