@@ -148,6 +148,7 @@
         var indexSelectedBusqueda = 0
 
         leerDatos()
+        inputTxtDeBusqueda.focus();
 
         document.getElementById('btnAgregar').addEventListener('click', function () {
             //agregarProducto()
@@ -276,6 +277,7 @@
                     arrayCraftingFinal = []
                     $(productBusqueda).empty();
                     alert("Agregado correctamente!")
+                    inputTxtDeBusqueda.focus();
                 }).catch(function (reason) {
                     console.log(reason)
                     alert("Hay campos vacíos, debe llenarlos todos antes de enviar.")
