@@ -142,6 +142,7 @@
         var urlNexusCrafting = "https://api.nexushub.co/wow-classic/v1/crafting/pagle-alliance/"
         var nombreConGuion = ""
         var requiredSkill = 0
+        var categoryDefault = ""
         var recipes = []
         var iconProductoBuscado = []
         var arrayComponentes = []
@@ -260,6 +261,7 @@
                             "traduccion": nombreEspañol,
                             "nivelUsoProfesion": requiredSkill,
                             "receta": recipes,
+                            "categoryDefault": categoryDefault,
                             "categoria": selectCategoria.value,
                             "nombreUnico": unicoNombre,
                             "expansion": selectExpansion.value,
@@ -336,9 +338,18 @@
                     console.log(responseText)
                     nombreConGuion = responseText[0].uniqueName
                     console.log(nombreConGuion)
+                    // verfifica si el array "createdBy" contiene algo
                     if (typeof responseText[1].createdBy != "undefined" && responseText[1].createdBy != null && responseText[1].createdBy.length != null && responseText[1].createdBy.length > 0) {
-                        // array existe y contiene una receta
-                        recipes = responseText[1].createdBy[0].recipes
+                        //receta por defecto
+                        categoryDefault = responseText[1].createdBy[0].category
+
+                        var recetaArrayIndex = responseText[1].createdBy[0].recipes.length
+                        //verifica si usa receta
+                        if (recetaArrayIndex > 0) {                            
+                            recipes = responseText[1].createdBy[0].recipes
+                        }else {
+                            recipes = "No"
+                        }
                         requiredSkill = responseText[1].createdBy[0].requiredSkill
                     }else{
                         console.log("No tiene receta!")
