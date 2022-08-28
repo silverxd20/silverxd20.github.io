@@ -141,6 +141,8 @@
         var urlNexusProducto = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/"
         var urlNexusCrafting = "https://api.nexushub.co/wow-classic/v1/crafting/pagle-alliance/"
         var nombreConGuion = ""
+        var requiredSkill = 0
+        var recipes = []
         var iconProductoBuscado = []
         var arrayComponentes = []
         var arrayProductoBuscado = []
@@ -170,8 +172,8 @@
         });
         //cuando cambia el dropdown de items buscados
         document.getElementById('selectBusqueda').addEventListener('change', function (evt) {
-           indexSelectedBusqueda = $("select[id='selectBusqueda'] option:selected").index()
-           console.log(indexSelectedBusqueda)
+            indexSelectedBusqueda = $("select[id='selectBusqueda'] option:selected").index()
+            console.log(indexSelectedBusqueda)
         });
 
 
@@ -245,6 +247,10 @@
 
                 //Si no existen el url del producto se procede a enviar el nuevo producto
                 unicoNombre = nombreConGuion
+                var requerido = requiredSkill
+                var receta = recipes
+                console.log(receta)
+                console.log(requiredSkill)
                 await setDoc(doc(db, "data", "datos"), {
                     "infoProducts": {
                         [unicoNombre]: {
@@ -252,6 +258,8 @@
                             "urlCrafting": urlNexusCrafting,
                             "icono": iconProductoBuscado[indexSelectedBusqueda],
                             "traduccion": nombreEspañol,
+                            "nivelUsoProfesion": requiredSkill,
+                            "receta": recipes,
                             "categoria": selectCategoria.value,
                             "nombreUnico": unicoNombre,
                             "expansion": selectExpansion.value,
@@ -275,13 +283,9 @@
 
                     inputTxtDeBusqueda.value = ""
                     arrayCraftingFinal = []
-                    console.log(arrayCraftingFinal)
                     iconProductoBuscado = []
                     arrayProductoBuscado = []
-                    console.log(iconProductoBuscado)
-                    console.log(arrayProductoBuscado)
                     arrayComponentes = []
-                    console.log(arrayComponentes)
                     $(productBusqueda).empty();
                     alert("Agregado correctamente!")
                     inputTxtDeBusqueda.focus();
@@ -303,11 +307,11 @@
             for (const key in json.results) {
                 var tipo = json.results[key].typeName
                 var name = json.results[key].name
-                
+
                 //si la busqueda es un objeto
                 if (tipo === "Objeto") {
                     //agrega los iconos en un array
-                    iconProductoBuscado.push("https://wow.zamimg.com/images/wow/icons/large/"+json.results[key].icon+".jpg")
+                    iconProductoBuscado.push("https://wow.zamimg.com/images/wow/icons/large/" + json.results[key].icon + ".jpg")
                     //agrega la busqueda al dropdown
                     const elementCate = name
                     console.log(elementCate)
@@ -329,14 +333,24 @@
                 return [a, b]
             })
                 .then((responseText) => {
+                    console.log(responseText)
                     nombreConGuion = responseText[0].uniqueName
                     console.log(nombreConGuion)
+                    if (typeof responseText[1].createdBy != "undefined" && responseText[1].createdBy != null && responseText[1].createdBy.length != null && responseText[1].createdBy.length > 0) {
+                        // array existe y contiene una receta
+                        recipes = responseText[1].createdBy[0].recipes
+                        requiredSkill = responseText[1].createdBy[0].requiredSkill
+                    }else{
+                        console.log("No tiene receta!")
+                        recipes = "No"
+                        requiredSkill = 0
+                    }
                     var arrayComponente = ""
-                    try {
 
-                       arrayComponente = responseText[1].createdBy[0].reagents
+                    try {
+                        arrayComponente = responseText[1].createdBy[0].reagents
                     } catch (error) {
-                       arrayComponente["n/a"]
+                        arrayComponente["n/a"]
                     }
                     console.log(arrayComponentes);
                     console.log("url: " + urlNexusProducto)
