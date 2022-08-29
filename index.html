@@ -148,7 +148,8 @@
         #btnCambiar {
             margin-top: 5px;
         }
-        #modalConentID{
+
+        #modalConentID {
             width: 620px;
         }
     </style>
@@ -448,7 +449,6 @@
         var diaSemanaAnterior = "Sat"
         var cantidades = 0
         var MismaVentana = false
-        var urlNexus = "https://nexushub.co/wow-classic/items/pagle-alliance/"
 
             //-------------------------------eventos on click y change-------------------------------------
 
@@ -516,8 +516,18 @@
         //click en la tab de graficas
         try {
             document.getElementById("graficasTab").addEventListener("click", function (params) {
+                var nexusUrlPagle = "https://nexushub.co/wow-classic/items/pagle-alliance/"
+                var nexusUrlWhitemane = "https://nexushub.co/wow-classic/items/whitemane-horde/"
+                var dropdownServidorValue = dropdownServidor.value
                 if (MismaVentana == false) {
-                    document.getElementById("iframeId").src = urlNexus + nombreUnico
+                    console.log(dropdownServidorValue)
+                    //Pone el URL en el IFRAME segun el servidor seleccionado
+                    if (dropdownServidorValue == "Pagle-alliance") {
+                        console.log(document.getElementById("iframeId").src = nexusUrlPagle + nombreUnico)
+
+                    } else if (dropdownServidorValue == "Whitemane-horde") {
+                        console.log(document.getElementById("iframeId").src = nexusUrlWhitemane + nombreUnico)
+                    }
                     MismaVentana = true
                     precioTituloId.innerText = "Precio de venta: " + precioVentaEnTablaNro + " " + tipoMonedaOroPlataBronce
                 } else if (MismaVentana == true) {
