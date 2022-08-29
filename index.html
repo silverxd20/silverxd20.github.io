@@ -624,6 +624,7 @@
         var namesito = ""
         var canti = 0
         async function traerProductoCrafteo(urlProductos, key, infoProductosArray, idioma, NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta) {
+            var dropdownServidorValue = dropdownServidor.value
             var cantidadComponentes = 0
             var nameComponente = ""
             var sumaDeComponentes = 0
@@ -634,14 +635,25 @@
                     var precioComponenteSumados = 0
                     var corsurl = "https://api.codetabs.com/v1/proxy?quest="
 
-                    var precio = precioActualizado
-                    var precioSimple = precio / 10000
+                    var precio = 0
+                    var precioSimple = 0
 
                     for (const key in crafteoComponente) {
-                        // multiplica de una vez el precio x la cantidad de componentes
-                        multiplicaCantidadPorPrecio = crafteoComponente[key].precioActual * crafteoComponente[key].cantidad
+                        if (dropdownServidorValue == "Pagle-alliance") {
+                            precio = precioActualizado
+                            precioSimple = precio / 10000
+                            // multiplica de una vez el precio x la cantidad de componentes en server Pagle
+                            multiplicaCantidadPorPrecio = crafteoComponente[key].precioActualPagle * crafteoComponente[key].cantidad
+
+                        } else if (dropdownServidorValue == "Whitemane-horde") {
+                            precio = precioActualizado
+                            precioSimple = precio / 10000
+                            // multiplica de una vez el precio x la cantidad de componentes en server Whitemane
+                            multiplicaCantidadPorPrecio = crafteoComponente[key].precioActualWhitemane * crafteoComponente[key].cantidad
+                        }
                         //suma el resultado anterior con precio nuevo
                         sumaDeComponentes = sumaDeComponentes + multiplicaCantidadPorPrecio
+                        console.log(sumaDeComponentes)
                     }
 
                     //El valor de la inversion al sumar todos los componentes
@@ -741,14 +753,14 @@
 
                             //pinta los datos en la tabla de los componentes para 1 producto
                             var numeroEnInput = inputCantidadComp.value
-                            recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioSimple)
+                            recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue)
 
                             //cuando presionas enter en el input del nro recalcula tambien
                             inputCantidadComp.addEventListener('keydown', function (event) {
                                 if (event.key === 'Enter') {
                                     var inputNumberComp = inputCantidadComp.value
                                     LimpiarTablaComponentes()
-                                    recalcularDatosComponentes(inputNumberComp, multiplicaCantidadPorPrecioSimple, precioSimple)
+                                    recalcularDatosComponentes(inputNumberComp, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue)
                                 }
                             });
 
@@ -756,7 +768,7 @@
                             document.getElementById('btnEnviarCantidadComp').addEventListener('click', function () {
                                 var inputNumberComp = inputCantidadComp.value
                                 LimpiarTablaComponentes()
-                                recalcularDatosComponentes(inputNumberComp, multiplicaCantidadPorPrecioSimple, precioSimple)
+                                recalcularDatosComponentes(inputNumberComp, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue)
                             });
                         }
 
@@ -834,7 +846,7 @@
         }
 
         //Funcion que recalcula los datos en el modal de componentes
-        function recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioProductoIndividual) {
+        function recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioProductoIndividual, server) {
             for (const key in infoProductosArray) {
                 if (infoProductosArray[key].traduccion == nombreTituloActualEnComponenteModal) {
                     var arrayComponentes = infoProductosArray[key].craftingComponentes
@@ -843,7 +855,12 @@
                         var idComp = arrayComponentes[llave].itemId
                         var iconoComp = arrayComponentes[llave].icono
                         var nombreComp = arrayComponentes[llave].nombreUnico
-                        var precioComp = arrayComponentes[llave].precioActual / 10000
+                        if(server == "Pagle-alliance"){
+                            var precioComp = arrayComponentes[llave].precioActualPagle / 10000
+
+                        }else if(server == "Whitemane-horde"){
+                            var precioComp = arrayComponentes[llave].precioActualWhitemane / 10000
+                        }
                         var cantidadComp = arrayComponentes[llave].cantidad * parseInt(numeroEnInput)
 
                         //agrega los datos a a tabla
@@ -1696,7 +1713,7 @@
 
                         //si el proveedor es de nexus entonces usa esa fecha
                         var corsurl = "https://api.codetabs.com/v1/proxy?quest="
-                        var resultDate = fetch("https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/scroll-of-agility-iv")
+                        var resultDate = fetch(corsurl + "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/scroll-of-agility-iv")
                             .then(resultDate => resultDate.json())
                             .then(function (fecha) {
                                 const d = new Date(fecha.stats.lastUpdated);
