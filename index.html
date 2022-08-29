@@ -520,13 +520,12 @@
                 var nexusUrlWhitemane = "https://nexushub.co/wow-classic/items/whitemane-horde/"
                 var dropdownServidorValue = dropdownServidor.value
                 if (MismaVentana == false) {
-                    console.log(dropdownServidorValue)
                     //Pone el URL en el IFRAME segun el servidor seleccionado
                     if (dropdownServidorValue == "Pagle-alliance") {
-                        console.log(document.getElementById("iframeId").src = nexusUrlPagle + nombreUnico)
+                        document.getElementById("iframeId").src = nexusUrlPagle + nombreUnico
 
                     } else if (dropdownServidorValue == "Whitemane-horde") {
-                        console.log(document.getElementById("iframeId").src = nexusUrlWhitemane + nombreUnico)
+                        document.getElementById("iframeId").src = nexusUrlWhitemane + nombreUnico
                     }
                     MismaVentana = true
                     precioTituloId.innerText = "Precio de venta: " + precioVentaEnTablaNro + " " + tipoMonedaOroPlataBronce
@@ -653,7 +652,6 @@
                         }
                         //suma el resultado anterior con precio nuevo
                         sumaDeComponentes = sumaDeComponentes + multiplicaCantidadPorPrecio
-                        console.log(sumaDeComponentes)
                     }
 
                     //El valor de la inversion al sumar todos los componentes
@@ -1887,14 +1885,11 @@
 
             if (tipoMonedaOroPlataBronce == "Oro") {
                 precioVentaEnTablaNro = precioVentaEnTablaNro * 10000
-                console.log("Es oro: " + precioVentaEnTablaNro)
             } else if (tipoMonedaOroPlataBronce == "Plata") {
                 precioVentaEnTablaNro = precioVentaEnTablaNro * 100
-                console.log("Es plata: " + precioVentaEnTablaNro)
 
             } else if (tipoMonedaOroPlataBronce == "Cobre") {
                 precioVentaEnTablaNro = precioVentaEnTablaNro * 10
-                console.log("Es plata: " + precioVentaEnTablaNro)
             }
 
             LimpiarTablaVerificacion()
