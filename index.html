@@ -28,12 +28,17 @@
             background-color: #242424;
         }
 
+        #trCraftId,
+        #trFlippingId {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
         #divTablaId,
         #divTabCraft {
             background-color: #242424;
-            opacity: 0.95;
             margin-top: -11px;
-
         }
 
         #titulo,
@@ -72,13 +77,15 @@
         }
 
         #txtNotificacion,
-        #NotificacionTextCrafteo {
+        #NotificacionTextCrafteo,
+        h4 {
             color: wheat;
             margin-top: 15px;
             text-align: center;
         }
 
-        #modalContent {
+        #modalContent,
+        #divContenidoComponenteModalId {
             background-color: #242424;
         }
 
@@ -121,6 +128,15 @@
         #divForm {
             margin-top: 10px;
             padding-left: 5px;
+        }
+
+        #txtInvertido {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        #txtGananciaAprox {
+            text-align: center;
         }
 
         #PventaId {
@@ -203,6 +219,38 @@
         </div>
     </div>
 
+    <!-- *************** HTML MODAL COMPONENTES DE CRAFTEO ****************** -->
+    <div class="modal fade" id="modalComponentes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <img id="imgModalProducto" src="" alt="">
+                    <h5 class="modal-title" id="tituloModalNombreProducto">mt</h5>
+                    <input type="number" min="1" id="inputCantidadComp" value="1">
+                    <input type="button" id="btnEnviarCantidadComp" value=">">
+                </div>
+                <!--Contenido de la tabla de componentes-->
+                <div id="divContenidoComponenteModalId" class="modal-body">
+                    <div>
+                        <h4>Componentes</h4>
+                    </div>
+                    <div id="divTablaComponente">
+                        <table id="tablaComponentes" border="1">
+                            <tr>
+                                <th>Img</th>
+                                <th>Nombre</th>
+                                <th>Precio de compra</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </table>
+                        <h5 id="txtInvertido"></h5>
+                        <h5 id="txtGananciaAprox"></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- ************************* HTML PRINCIPAL *************************** -->
     <div id="idDivOpacity">
@@ -274,7 +322,7 @@
                 <progress id="progressBar" value="0%" max="100"></progress>
                 <div id="divTablaId">
                     <table id="productos" border="1">
-                        <tr>
+                        <tr id="trFlippingId">
                             <th>Imagen</th>
                             <th>Nombre</th>
                             <th>Precio Compra</th>
@@ -296,7 +344,7 @@
                 <progress id="progressBarCraft" value="0%" max="100"></progress>
                 <div id="divTabCraft">
                     <table id="crafteoTabla" border="1">
-                        <tr>
+                        <tr id="trCraftId">
                             <th>Imagen</th>
                             <th>Nombre</th>
                             <th>Inversión en componentes</th>
@@ -305,6 +353,7 @@
                             <th>%</th>
                             <th>Nivel</th>
                             <th>Receta</th>
+                            <th>Componentes</th>
                         </tr>
                     </table>
                 </div>
@@ -351,6 +400,7 @@
         var cuerpoTablaCrafting = document.createElement('tbody');
         var divDatosOnline = document.getElementById("divDatosOnline")
         var divId = document.getElementById("divPassId")
+        var btnEnviarCantidadComp = document.getElementById("btnEnviarCantidadComp")
         var corsBoton = document.getElementById('corsBtn');
         var NotificacionText = document.getElementById("txtNotificacion")
         var NotificacionTextCrafteo = document.getElementById("txtNotificacionCrafteo")
@@ -362,10 +412,14 @@
         var selectCategoria = document.createElement('dropdownCategoriaProductos');
         var dropdownServidor = document.getElementById('dropdownServidor')
         var dropdownExpansion = document.getElementById("dropdownExpansion")
+        var tituloModalNombreProducto = document.getElementById("tituloModalNombreProducto")
+        var imgModalProducto = document.getElementById("imgModalProducto")
         var RadioArchivo = document.getElementById("radioCheckArchivo")
         var RadioNexusVar = document.getElementById("radioCheckNexus")
         var positivoNegativo = ""
         var RadioValorSelected = ""
+        var multiplicaCantidadPorPrecioSimple = 0
+        var nombreTituloActualEnComponenteModal = ""
         var nivelProfesionRequerido = 0
         var server = ""
         var arrayDeCategoriaFlipping = []
@@ -375,6 +429,7 @@
 
         //VARIABLES DEL LA VENTANITA
         var tablaVerificacion = document.getElementById('tablaVerificacion');
+        var tablaComponentes = document.getElementById('tablaComponentes')
         var tbody = document.createElement('tbody');
         var campoTextPrecioVentaID = document.getElementById("PventaId")
         var campoTextoValor = document.getElementById("PventaId").value
@@ -389,7 +444,8 @@
         var cantidades = 0
         var MismaVentana = false
         var urlNexus = "https://nexushub.co/wow-classic/items/pagle-alliance/"
-        //eventos
+
+        //-------------------------------eventos on click y change-------------------------------------
 
         //Abre el panel para agregar productos
         document.addEventListener('keydown', function (event) {
@@ -403,8 +459,8 @@
             document.getElementById("flippingTab").addEventListener("click", function (params) {
                 ladoDelTabId = 0
                 if (RadioNexusVar.checked == true) {
-                    
-                }else{
+
+                } else {
                     RadioValorSelected = RadioArchivo.value
                     console.log(RadioValorSelected)
                 }
@@ -523,6 +579,12 @@
             subirArchivoJson()
         });
 
+        //eveto cuando se cierra el modal de los componentes
+        $("#modalComponentes").on("hide.bs.modal", function () {
+            multiplicaCantidadPorPrecioSimple = 0
+            inputCantidadComp.value = 1
+        });
+
         //variables del html principal
         var vueltasBucle = 0
 
@@ -537,9 +599,289 @@
         //Inicia tratendo los datos y categorias del la base de datos
         leerDatos()
 
+        //Inserta a todas las tablas el tbody
         tablaVerificacion.appendChild(tbody);
+        tablaComponentes.appendChild(tbody)
         tablaCrafting.appendChild(cuerpoTablaCrafting)
         tablaProducto.appendChild(cuerpoTablaFlipping);
+
+        //.............................Funciones de crafteo...............................................
+        var namesito = ""
+        var canti = 0
+        async function traerProductoCrafteo(urlProductos, key, infoProductosArray, idioma, NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta) {
+            var cantidadComponentes = 0
+            var nameComponente = ""
+            var sumaDeComponentes = 0
+            var multiplicaCantidadPorPrecio = 0
+            var ganancia = 0
+            for (let i = 0; i <= 4; i++) {
+                try {
+                    var precioComponenteSumados = 0
+                    var corsurl = "https://api.codetabs.com/v1/proxy?quest="
+
+                    var precio = precioActualizado
+                    var precioSimple = precio / 10000
+
+                    for (const key in crafteoComponente) {
+                        // multiplica de una vez el precio x la cantidad de componentes
+                        multiplicaCantidadPorPrecio = crafteoComponente[key].precioActual * crafteoComponente[key].cantidad
+                        //suma el resultado anterior con precio nuevo
+                        sumaDeComponentes = sumaDeComponentes + multiplicaCantidadPorPrecio
+                    }
+
+                    //El valor de la inversion al sumar todos los componentes
+                    var multiplicaCantidadPorPrecioSimple = sumaDeComponentes / 10000
+
+                    //el valor de la ganancia
+                    ganancia = precio - sumaDeComponentes
+                    var gananciaSimple = ganancia / 10000 // ejemp : transforma 29000 -> 2.90
+
+                    if (nivelProfesionRequerido != 0) {
+                        //agrega los datos a a tabla
+                        var fila = document.createElement('tr');
+
+                        //la imagen del producto
+                        var div_caption = document.createElement('div');
+                        var img = document.createElement('img');
+                        img.src = iconoImg;
+                        fila.appendChild(div_caption);
+                        fila.appendChild(img);
+
+                        //crea el nombre
+                        var td = document.createElement('td');
+                        td.innerText = NombreEspañol
+                        td.setAttribute("style", "font-weight:bold");
+                        fila.appendChild(td);
+
+                        //crea el precio de inversion
+                        td = document.createElement('td');
+                        td.setAttribute("style", "font-weight:bold");
+
+                        td.innerText = PlataOro(multiplicaCantidadPorPrecioSimple);
+                        fila.appendChild(td);
+
+
+                        //crea el precio minimo
+                        td = document.createElement('td');
+                        td.setAttribute("style", "font-weight:bold");
+                        if (nivelProfesionRequerido != 0) {
+                            td.innerText = PlataOro(precioSimple);
+                        } else {
+                            td.innerText = "-"
+                        }
+                        fila.appendChild(td);
+
+                        //crea la ganancia
+                        var td = document.createElement('td');
+                        if (nivelProfesionRequerido != 0) {
+                            td.innerText = PlataOro(gananciaSimple);
+                        } else {
+                            td.innerText = "-"
+                        }
+                        td.setAttribute("style", "font-weight:bold");
+                        fila.appendChild(td);
+
+                        //crea el % de ganancia
+                        td = document.createElement('tr');
+                        td = document.createElement('td');
+                        var gananciaEstimada = gananciaPromedia(multiplicaCantidadPorPrecioSimple, precioSimple).toFixed(4)
+                        var porcentajeGanancia = gananciaEstimada / multiplicaCantidadPorPrecioSimple * 100
+                        if (porcentajeGanancia.toFixed(2) < 0) {
+
+                            td.setAttribute("style", "color:red");;
+                        } else if (porcentajeGanancia.toFixed(2) > 0) {
+                            //color verde si es mayor a 0%
+                            td.setAttribute("style", "color:#00af1d");
+                        }
+                        td.innerText = porcentajeGanancia.toFixed(2) + " %"
+                        fila.appendChild(td);
+
+                        //crea el nivel de profesion requerido
+                        var td = document.createElement('td');
+                        td.innerText = nivelProfesionRequerido
+                        fila.appendChild(td);
+
+                        //crea si usa receta o no
+                        var td = document.createElement('td');
+                        if (receta != "No") {
+                            td.innerText = "Si"
+                        } else {
+                            td.innerText = receta
+                        }
+                        fila.appendChild(td);
+
+                        //crea el boton para el modal de componentes
+                        var td = document.createElement('td');
+                        td.innerText = "Ver"
+                        td.setAttribute("data-bs-toggle", "modal")
+                        td.setAttribute("data-bs-target", "#modalComponentes")
+                        td.setAttribute("style", "cursor: pointer")
+                        td.onclick = function (evt) {
+                            LimpiarTablaComponentes()
+                            //coloca la imagen en el titulo
+                            imgModalProducto.src = iconoImg
+                            nombreTituloActualEnComponenteModal = NombreEspañol
+                            //coloca el nombre en el titulo
+                            tituloModalNombreProducto.innerText = NombreEspañol
+
+                            //pinta los datos en la tabla de los componentes para 1 producto
+                            var numeroEnInput = inputCantidadComp.value
+                            recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioSimple)
+
+                            //cuando haces click en el boton dentro del modal componente
+                            document.getElementById('btnEnviarCantidadComp').addEventListener('click', function () {
+                                var inputNumberComp = inputCantidadComp.value
+                                LimpiarTablaComponentes()
+                                recalcularDatosComponentes(inputNumberComp, multiplicaCantidadPorPrecioSimple, precioSimple)
+                            });
+                        }
+
+                        fila.appendChild(td);
+                        tablaCrafting.appendChild(fila);
+                    }
+
+                    //doble click en la fila
+                    fila.ondblclick = function (evt) {
+
+                        copiarNombreProducto(NombreEspañol)
+                    }
+
+                    // filtra la tabla por mayor % cada vez q se agregan a la tabla
+                    sortTableCrafting()
+
+                    break
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+        }
+
+        //Seleccion del dropdown de productos
+        function SeleccionListaCategoriaCrafteo() {
+            if (dropdownProductosValue != "Seleccionar Profesion") {
+                var dropdownProductosValue = document.getElementById("dropdownCategoriaProductos").value
+                var dropdownExpansionValue = dropdownExpansion.value
+                var dropdownServidorValue = dropdownServidor.value
+                NotificacionTextCrafteo.innerText = ""
+                LimpiarTablaCrafting()
+
+                const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
+                const loop = async () => {
+                    for (const key in infoProductosArray) {
+                        var urlNormal = infoProductosArray[key].url
+                        var urlProductos = obtenerUrlCrafteo(urlNormal, dropdownServidorValue)
+                        var NombreEspañol = infoProductosArray[key].traduccion
+                        var iconoImg = infoProductosArray[key].icono
+                        var categoria = infoProductosArray[key].categoria
+                        var receta = infoProductosArray[key].receta
+                        var nivelProfesionRequerido = infoProductosArray[key].nivelUsoProfesion
+                        var expansion = infoProductosArray[key].expansion
+                        var nombreUnicoProducto = infoProductosArray[key].nombreUnico
+                        var crafteoComponente = infoProductosArray[key].craftingComponentes
+
+                        if (infoProductosArray[key].craftingCategory == dropdownProductosValue) {
+                            if (dropdownServidor.value == "Pagle-alliance") {
+                                precioActualizado = infoProductosArray[key].servidor.pagle.precioActualizado
+                                fechaActualizada = infoProductosArray[key].servidor.pagle.FechaActualizada
+
+                            } else if (dropdownServidor.value == "Whitemane-horde") {
+                                precioActualizado = infoProductosArray[key].servidor.whitemane.precioActualizado
+                                fechaActualizada = infoProductosArray[key].servidor.whitemane.FechaActualizada
+                            }
+                            if (dropdownProductosValue == infoProductosArray[key].craftingCategory && dropdownExpansionValue == infoProductosArray[key].expansion) {
+
+                                traerProductoCrafteo(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta)
+
+                            } else if (dropdownProductosValue == infoProductosArray[key].craftingCategory && dropdownExpansionValue == "Todos") {
+
+                                traerProductoCrafteo(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta)
+                            }
+                            await wait(75)
+                        }
+                    }
+                }
+                loop()
+                lastUpdated()
+            } else {
+                NotificacionTextCrafteo.innerText = "Selecciona una profesión para cargar la lista!"
+            }
+        }
+
+        //Funcion que recalcula los datos en el modal de componentes
+        function recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioProductoIndividual) {
+            for (const key in infoProductosArray) {
+                if (infoProductosArray[key].traduccion == nombreTituloActualEnComponenteModal) {
+                    var arrayComponentes = infoProductosArray[key].craftingComponentes
+
+                    for (const llave in arrayComponentes) {
+                        var idComp = arrayComponentes[llave].itemId
+                        var iconoComp = arrayComponentes[llave].icono
+                        var nombreComp = arrayComponentes[llave].nombreUnico
+                        var precioComp = arrayComponentes[llave].precioActual / 10000
+                        var cantidadComp = arrayComponentes[llave].cantidad * parseInt(numeroEnInput)
+
+                        //agrega los datos a a tabla
+                        var fila = document.createElement('tr');
+
+                        //la imagen del componente
+                        var div_caption = document.createElement('div');
+                        var img = document.createElement('img');
+                        img.src = iconoComp;
+                        fila.appendChild(div_caption);
+                        fila.appendChild(img);
+
+                        //crea el nombre
+                        var td = document.createElement('td');
+                        td.innerText = nombreComp
+                        td.setAttribute("style", "font-weight:bold");
+                        fila.appendChild(td);
+
+                        //crea el precio del componente
+                        var td = document.createElement('td');
+                        td.innerText = PlataOro(precioComp)
+                        td.setAttribute("style", "font-weight:bold");
+                        fila.appendChild(td);
+
+                        //crea la cantidad de componentes a comprar
+                        var td = document.createElement('td');
+                        td.innerText = cantidadComp
+                        td.setAttribute("style", "font-weight:bold");
+                        fila.appendChild(td);
+
+                        //doble click en la fila
+                        fila.ondblclick = function (evt) {
+                            copiarNombreProducto(nombreComp)
+                        }
+
+                        tablaComponentes.appendChild(fila);
+                    }
+                }
+            }
+            var invertidoEnComp = document.getElementById("txtInvertido")
+            var gananciaEnComp = document.getElementById("txtGananciaAprox")
+            //Calcula el total invertido en componentes
+            var multiplicaCantidad = multiplicaCantidadPorPrecioSimple * parseInt(numeroEnInput)
+            invertidoEnComp.innerText = "Total invertido = " + PlataOro(multiplicaCantidad)
+            //Calcula la ganancia aproximada 
+            var multiplicaPrecioPorCantidad = precioProductoIndividual * parseInt(numeroEnInput)
+            var gananciaAprox = multiplicaPrecioPorCantidad - multiplicaCantidad
+
+            //calcula un 10% menos a la ganancia final
+            var menosCincoPorciento = parseFloat(gananciaAprox).toFixed(2) * 10 / 100
+            var totalConDescuento = gananciaAprox - menosCincoPorciento
+            if (gananciaAprox > 0) {
+                //color verde si hay ganancia
+                gananciaEnComp.setAttribute("style", "color:#00af1d")
+                gananciaEnComp.innerText = "Ganancia aprox entre = " + PlataOroEspecial(totalConDescuento.toFixed(2)) + " a " + PlataOro(gananciaAprox)
+            } else if (gananciaAprox < 0) {
+                //color rojo si hay perdida
+                gananciaEnComp.setAttribute("style", "color: red")
+                gananciaEnComp.innerText = "La pérdida es = " + PlataOro(gananciaAprox)
+            }
+        }
+
+        //.............................Funciones de Flipping...............................................
 
         //LEE LOS DATOS DE FIREBASE
         async function leerDatos() {
@@ -607,183 +949,6 @@
             })
             NotificacionText.innerText = "Seleccione un producto para cargar la lista!"
         }
-
-        //.............................Funciones de crafteo...............................................
-        var namesito = ""
-        var canti = 0
-        async function traerProductoCrafteo(urlProductos, key, infoProductosArray, idioma, NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta) {
-            var cantidadComponentes = 0
-            var nameComponente = ""
-            var sumaDeComponentes = 0
-            var multiplicaCantidadPorPrecio = 0
-            var ganancia = 0
-            for (let i = 0; i <= 4; i++) {
-                try {
-                    var precioComponenteSumados = 0
-                    var corsurl = "https://api.codetabs.com/v1/proxy?quest="
-                    console.log("nombre del producto que se quiere craftear: " + NombreEspañol)
-                    var precio = precioActualizado
-                    var precioSimple = precio / 10000
-                    console.log("PrecioActual: " + precioSimple + "g")
-
-                    for (const key in crafteoComponente) {
-                        sumaDeComponentes = sumaDeComponentes + crafteoComponente[key].precioActual
-                        cantidadComponentes = cantidadComponentes + crafteoComponente[key].cantidad
-
-                    }
-                    multiplicaCantidadPorPrecio = sumaDeComponentes * cantidadComponentes
-                    var multiplicaCantidadPorPrecioSimple = multiplicaCantidadPorPrecio / 10000
-                    console.log("La suma de componentes es: " + multiplicaCantidadPorPrecioSimple + "g")
-                    ganancia = precio - multiplicaCantidadPorPrecio
-                    var gananciaSimple = ganancia / 10000
-                    console.log("La ganancia o perdida es: " + gananciaSimple + "g")
-
-                    //agrega los datos a a tabla
-                    var fila = document.createElement('tr');
-
-                    //la imagen del producto
-                    var div_caption = document.createElement('div');
-                    var img = document.createElement('img');
-                    img.src = iconoImg;
-                    fila.appendChild(div_caption);
-                    fila.appendChild(img);
-
-                    //crea el nombre
-                    var td = document.createElement('td');
-                    td.innerText = NombreEspañol
-                    td.setAttribute("style", "font-weight:bold");
-                    fila.appendChild(td);
-
-                    //crea el precio de inversion
-                    td = document.createElement('td');
-                    td.setAttribute("style", "font-weight:bold");
-                    if (nivelProfesionRequerido != 0) {
-                        td.innerText = PlataOro(multiplicaCantidadPorPrecioSimple);
-                    } else {
-                        td.innerText = "No es crafteable"
-                    }
-                    fila.appendChild(td);
-
-                    //crea el precio minimo
-                    td = document.createElement('td');
-                    td.setAttribute("style", "font-weight:bold");
-                    if (nivelProfesionRequerido != 0) {
-                        td.innerText = PlataOro(precioSimple);
-                    } else {
-                        td.innerText = "-"
-                    }
-                    fila.appendChild(td);
-
-                    //crea la ganancia
-                    var td = document.createElement('td');
-                    if (nivelProfesionRequerido != 0) {
-                        td.innerText = PlataOro(gananciaSimple);
-                    } else {
-                        td.innerText = "-"
-                    }
-                    td.setAttribute("style", "font-weight:bold");
-                    fila.appendChild(td);
-
-                    //crea el % de ganancia
-                    td = document.createElement('tr');
-                    td = document.createElement('td');
-                    var gananciaEstimada = gananciaPromedia(multiplicaCantidadPorPrecioSimple, precioSimple).toFixed(4)
-                    var porcentajeGanancia = gananciaEstimada / multiplicaCantidadPorPrecioSimple * 100
-                    if (porcentajeGanancia.toFixed(2) < 0) {
-
-                        td.setAttribute("style", "color:red");;
-                    } else if (porcentajeGanancia.toFixed(2) > 0) {
-                        //color verde si es mayor a 0%
-                        td.setAttribute("style", "color:#00af1d");
-                    }
-                    td.innerText = porcentajeGanancia.toFixed(2) + " %"
-                    fila.appendChild(td);
-
-                    //crea el nivel de profesion requerido
-                    var td = document.createElement('td');
-                    td.innerText = nivelProfesionRequerido
-                    fila.appendChild(td);
-
-                    //crea si usa receta o no
-                    var td = document.createElement('td');
-                    if(receta != "No"){
-                        td.innerText = "Si"
-                    }else {
-                        td.innerText = receta
-                    }
-                    fila.appendChild(td);
-
-                    cuerpoTablaCrafting.appendChild(fila);
-
-                    //doble click en la fila
-                    fila.ondblclick = function (evt) {
- 
-                         copiarNombreProducto(NombreEspañol)
-                     }
-
-                    // filtra la tabla por mayor % cada vez q se agregan a la tabla
-                    sortTableCrafting()
-
-                    break
-                } catch (error) {
-                    console.log(error)
-                }
-            }
-        }
-
-        //Seleccion del dropdown de productos
-        function SeleccionListaCategoriaCrafteo() {
-            if (dropdownProductosValue != "Seleccionar Profesion") {
-                var dropdownProductosValue = document.getElementById("dropdownCategoriaProductos").value
-                var dropdownExpansionValue = dropdownExpansion.value
-                var dropdownServidorValue = dropdownServidor.value
-                NotificacionTextCrafteo.innerText = ""
-                LimpiarTablaCrafting()
-
-                const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms))
-
-                const loop = async () => {
-                    for (const key in infoProductosArray) {
-                        var urlNormal = infoProductosArray[key].url
-                        var urlProductos = obtenerUrlCrafteo(urlNormal, dropdownServidorValue)
-                        var NombreEspañol = infoProductosArray[key].traduccion
-                        var iconoImg = infoProductosArray[key].icono
-                        var categoria = infoProductosArray[key].categoria
-                        var receta = infoProductosArray[key].receta
-                        var nivelProfesionRequerido = infoProductosArray[key].nivelUsoProfesion
-                        var expansion = infoProductosArray[key].expansion
-                        var nombreUnicoProducto = infoProductosArray[key].nombreUnico
-                        var crafteoComponente = infoProductosArray[key].craftingComponentes
-
-                        if (infoProductosArray[key].craftingCategory == dropdownProductosValue) {
-                            if (dropdownServidor.value == "Pagle-alliance") {
-                                precioActualizado = infoProductosArray[key].servidor.pagle.precioActualizado
-                                fechaActualizada = infoProductosArray[key].servidor.pagle.FechaActualizada
-
-                            } else if (dropdownServidor.value == "Whitemane-horde") {
-                                precioActualizado = infoProductosArray[key].servidor.whitemane.precioActualizado
-                                fechaActualizada = infoProductosArray[key].servidor.whitemane.FechaActualizada
-                            }
-                            if (dropdownProductosValue == infoProductosArray[key].craftingCategory && dropdownExpansionValue == infoProductosArray[key].expansion) {
-
-                                traerProductoCrafteo(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta)
-
-                            } else if (dropdownProductosValue == infoProductosArray[key].craftingCategory && dropdownExpansionValue == "Todos") {
-                                
-                                traerProductoCrafteo(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta)
-                            }
-                            await wait(75)
-                        }
-                    }
-                }
-                loop()
-                lastUpdated()
-            } else {
-                NotificacionTextCrafteo.innerText = "Selecciona una profesión para cargar la lista!"
-            }
-        }
-
-        //.............................Funciones de Flipping...............................................
 
         //Abre los URL de los productos trae sus datos en una tablas (Funcion principal)
         async function traerProductoDatos(urlProductos, indice, array, idioma, NombreEspañol, nombreUnicoProducto, precioActual) {
@@ -1122,13 +1287,11 @@
             return countValue
         }
 
-
         async function leerJsonSubido(url) {
             const db = getFirestore(app);
             const Ref = doc(db, "data", "datos");
             var amount = 0
             var componenteNombreUnico = ""
-
 
             for (let indice = 0; indice < 5; indice++) {
 
@@ -1149,10 +1312,10 @@
                     var nombreNormalJson = respuestaArchivoJson.Productos[key].nombre //Nombre
                     var nombreSinAcentoMinusculasJson = nombreNormalJson
                     for (let index = 0; index < infoProductosArray.length; index++) {
-                        
+
                         var NombreEspañolBaseDatosMinuscula = infoProductosArray[index].traduccion
                         //Si el nombre existe en nuestra BD entonces guarda solo ese producto en un nuevo objeto json
-                     
+
                         if (NombreEspañolBaseDatosMinuscula == nombreSinAcentoMinusculasJson) {
                             var urlNormal = infoProductosArray[index].url
                             var urlProductos = obtenerUrlConServer(urlNormal, dropdownServidorValue)
@@ -1227,7 +1390,7 @@
                                 "categoria": categoria,
                                 "nivelUsoProfesion": nivelProfesionRequerido,
                                 "receta": receta,
-                                "categoryDefault" : categoryDefault,
+                                "categoryDefault": categoryDefault,
                                 "nombreUnico": nombreUnicoProducto,
                                 "craftingCategory": craftingCategory,
                                 "expansion": expansion,
@@ -1243,8 +1406,8 @@
                                     }
                                 }
                             };
-                        }else{
-                            
+                        } else {
+
                         }
                     }
                 }
@@ -1266,7 +1429,6 @@
             }
 
         }
-
 
         //funcion cuando se selecciona el radio de nexus
         function CheckNexusSelected() {
@@ -1324,7 +1486,9 @@
             } else if (PrecioFloat > 0.01) {
                 //si es positivo y es plata
                 var precioMinimo = parseFloat(PrecioFloat).toFixed(4) * 100 + " Plata"
-                if (precioMinimo == 1) {
+                var precioMin = precioMinimo.split(" ")
+                console.log(precioMin)
+                if (precioMin[0] == 100) {
                     precioMinimo = PrecioFloat + " Oro"
                 }
                 positivoNegativo = true
@@ -1345,6 +1509,45 @@
                 } else {
                     //si esto es negativo y es menor a -100
                     var precioMinimo = PrecioFloat * 100 + " Plata"
+                }
+            }
+            return precioMinimo;
+        }
+
+        //igual que la anterior pero sin poner el texto de oro plata o cobre
+        function PlataOroEspecial(nro) {
+
+            var PrecioFloat = nro
+            if (PrecioFloat > 1) {
+                //si es positivo y es oro
+                var precioMinimo = parseFloat(PrecioFloat).toFixed(2)
+
+            } else if (PrecioFloat > 0.01) {
+                //si es positivo y es plata
+                var precioMinimo = parseFloat(PrecioFloat).toFixed(4) * 100
+                var precioMin = precioMinimo.toString().split(" ")
+                console.log(precioMin)
+                if (parseInt(precioMin[0]) == 100) {
+                    precioMinimo = PrecioFloat
+    }
+                positivoNegativo = true
+
+            } else if (PrecioFloat > 0.001) {
+                //si es positivo y es cobre
+                var precioMinimo = PrecioFloat * 10000
+                positivoNegativo = true
+            } else {
+                //aqui esto es negativo
+                precioMinimo = PrecioFloat * 100
+                positivoNegativo = false
+
+                if (precioMinimo < -100) {
+                    //si esto es negativo y pasa de -100
+                    var precioMinimo = parseFloat(precioMinimo / 100).toFixed(2)
+
+                } else {
+                    //si esto es negativo y es menor a -100
+                    var precioMinimo = PrecioFloat * 100
                 }
             }
             return precioMinimo;
@@ -1372,6 +1575,16 @@
         function LimpiarTablaCrafting() {
             var tableHeaderRowCount = 1;
             var table = document.getElementById('crafteoTabla');
+            var rowCount = table.rows.length;
+            for (var i = tableHeaderRowCount; i < rowCount; i++) {
+                table.deleteRow(tableHeaderRowCount);
+            }
+        }
+
+        //Limpia la tabla componentes
+        function LimpiarTablaComponentes() {
+            var tableHeaderRowCount = 1;
+            var table = document.getElementById('tablaComponentes');
             var rowCount = table.rows.length;
             for (var i = tableHeaderRowCount; i < rowCount; i++) {
                 table.deleteRow(tableHeaderRowCount);
