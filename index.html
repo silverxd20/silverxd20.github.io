@@ -148,6 +148,9 @@
         #btnCambiar {
             margin-top: 5px;
         }
+        #modalConentID{
+            width: 620px;
+        }
     </style>
 
     <!-- ************************** HTML MODAL *************************** -->
@@ -223,11 +226,11 @@
     <div class="modal fade" id="modalComponentes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
+            <div id="modalConentID" class="modal-content">
                 <div class="modal-header">
                     <img id="imgModalProducto" src="" alt="">
                     <h5 class="modal-title" id="tituloModalNombreProducto">mt</h5>
-                    <input type="number" min="1" id="inputCantidadComp" value="1">
+                    <input type="number" min="1" oninput="this.value|=0" id="inputCantidadComp" value="1">
                     <input type="button" id="btnEnviarCantidadComp" value=">">
                 </div>
                 <!--Contenido de la tabla de componentes-->
@@ -241,6 +244,7 @@
                                 <th>Img</th>
                                 <th>Nombre</th>
                                 <th>Precio de compra</th>
+                                <th>hasta el 5%</th>
                                 <th>Cantidad</th>
                             </tr>
                         </table>
@@ -398,6 +402,7 @@
         var tablaCrafting = document.getElementById('crafteoTabla');
         var cuerpoTablaFlipping = document.createElement('tbody');
         var cuerpoTablaCrafting = document.createElement('tbody');
+        var cuerpoTablaComponentes = document.createElement('tbody');
         var divDatosOnline = document.getElementById("divDatosOnline")
         var divId = document.getElementById("divPassId")
         var btnEnviarCantidadComp = document.getElementById("btnEnviarCantidadComp")
@@ -445,14 +450,14 @@
         var MismaVentana = false
         var urlNexus = "https://nexushub.co/wow-classic/items/pagle-alliance/"
 
-        //-------------------------------eventos on click y change-------------------------------------
+            //-------------------------------eventos on click y change-------------------------------------
 
-        //Abre el panel para agregar productos
-        document.addEventListener('keydown', function (event) {
-            if (event.ctrlKey && event.key === 'z') {
-                window.open("dashboard/panel.html", "_blank");
-            }
-        });
+            //Abre el panel para agregar productos
+            < document.addEventListener('keydown', function (event) {
+                if (event.ctrlKey && event.key === 'z') {
+                    window.open("dashboard/panel.html", "_blank");
+                }
+            });
 
         //click en la tab de flipping
         try {
@@ -601,7 +606,7 @@
 
         //Inserta a todas las tablas el tbody
         tablaVerificacion.appendChild(tbody);
-        tablaComponentes.appendChild(tbody)
+        tablaComponentes.appendChild(cuerpoTablaComponentes)
         tablaCrafting.appendChild(cuerpoTablaCrafting)
         tablaProducto.appendChild(cuerpoTablaFlipping);
 
@@ -728,6 +733,15 @@
                             var numeroEnInput = inputCantidadComp.value
                             recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioSimple)
 
+                            //cuando presionas enter en el input del nro recalcula tambien
+                            inputCantidadComp.addEventListener('keydown', function (event) {
+                                if (event.key === 'Enter') {
+                                    var inputNumberComp = inputCantidadComp.value
+                                    LimpiarTablaComponentes()
+                                    recalcularDatosComponentes(inputNumberComp, multiplicaCantidadPorPrecioSimple, precioSimple)
+                                }
+                            });
+
                             //cuando haces click en el boton dentro del modal componente
                             document.getElementById('btnEnviarCantidadComp').addEventListener('click', function () {
                                 var inputNumberComp = inputCantidadComp.value
@@ -843,6 +857,15 @@
                         td.setAttribute("style", "font-weight:bold");
                         fila.appendChild(td);
 
+                        //crea que te dice que compres hasta el 10% max
+                        var td = document.createElement('td');
+                        //calcula un 10% menos a la ganancia final
+                        var menosjincoPorciento = parseFloat(precioComp).toFixed(2) * 5 / 100
+                        var totalConDescuentoCinco = precioComp + menosjincoPorciento
+                        td.innerText = PlataOro(totalConDescuentoCinco)
+                        td.setAttribute("style", "font-weight:bold");
+                        fila.appendChild(td);
+
                         //crea la cantidad de componentes a comprar
                         var td = document.createElement('td');
                         td.innerText = cantidadComp
@@ -867,9 +890,9 @@
             var multiplicaPrecioPorCantidad = precioProductoIndividual * parseInt(numeroEnInput)
             var gananciaAprox = multiplicaPrecioPorCantidad - multiplicaCantidad
 
-            //calcula un 10% menos a la ganancia final
-            var menosCincoPorciento = parseFloat(gananciaAprox).toFixed(2) * 10 / 100
-            var totalConDescuento = gananciaAprox - menosCincoPorciento
+            //calcula un 7% menos a la ganancia final
+            var menosSietePorciento = parseFloat(gananciaAprox).toFixed(2) * 7 / 100
+            var totalConDescuento = gananciaAprox - menosSietePorciento
             if (gananciaAprox > 0) {
                 //color verde si hay ganancia
                 gananciaEnComp.setAttribute("style", "color:#00af1d")
@@ -1487,7 +1510,6 @@
                 //si es positivo y es plata
                 var precioMinimo = parseFloat(PrecioFloat).toFixed(4) * 100 + " Plata"
                 var precioMin = precioMinimo.split(" ")
-                console.log(precioMin)
                 if (precioMin[0] == 100) {
                     precioMinimo = PrecioFloat + " Oro"
                 }
@@ -1529,7 +1551,7 @@
                 console.log(precioMin)
                 if (parseInt(precioMin[0]) == 100) {
                     precioMinimo = PrecioFloat
-    }
+                }
                 positivoNegativo = true
 
             } else if (PrecioFloat > 0.001) {
