@@ -855,10 +855,10 @@
                         var idComp = arrayComponentes[llave].itemId
                         var iconoComp = arrayComponentes[llave].icono
                         var nombreComp = arrayComponentes[llave].nombreUnico
-                        if(server == "Pagle-alliance"){
+                        if (server == "Pagle-alliance") {
                             var precioComp = arrayComponentes[llave].precioActualPagle / 10000
 
-                        }else if(server == "Whitemane-horde"){
+                        } else if (server == "Whitemane-horde") {
                             var precioComp = arrayComponentes[llave].precioActualWhitemane / 10000
                         }
                         var cantidadComp = arrayComponentes[llave].cantidad * parseInt(numeroEnInput)
@@ -885,9 +885,9 @@
                         td.setAttribute("style", "font-weight:bold");
                         fila.appendChild(td);
 
-                        //crea que te dice que compres hasta el 10% max
+                        //crea que te dice que compres hasta el 5% max
                         var td = document.createElement('td');
-                        //calcula un 10% menos a la ganancia final
+                        //calcula un 5% menos a la ganancia final
                         var menosjincoPorciento = parseFloat(precioComp).toFixed(2) * 5 / 100
                         var totalConDescuentoCinco = precioComp + menosjincoPorciento
                         td.innerText = PlataOro(totalConDescuentoCinco)
@@ -1355,7 +1355,7 @@
                 const respuestaArchivoJson = await respuesta.json()
                 console.log("Archivo escaneado (2/4)")
                 var fechaUltimoScan = respuestaArchivoJson.FechaUltimoScan //Fecha ultimo escaneo
-                server = respuestaArchivoJson.servidor.toString().toLowerCase()
+                server = respuestaArchivoJson.servidor.toString()
                 console.log("servidor: " + server)
                 //Recorre todos los productos del archivo json
                 for (const key in respuestaArchivoJson.Productos) {
@@ -1382,15 +1382,13 @@
                             var nombreUnicoProducto = infoProductosArray[index].nombreUnico
                             var craftingCategory = infoProductosArray[index].craftingCategory
                             var precioActualizado = respuestaArchivoJson.Productos[key].Precio //Precio
-                            var precioActualPagleComp = 0
-                            var precioActualWhitemaneComp = 0
-                            var precioActualPagle = 0
-                            var precioActualWhitemane = 0
                             var arrayCraftingFinal = []
 
                             if (craftingComponent.length != 0) {
 
                                 for (const key in craftingComponent) {
+                                    var precioActualPagleComp = craftingComponent[key].precioActualPagle
+                                    var precioActualWhitemaneComp = craftingComponent[key].precioActualWhitemane
                                     var itemId = craftingComponent[key].itemId
                                     componenteNombreUnico = craftingComponent[key].nombreUnico
                                     amount = craftingComponent[key].cantidad
@@ -1401,16 +1399,16 @@
                                         var name = respuestaArchivoJson.Productos[llave].nombre.toString().toLowerCase()
                                         var nameEspañol = NombreEspañol.toString().toLowerCase()
                                         if (itemId == llave) {
-                                            if (server == "pagle") {
+                                            if (server == "Pagle") {
                                                 precioActualPagleComp = respuestaArchivoJson.Productos[llave].Precio
-                                                precioActualWhitemaneComp = infoProductosArray[index].servidor.whitemane.precioActualizado
-                                                console.log("precio pagle del archivo nuevo: " + precioActualPagle)
-                                                console.log("precio anterior whitemane: " + precioActualPagleComp)
+                                                precioActualWhitemaneComp = precioActualWhitemaneComp
+                                                console.log("precio pagle del archivo nuevo: " + precioActualPagleComp)
+                                                console.log("precio anterior whitemane: " + precioActualWhitemaneComp)
 
-                                            } else if (server == "whitemane") {
+                                            } else if (server == "Whitemane") {
                                                 precioActualWhitemaneComp = respuestaArchivoJson.Productos[llave].Precio
-                                                precioActualPagleComp = infoProductosArray[index].servidor.pagle.precioActualizado
-                                                console.log("precio whitemane del archivo nuevo: " + precioActualWhitemane)
+                                                precioActualPagleComp = precioActualPagleComp
+                                                console.log("precio whitemane del archivo nuevo: " + precioActualWhitemaneComp)
                                                 console.log("precio anterior Pagle: " + precioActualPagleComp)
                                             }
 
@@ -1431,7 +1429,7 @@
                             }
                             console.log(arrayCraftingFinal)
                             //si es pagle o whitemane pone un precio u otro
-                            if (server == "pagle") {
+                            if (server == "Pagle") {
 
                                 precioPagle = respuestaArchivoJson.Productos[key].Precio
                                 fechaPagle = respuestaArchivoJson.FechaUltimoScan
@@ -1439,7 +1437,7 @@
                                 precioWhitemane = infoProductosArray[index].servidor.whitemane.precioActualizado
                                 fechaWhitemane = infoProductosArray[index].servidor.whitemane.FechaActualizada
 
-                            } else if (server == "whitemane") {
+                            } else if (server == "Whitemane") {
 
                                 precioWhitemane = respuestaArchivoJson.Productos[key].Precio
                                 fechaWhitemane = respuestaArchivoJson.FechaUltimoScan
@@ -1488,7 +1486,7 @@
 
                     alert("Agregado correctamente!")
                     console.log("Se han guardado los datos (4/4)")
-                    window.location.reload(true);
+                    //window.location.reload(true);
                 }).catch(function (reason) {
                     console.log(reason)
                 });
