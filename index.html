@@ -804,6 +804,7 @@
                         var nombreUnicoProducto = infoProductosArray[key].nombreUnico
                         var crafteoComponente = infoProductosArray[key].craftingComponentes
 
+                        //trae solo los productos en la categoria seleccionada
                         if (infoProductosArray[key].craftingCategory == dropdownProductosValue) {
                             if (dropdownServidor.value == "Pagle-alliance") {
                                 precioActualizado = infoProductosArray[key].servidor.pagle.precioActualizado
@@ -1364,6 +1365,10 @@
                             var nombreUnicoProducto = infoProductosArray[index].nombreUnico
                             var craftingCategory = infoProductosArray[index].craftingCategory
                             var precioActualizado = respuestaArchivoJson.Productos[key].Precio //Precio
+                            var precioActualPagleComp = 0
+                            var precioActualWhitemaneComp = 0
+                            var precioActualPagle = 0
+                            var precioActualWhitemane = 0
                             var arrayCraftingFinal = []
 
                             if (craftingComponent.length != 0) {
@@ -1379,14 +1384,26 @@
                                         var name = respuestaArchivoJson.Productos[llave].nombre.toString().toLowerCase()
                                         var nameEspañol = NombreEspañol.toString().toLowerCase()
                                         if (itemId == llave) {
-                                            var precioActual = respuestaArchivoJson.Productos[llave].Precio
-                                            console.log("precio: " + precioActual)
+                                            if (server == "pagle") {
+                                                precioActualPagleComp = respuestaArchivoJson.Productos[llave].Precio
+                                                precioActualWhitemaneComp = infoProductosArray[index].servidor.whitemane.precioActualizado
+                                                console.log("precio pagle del archivo nuevo: " + precioActualPagle)
+                                                console.log("precio anterior whitemane: " + precioActualPagleComp)
+
+                                            } else if (server == "whitemane") {
+                                                precioActualWhitemaneComp = respuestaArchivoJson.Productos[llave].Precio
+                                                precioActualPagleComp = infoProductosArray[index].servidor.pagle.precioActualizado
+                                                console.log("precio whitemane del archivo nuevo: " + precioActualWhitemane)
+                                                console.log("precio anterior Pagle: " + precioActualPagleComp)
+                                            }
+
                                             console.log(NombreEspañol)
                                             console.log(amount)
 
                                             arrayCraftingFinal.push({
                                                 "itemId": itemId,
-                                                "precioActual": precioActual,
+                                                "precioActualPagle": precioActualPagleComp,
+                                                "precioActualWhitemane": precioActualWhitemaneComp,
                                                 "icono": iconoImg,
                                                 "cantidad": amount,
                                                 "nombreUnico": componenteNombreUnico
