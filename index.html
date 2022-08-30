@@ -851,6 +851,7 @@
                         var idComp = arrayComponentes[llave].itemId
                         var iconoComp = arrayComponentes[llave].icono
                         var nombreComp = arrayComponentes[llave].nombreUnico
+                        var nameEspañolComp = arrayComponentes[llave].nombreEnEspañol
                         if (server == "Pagle-alliance") {
                             var precioComp = arrayComponentes[llave].precioActualPagle / 10000
 
@@ -871,7 +872,7 @@
 
                         //crea el nombre
                         var td = document.createElement('td');
-                        td.innerText = nombreComp
+                        td.innerText = nameEspañolComp
                         td.setAttribute("style", "font-weight:bold");
                         fila.appendChild(td);
 
@@ -1417,6 +1418,7 @@
                                                 "precioActualWhitemane": precioActualWhitemaneComp,
                                                 "icono": iconoImg,
                                                 "cantidad": amount,
+                                                "nombreEnEspañol": name,
                                                 "nombreUnico": componenteNombreUnico
                                             })
                                         }
