@@ -236,7 +236,8 @@
                 var iconoImg = arrayComponentes[key].icon
                 arrayCraftingFinal.push({
                     "itemId": itemId,
-                    "precioActual": 0,
+                    "precioActualPagle": 0,
+                    "precioActualWhitemane": 0,
                     "icono": iconoImg,
                     "cantidad": amount,
                     "nombreUnico": componenteNombreUnico
@@ -345,13 +346,13 @@
 
                         var recetaArrayIndex = responseText[1].createdBy[0].recipes.length
                         //verifica si usa receta
-                        if (recetaArrayIndex > 0) {                            
+                        if (recetaArrayIndex > 0) {
                             recipes = responseText[1].createdBy[0].recipes
-                        }else {
+                        } else {
                             recipes = "No"
                         }
                         requiredSkill = responseText[1].createdBy[0].requiredSkill
-                    }else{
+                    } else {
                         console.log("No tiene receta!")
                         recipes = "No"
                         requiredSkill = 0
