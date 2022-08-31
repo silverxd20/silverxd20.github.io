@@ -11,11 +11,44 @@
     <!--jquery 3-->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <!--Toastr-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
 </head>
 
 <body>
 
     <style>
+        .spinnerBuscar {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s ease infinite;
+        }
+
+        .spinnerGuardar {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s ease infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+
+
         h2 {
             color: darkgoldenrod;
         }
@@ -67,9 +100,10 @@
                             <input id="inputTxtBusquedaId" class="col-md-8" type="text"
                                 placeholder="Ejemp: Barra de torio">
                             <button id="btnBuscar" class="btn btn-primary" type="button">
-                                <span class="col-md-4 spinner-grow spinner-grow-sm" role="status"
-                                    aria-hidden="true"></span>
                                 Buscar
+                                <span class="d-flex justify-content-center">
+                                    <div id="spinnerBuscar" class="spinnerBuscar"></div>
+                                </span>
                             </button>
 
                         </div>
@@ -95,13 +129,17 @@
                                 <option selected>Tbc</option>
                                 <option selected>Wotlk</option>
                             </select>
-                            <br>
+                            <div class="d-flex p-2 justify-content-center">
+                                <button id="btnAgregar" class="btn btn-primary">
+                                    Guardar
+                                    <span class="d-flex justify-content-center">
+                                        <div id="spinnerGuardar" class="spinnerGuardar"></div>
+                                    </span>
+                                </button>
+                            </div>
                 </form>
             </div>
 
-            <div class="d-flex p-2 justify-content-center">
-                <input type="button" id="btnAgregar" class="btn btn-primary" value="Agregar"></button>
-            </div>
         </div>
     </div>
 
@@ -130,11 +168,27 @@
         var selectExpansion = document.getElementById("selectExpansion")
         var productBusqueda = document.getElementById('selectBusqueda');
         var inputTxtDeBusqueda = document.getElementById("inputTxtBusquedaId")
+        var spinnerGuardar = document.getElementById("spinnerGuardar")
+        var spinnerBuscar = document.getElementById("spinnerBuscar")
         var btnBuscar = document.getElementById('btnBuscar')
+        var btnAgregar = document.getElementById('btnAgregar')
         var unicoNombre = ""
-
-        function desactivarTodo() {
-
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "200",
+            "timeOut": "3000",
+            "extendedTimeOut": "500",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
         }
 
         //variables nuevas
@@ -152,16 +206,20 @@
         var arrayProductoBuscado = []
         var arrayCraftingFinal = []
         var indexSelectedBusqueda = 0
+        var agregadoConExito = false
 
         leerDatos()
         inputTxtDeBusqueda.focus();
+        spinnerBuscar.setAttribute("style", "display:none;")
+        spinnerGuardar.style.display = "none"
 
-        document.getElementById('btnAgregar').addEventListener('click', function () {
+        btnAgregar.addEventListener('click', function () {
             //agregarProducto()
             var NameClickedEspañol = productBusqueda.value
+            spinnerGuardar.setAttribute("style", "display:inline")
             for (const key in arrayProductoBuscado) {
                 if (arrayProductoBuscado[key].name == NameClickedEspañol) {
-
+                    desactivarTodo()
                     var id = arrayProductoBuscado[key].id
                     console.log(NameClickedEspañol)
                     var urlNexusProductoAqui = urlNexusProducto + id
@@ -176,12 +234,22 @@
 
         });
         btnBuscar.addEventListener('click', function (e) {
+            spinnerBuscar.setAttribute("style", "display:inline")
+            productBusqueda.disabled = true
+            inputTxtDeBusqueda.disabled = true
+            btnBuscar.disabled = true
+            btnAgregar.disabled = true
             buscaObjeto()
         });
 
         //cuando presionas enter en el input del nro recalcula tambien
         inputTxtDeBusqueda.addEventListener('keydown', function (event) {
             if (event.key === 'Enter') {
+                spinnerBuscar.setAttribute("style", "display:inline")
+                productBusqueda.disabled = true
+                inputTxtDeBusqueda.disabled = true
+                btnBuscar.disabled = true
+                btnAgregar.disabled = true
                 buscaObjeto()
             }
         });
@@ -189,7 +257,6 @@
         //cuando cambia el dropdown de items buscados
         document.getElementById('selectBusqueda').addEventListener('change', function (evt) {
             indexSelectedBusqueda = $("select[id='selectBusqueda'] option:selected").index()
-            console.log(indexSelectedBusqueda)
         });
 
 
@@ -227,6 +294,7 @@
         }
 
         async function agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponentes) {
+            agregadoConExito = false
             // Inicializa Firebase si no esta inicializado
             if (!firebase.apps.length) {
                 const app = initializeApp(firebaseConfig);
@@ -260,84 +328,125 @@
                 })
             }
 
-            if (indicadorDeEnvio == true) {
-                console.log("Agregando los productos...")
+            for (let index = 0; index < 5; index++) {
+                try {
+                    if (indicadorDeEnvio == true) {
+                        console.log("Agregando los productos...")
 
-                //Si no existen el url del producto se procede a enviar el nuevo producto
-                unicoNombre = nombreConGuion
-                var requerido = requiredSkill
-                var receta = recipes
-                console.log(receta)
-                console.log(requiredSkill)
-                await setDoc(doc(db, "data", "datos"), {
-                    "infoProducts": {
-                        [unicoNombre]: {
-                            "url": urlNexusProducto,
-                            "urlCrafting": urlNexusCrafting,
-                            "icono": iconProductoBuscado[indexSelectedBusqueda],
-                            "traduccion": nombreEspañol,
-                            "nivelUsoProfesion": requiredSkill,
-                            "receta": recipes,
-                            "categoryDefault": categoryDefault,
-                            "categoria": selectCategoria.value,
-                            "nombreUnico": unicoNombre,
-                            "expansion": selectExpansion.value,
-                            "craftingCategory": selectCategoriaCrafting.value,
-                            "craftingComponentes": arrayCraftingFinal,
-                            "servidor": {
-                                "pagle": {
-                                    "precioActualizado": 0,
-                                    "FechaActualizada": 0
-                                },
-                                "whitemane": {
-                                    "precioActualizado": 0,
-                                    "FechaActualizada": 0
+                        //Si no existen el url del producto se procede a enviar el nuevo producto
+                        unicoNombre = nombreConGuion
+                        var requerido = requiredSkill
+                        var receta = recipes
+                        await setDoc(doc(db, "data", "datos"), {
+                            "infoProducts": {
+                                [unicoNombre]: {
+                                    "url": urlNexusProducto,
+                                    "urlCrafting": urlNexusCrafting,
+                                    "icono": iconProductoBuscado[indexSelectedBusqueda],
+                                    "traduccion": nombreEspañol,
+                                    "nivelUsoProfesion": requiredSkill,
+                                    "receta": recipes,
+                                    "categoryDefault": categoryDefault,
+                                    "categoria": selectCategoria.value,
+                                    "nombreUnico": unicoNombre,
+                                    "expansion": selectExpansion.value,
+                                    "craftingCategory": selectCategoriaCrafting.value,
+                                    "craftingComponentes": arrayCraftingFinal,
+                                    "servidor": {
+                                        "pagle": {
+                                            "precioActualizado": 0,
+                                            "FechaActualizada": 0
+                                        },
+                                        "whitemane": {
+                                            "precioActualizado": 0,
+                                            "FechaActualizada": 0
+                                        }
+                                    }
                                 }
                             }
-                        }
+                        }, { merge: true }).then(resp => {
+                            console.log("Se han guardado los datos")
+                            //Luego de guardar los datos limpiamos los campos de texto
+                            activarTodo()
+                            spinnerGuardar.setAttribute("style", "display:none")
+                            inputTxtDeBusqueda.value = ""
+                            arrayCraftingFinal = []
+                            iconProductoBuscado = []
+                            arrayProductoBuscado = []
+                            arrayComponentes = []
+                            $(productBusqueda).empty();
+                            alert("Agregado correctamente!")
+                            inputTxtDeBusqueda.focus();
+                            agregadoConExito = true
+                        }).catch(function (reason) {
+                            console.log(reason)
+                            activarTodo()
+                            spinnerGuardar.setAttribute("style", "display:none")
+                            alert("Hay campos vacíos, debe llenarlos todos antes de enviar.")                            
+                        });
+
                     }
-                }, { merge: true }).then(resp => {
-                    console.log("Se han guardado los datos")
-                    //Luego de guardar los datos limpiamos los campos de texto
-
-                    inputTxtDeBusqueda.value = ""
-                    arrayCraftingFinal = []
-                    iconProductoBuscado = []
-                    arrayProductoBuscado = []
-                    arrayComponentes = []
-                    $(productBusqueda).empty();
-                    alert("Agregado correctamente!")
-                    inputTxtDeBusqueda.focus();
-                }).catch(function (reason) {
-                    console.log(reason)
-                    alert("Hay campos vacíos, debe llenarlos todos antes de enviar.")
-                });
-
-
+                    if (agregadoConExito == true) {                       
+                        break
+                    }
+                } catch (error) {                  
+                        console.log(error)
+                        toastr.error("Error al subir el producto, intente de nuevo!", "Mensaje:")
+                        spinnerGuardar.setAttribute("style", "display:none")
+                        activarTodo()                   
+                }
             }
         }
 
         async function buscaObjeto() {
-            $(productBusqueda).empty();
-            var nombreEspañolProducto = inputTxtDeBusqueda.value
-            const respuesta = await fetch(corsurl + urlBusquedaWowHeadEspañol + nombreEspañolProducto)
-            const json = await respuesta.json()
-            //recorre el json que da el url de busqueda de wowhead
-            for (const key in json.results) {
-                var tipo = json.results[key].typeName
-                var name = json.results[key].name
+            for (let index = 0; index < 5; index++) {
+                try {
+                    $(productBusqueda).empty();
+                    var nombreEspañolProducto = inputTxtDeBusqueda.value
+                    const respuesta = await fetch(corsurl + urlBusquedaWowHeadEspañol + nombreEspañolProducto)
+                    const json = await respuesta.json()
+                    //recorre el json que da el url de busqueda de wowhead
 
-                //si la busqueda es un objeto
-                if (tipo === "Objeto") {
-                    //agrega los iconos en un array
-                    iconProductoBuscado.push("https://wow.zamimg.com/images/wow/icons/large/" + json.results[key].icon + ".jpg")
-                    //agrega la busqueda al dropdown
-                    const elementCate = name
-                    console.log(elementCate)
-                    productBusqueda.options[productBusqueda.options.length] = new Option(elementCate, elementCate);
+                    for (const key in json.results) {
+                        var tipo = json.results[key].typeName
+                        var name = json.results[key].name
+                        console.log()
+                        if (json.results[key].name != "") {
+                            //si la busqueda es un objeto
+                            if (tipo === "Objeto") {
+                                //agrega los iconos en un array
+                                iconProductoBuscado.push("https://wow.zamimg.com/images/wow/icons/large/" + json.results[key].icon + ".jpg")
+                                //agrega la busqueda al dropdown
+                                const elementCate = name
+                                productBusqueda.options[productBusqueda.options.length] = new Option(elementCate, elementCate);
 
-                    arrayProductoBuscado.push(json.results[key])
+                                arrayProductoBuscado.push(json.results[key])
+                            }
+                        } else {
+                            console.log("vacio")
+                            toastr.warning("No se encontraron resultados!", "Mensaje:")
+                        }
 
+                    }
+                    //al terminar la busqueda habilita de nuevo los campos
+                    spinnerBuscar.setAttribute("style", "display:none")
+                    productBusqueda.disabled = false
+                    inputTxtDeBusqueda.disabled = false
+                    btnBuscar.disabled = false
+                    btnAgregar.disabled = false
+                    //termina en bucle for
+                    break
+                } catch (error) {
+                    console.log(error)
+                    console.log("Problemas en la busqueda intentando de nuevo (" + index + "/4)")
+                    if (index == 4) {
+                        productBusqueda.disabled = false
+                        inputTxtDeBusqueda.disabled = false
+                        btnBuscar.disabled = false
+                        btnAgregar.disabled = false
+                        spinnerBuscar.setAttribute("style", "display:none")
+                        toastr.error("No se pudo hacer la busqueda, intente de nuevo!", "Mensaje:")
+                    }
                 }
             }
         }
@@ -354,7 +463,6 @@
                 .then((responseText) => {
                     console.log(responseText)
                     nombreConGuion = responseText[0].uniqueName
-                    console.log(nombreConGuion)
                     // verfifica si el array "createdBy" contiene algo
                     if (typeof responseText[1].createdBy != "undefined" && responseText[1].createdBy != null && responseText[1].createdBy.length != null && responseText[1].createdBy.length > 0) {
                         //receta por defecto
@@ -381,20 +489,30 @@
                         arrayComponente["n/a"]
                     }
                     console.log(arrayComponentes);
-                    console.log("url: " + urlNexusProducto)
-                    console.log("urlCrafting: " + urlNexusCrafting)
-                    console.log("traduccion: " + nombreEspañol)
-                    console.log("nombreUnico: " + nombreConGuion)
-                    console.log("expansion: " + "classic")
-                    console.log("crafting : " + {
-                        "componentes": arrayComponente,
-                    })
                     agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponente)
                 })
 
         }
 
+        function desactivarTodo() {
+            selectExpansion.disabled = true
+            selectCategoriaCrafting.disabled = true
+            selectCategoria.disabled = true
+            productBusqueda.disabled = true
+            inputTxtDeBusqueda.disabled = true
+            btnBuscar.disabled = true
+            btnAgregar.disabled = true
+        }
 
+        function activarTodo() {
+            selectExpansion.disabled = false
+            selectCategoriaCrafting.disabled = false
+            selectCategoria.disabled = false
+            productBusqueda.disabled = false
+            inputTxtDeBusqueda.disabled = false
+            btnBuscar.disabled = false
+            btnAgregar.disabled = false
+        }
     </script>
 </body>
 
