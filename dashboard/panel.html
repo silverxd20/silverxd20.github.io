@@ -124,15 +124,18 @@
         const app = initializeApp(firebaseConfig);
 
         var infoProductosArray = []
-        var campoTraduccion = document.getElementById("campoTraduccion")
-        var campoUnicoNombre = document.getElementById("campoUnicoNombre")
         var campoCategoria = document.getElementById("campoCategoria")
         var selectCategoria = document.getElementById("selectCategoria")
         var selectCategoriaCrafting = document.getElementById("selectCategoriaCrafting")
         var selectExpansion = document.getElementById("selectExpansion")
         var productBusqueda = document.getElementById('selectBusqueda');
         var inputTxtDeBusqueda = document.getElementById("inputTxtBusquedaId")
+        var btnBuscar = document.getElementById('btnBuscar')
         var unicoNombre = ""
+
+        function desactivarTodo() {
+
+        }
 
         //variables nuevas
         var btnBuscar = document.getElementById("btnBuscar")
@@ -168,9 +171,21 @@
             }
         });
 
-        document.getElementById('btnBuscar').addEventListener('click', function () {
+        $('form').on("submit", function (event) {
+            event.preventDefault()
+
+        });
+        btnBuscar.addEventListener('click', function (e) {
             buscaObjeto()
         });
+
+        //cuando presionas enter en el input del nro recalcula tambien
+        inputTxtDeBusqueda.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                buscaObjeto()
+            }
+        });
+
         //cuando cambia el dropdown de items buscados
         document.getElementById('selectBusqueda').addEventListener('change', function (evt) {
             indexSelectedBusqueda = $("select[id='selectBusqueda'] option:selected").index()
@@ -377,7 +392,9 @@
                     agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponente)
                 })
 
-        }  
+        }
+
+
     </script>
 </body>
 
