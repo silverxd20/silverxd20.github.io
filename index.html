@@ -1032,17 +1032,13 @@
         async function traerDatosAdicionales(precioVentaLocal, nameUnicoProducto) {            
             for (let index = 0; index < 4; index++) {
                 var urlDatosAdicionales = "https://api.nexushub.co/wow-classic/v1/items/"+dropdownServidor.value+"/"+nameUnicoProducto
-                console.log(urlDatosAdicionales)
                 try {
                     bIdPrecioDeVenta.innerText = PlataOro(precioVentaLocal)
 
                     const respuesta = await fetch(corsurl + urlDatosAdicionales)
                     const json = await respuesta.json()
-                    console.log(json.stats.current)
                     bIdPrecioPromedio.innerText = PlataOro(json.stats.current.marketValue / 10000)
-                    console.log(PlataOro(json.stats.current.marketValue / 10000))
                     bIdCantidadPublicada.innerText = json.stats.current.quantity
-                    console.log(json.stats.current.quantity)
                     break
                 } catch (error) {
 
