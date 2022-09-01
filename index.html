@@ -109,6 +109,7 @@
             background-color: #091e4d;
             color: white;
         }
+
         #spinnerCargandoDatoAdicional {
             border: 4px solid rgba(0, 0, 0, 0.1);
             width: 20px;
@@ -158,9 +159,10 @@
             margin-top: 5px;
         }
 
-        #modalConentID  {
+        #modalConentID {
             width: 635px;
-        }  
+        }
+
         #bIdComp {
             margin-bottom: 15px;
         }
@@ -208,7 +210,7 @@
             top: 109px;
             color: bisque;
             margin-top: 12px;
-            margin-left: 20px;            
+            margin-left: 20px;
         }
     </style>
 
@@ -317,13 +319,13 @@
                                 <div id="TituloDatosAdicionales">Datos adicionales</div> <br>
                             </div>
                             <div id="divDatosAdicionales">
-                                <b  id="bIdComp">- Precio de venta:  </b>
-                                <b  id="bIdPrecioDeVenta">0</b>
+                                <b id="bIdComp">- Precio de venta: </b>
+                                <b id="bIdPrecioDeVenta">0</b>
                                 <br>
-                                <b id="bIdComp">- Precio promedio:  </b>                                
+                                <b id="bIdComp">- Precio promedio: </b>
                                 <b id="bIdPrecioPromedio"></b>
                                 <br>
-                                <b id="bIdComp">- Cantidad en subasta:  </b>
+                                <b id="bIdComp">- Cantidad en subasta: </b>
                                 <b id="bIdCantidadPublicada"></b>
                             </div>
                         </div>
@@ -448,7 +450,7 @@
         //firestore imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-app.js";
         import { getFirestore } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js"
-        import { collection, getDocs, addDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js";
+        import { collection, getDocs, addDoc, doc, setDoc, updateDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js";
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -729,163 +731,163 @@
             var multiplicaCantidadPorPrecio = 0
             var ganancia = 0
 
-                try {
-                    var precioComponenteSumados = 0
-                    var precio = 0
-                    var precioSimple = 0
+            try {
+                var precioComponenteSumados = 0
+                var precio = 0
+                var precioSimple = 0
 
-                    for (const key in crafteoComponente) {
-                        if (dropdownServidorValue == "Pagle-alliance") {
-                            precio = precioActualizado
-                            precioSimple = precio / 10000
-                            // multiplica de una vez el precio x la cantidad de componentes en server Pagle
-                            multiplicaCantidadPorPrecio = crafteoComponente[key].precioActualPagle * crafteoComponente[key].cantidad
+                for (const key in crafteoComponente) {
+                    if (dropdownServidorValue == "Pagle-alliance") {
+                        precio = precioActualizado
+                        precioSimple = precio / 10000
+                        // multiplica de una vez el precio x la cantidad de componentes en server Pagle
+                        multiplicaCantidadPorPrecio = crafteoComponente[key].precioActualPagle * crafteoComponente[key].cantidad
 
-                        } else if (dropdownServidorValue == "Whitemane-horde") {
-                            precio = precioActualizado
-                            precioSimple = precio / 10000
-                            // multiplica de una vez el precio x la cantidad de componentes en server Whitemane
-                            multiplicaCantidadPorPrecio = crafteoComponente[key].precioActualWhitemane * crafteoComponente[key].cantidad
-                        }
-                        //suma el resultado anterior con precio nuevo
-                        sumaDeComponentes = sumaDeComponentes + multiplicaCantidadPorPrecio
+                    } else if (dropdownServidorValue == "Whitemane-horde") {
+                        precio = precioActualizado
+                        precioSimple = precio / 10000
+                        // multiplica de una vez el precio x la cantidad de componentes en server Whitemane
+                        multiplicaCantidadPorPrecio = crafteoComponente[key].precioActualWhitemane * crafteoComponente[key].cantidad
                     }
+                    //suma el resultado anterior con precio nuevo
+                    sumaDeComponentes = sumaDeComponentes + multiplicaCantidadPorPrecio
+                }
 
-                    //El valor de la inversion al sumar todos los componentes
-                    var multiplicaCantidadPorPrecioSimple = sumaDeComponentes / 10000
+                //El valor de la inversion al sumar todos los componentes
+                var multiplicaCantidadPorPrecioSimple = sumaDeComponentes / 10000
 
-                    //el valor de la ganancia
-                    ganancia = precio - sumaDeComponentes
-                    var gananciaSimple = ganancia / 10000 // ejemp : transforma 29000 -> 2.90
+                //el valor de la ganancia
+                ganancia = precio - sumaDeComponentes
+                var gananciaSimple = ganancia / 10000 // ejemp : transforma 29000 -> 2.90
 
+                if (nivelProfesionRequerido != 0) {
+                    //agrega los datos a a tabla
+                    var fila = document.createElement('tr');
+
+                    //la imagen del producto
+                    var div_caption = document.createElement('div');
+                    var img = document.createElement('img');
+                    img.src = iconoImg;
+                    fila.appendChild(div_caption);
+                    fila.appendChild(img);
+
+                    //crea el nombre
+                    var td = document.createElement('td');
+                    td.innerText = NombreEspañol
+                    td.setAttribute("style", "font-weight:bold");
+                    fila.appendChild(td);
+
+                    //crea el precio de inversion
+                    td = document.createElement('td');
+                    td.setAttribute("style", "font-weight:bold");
+
+                    td.innerText = PlataOro(multiplicaCantidadPorPrecioSimple);
+                    fila.appendChild(td);
+
+
+                    //crea el precio minimo
+                    td = document.createElement('td');
+                    td.setAttribute("style", "font-weight:bold");
                     if (nivelProfesionRequerido != 0) {
-                        //agrega los datos a a tabla
-                        var fila = document.createElement('tr');
+                        td.innerText = PlataOro(precioSimple);
+                    } else {
+                        td.innerText = "-"
+                    }
+                    fila.appendChild(td);
 
-                        //la imagen del producto
-                        var div_caption = document.createElement('div');
-                        var img = document.createElement('img');
-                        img.src = iconoImg;
-                        fila.appendChild(div_caption);
-                        fila.appendChild(img);
+                    //crea la ganancia
+                    var td = document.createElement('td');
+                    if (nivelProfesionRequerido != 0) {
+                        td.innerText = PlataOro(gananciaSimple);
+                    } else {
+                        td.innerText = "-"
+                    }
+                    td.setAttribute("style", "font-weight:bold");
+                    fila.appendChild(td);
 
-                        //crea el nombre
-                        var td = document.createElement('td');
-                        td.innerText = NombreEspañol
-                        td.setAttribute("style", "font-weight:bold");
-                        fila.appendChild(td);
+                    //crea el % de ganancia
+                    td = document.createElement('tr');
+                    td = document.createElement('td');
+                    var gananciaEstimada = gananciaPromedia(multiplicaCantidadPorPrecioSimple, precioSimple).toFixed(4)
+                    var porcentajeGanancia = gananciaEstimada / multiplicaCantidadPorPrecioSimple * 100
+                    if (porcentajeGanancia.toFixed(2) < 0) {
 
-                        //crea el precio de inversion
-                        td = document.createElement('td');
-                        td.setAttribute("style", "font-weight:bold");
+                        td.setAttribute("style", "color:red");;
+                    } else if (porcentajeGanancia.toFixed(2) > 0) {
+                        //color verde si es mayor a 0%
+                        td.setAttribute("style", "color:#00af1d");
+                    }
+                    td.innerText = porcentajeGanancia.toFixed(2) + " %"
+                    fila.appendChild(td);
 
-                        td.innerText = PlataOro(multiplicaCantidadPorPrecioSimple);
-                        fila.appendChild(td);
+                    //crea el nivel de profesion requerido
+                    var td = document.createElement('td');
+                    td.innerText = nivelProfesionRequerido
+                    fila.appendChild(td);
 
+                    //crea si usa receta o no
+                    var td = document.createElement('td');
+                    if (receta != "No") {
+                        td.innerText = "Si"
+                    } else {
+                        td.innerText = receta
+                    }
+                    fila.appendChild(td);
 
-                        //crea el precio minimo
-                        td = document.createElement('td');
-                        td.setAttribute("style", "font-weight:bold");
-                        if (nivelProfesionRequerido != 0) {
-                            td.innerText = PlataOro(precioSimple);
-                        } else {
-                            td.innerText = "-"
-                        }
-                        fila.appendChild(td);
+                    //crea el boton para el modal de componentes
+                    var td = document.createElement('td');
+                    td.innerText = "Ver"
+                    td.setAttribute("data-bs-toggle", "modal")
+                    td.setAttribute("data-bs-target", "#modalComponentes")
+                    td.setAttribute("style", "cursor: pointer")
+                    td.onclick = function (evt) {
+                        LimpiarTablaComponentes()
+                        //coloca la imagen en el titulo
+                        imgModalProducto.src = iconoImg
+                        nombreTituloActualEnComponenteModal = NombreEspañol
+                        var nombreUrlProductoUnico = nombreUnicoProducto
+                        //coloca el nombre en el titulo
+                        tituloModalNombreProducto.innerText = NombreEspañol
 
-                        //crea la ganancia
-                        var td = document.createElement('td');
-                        if (nivelProfesionRequerido != 0) {
-                            td.innerText = PlataOro(gananciaSimple);
-                        } else {
-                            td.innerText = "-"
-                        }
-                        td.setAttribute("style", "font-weight:bold");
-                        fila.appendChild(td);
+                        //pinta los datos en la tabla de los componentes para 1 producto
+                        var numeroEnInput = inputCantidadComp.value
+                        recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue)
 
-                        //crea el % de ganancia
-                        td = document.createElement('tr');
-                        td = document.createElement('td');
-                        var gananciaEstimada = gananciaPromedia(multiplicaCantidadPorPrecioSimple, precioSimple).toFixed(4)
-                        var porcentajeGanancia = gananciaEstimada / multiplicaCantidadPorPrecioSimple * 100
-                        if (porcentajeGanancia.toFixed(2) < 0) {
+                        //Muestra los datos adicionales
+                        traerDatosAdicionales(precioSimple, nombreUrlProductoUnico)
 
-                            td.setAttribute("style", "color:red");;
-                        } else if (porcentajeGanancia.toFixed(2) > 0) {
-                            //color verde si es mayor a 0%
-                            td.setAttribute("style", "color:#00af1d");
-                        }
-                        td.innerText = porcentajeGanancia.toFixed(2) + " %"
-                        fila.appendChild(td);
-
-                        //crea el nivel de profesion requerido
-                        var td = document.createElement('td');
-                        td.innerText = nivelProfesionRequerido
-                        fila.appendChild(td);
-
-                        //crea si usa receta o no
-                        var td = document.createElement('td');
-                        if (receta != "No") {
-                            td.innerText = "Si"
-                        } else {
-                            td.innerText = receta
-                        }
-                        fila.appendChild(td);
-
-                        //crea el boton para el modal de componentes
-                        var td = document.createElement('td');
-                        td.innerText = "Ver"
-                        td.setAttribute("data-bs-toggle", "modal")
-                        td.setAttribute("data-bs-target", "#modalComponentes")
-                        td.setAttribute("style", "cursor: pointer")
-                        td.onclick = function (evt) {
-                            LimpiarTablaComponentes()
-                            //coloca la imagen en el titulo
-                            imgModalProducto.src = iconoImg
-                            nombreTituloActualEnComponenteModal = NombreEspañol
-                            var nombreUrlProductoUnico = nombreUnicoProducto
-                            //coloca el nombre en el titulo
-                            tituloModalNombreProducto.innerText = NombreEspañol
-
-                            //pinta los datos en la tabla de los componentes para 1 producto
-                            var numeroEnInput = inputCantidadComp.value
-                            recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue)
-                            
-                            //Muestra los datos adicionales
-                            traerDatosAdicionales(precioSimple, nombreUrlProductoUnico)
-
-                            //cuando presionas enter en el input del nro recalcula tambien
-                            inputCantidadComp.addEventListener('keydown', function (event) {
-                                if (event.key === 'Enter') {
-                                    var inputNumberComp = inputCantidadComp.value
-                                    LimpiarTablaComponentes()
-                                    recalcularDatosComponentes(inputNumberComp, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue)
-                                }
-                            });
-
-                            //cuando haces click en el boton dentro del modal componente
-                            document.getElementById('btnEnviarCantidadComp').addEventListener('click', function () {
+                        //cuando presionas enter en el input del nro recalcula tambien
+                        inputCantidadComp.addEventListener('keydown', function (event) {
+                            if (event.key === 'Enter') {
                                 var inputNumberComp = inputCantidadComp.value
                                 LimpiarTablaComponentes()
                                 recalcularDatosComponentes(inputNumberComp, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue)
-                            });
-                        }
+                            }
+                        });
 
-                        fila.appendChild(td);
-                        //doble click en la fila
-                        fila.ondblclick = function (evt) {
-                            copiarNombreProducto(NombreEspañol)
-                        }
-                        tablaCrafting.appendChild(fila);
+                        //cuando haces click en el boton dentro del modal componente
+                        document.getElementById('btnEnviarCantidadComp').addEventListener('click', function () {
+                            var inputNumberComp = inputCantidadComp.value
+                            LimpiarTablaComponentes()
+                            recalcularDatosComponentes(inputNumberComp, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue)
+                        });
                     }
 
-                    // filtra la tabla por mayor % cada vez q se agregan a la tabla
-                    sortTableCrafting()
-   
-                } catch (error) {
-                    console.log(error)
+                    fila.appendChild(td);
+                    //doble click en la fila
+                    fila.ondblclick = function (evt) {
+                        copiarNombreProducto(NombreEspañol)
+                    }
+                    tablaCrafting.appendChild(fila);
                 }
-            
+
+                // filtra la tabla por mayor % cada vez q se agregan a la tabla
+                sortTableCrafting()
+
+            } catch (error) {
+                console.log(error)
+            }
+
         }
 
         //Seleccion del dropdown de productos
@@ -909,10 +911,10 @@
                     var expansion = infoProductosArray[key].expansion
                     var nombreUnicoProducto = infoProductosArray[key].nombreUnico
                     var crafteoComponente = infoProductosArray[key].craftingComponentes
-                    
+
                     //trae solo los productos en la categoria seleccionada
                     if (infoProductosArray[key].craftingCategory == dropdownProductosValue) {
-                        
+
                         if (dropdownServidor.value == "Pagle-alliance") {
                             precioActualizado = infoProductosArray[key].servidor.pagle.precioActualizado
                             fechaActualizada = infoProductosArray[key].servidor.pagle.FechaActualizada
@@ -1029,89 +1031,109 @@
             }
         }
 
-        async function traerDatosAdicionales(precioVentaLocal, nameUnicoProducto) {            
+        async function traerDatosAdicionales(precioVentaLocal, nameUnicoProducto) {
             for (let index = 0; index < 4; index++) {
-                var urlDatosAdicionales = "https://api.nexushub.co/wow-classic/v1/items/"+dropdownServidor.value+"/"+nameUnicoProducto
+                var urlDatosAdicionales = "https://api.nexushub.co/wow-classic/v1/items/" + dropdownServidor.value + "/" + nameUnicoProducto
                 try {
                     bIdPrecioDeVenta.innerText = PlataOro(precioVentaLocal)
-
                     const respuesta = await fetch(corsurl + urlDatosAdicionales)
                     const json = await respuesta.json()
                     bIdPrecioPromedio.innerText = PlataOro(json.stats.current.marketValue / 10000)
                     bIdCantidadPublicada.innerText = json.stats.current.quantity
                     break
                 } catch (error) {
-
+                    console.log(error)
                 }
-
             }
-
         }
 
         //.............................Funciones de Flipping...............................................
 
         //LEE LOS DATOS DE FIREBASE
         async function leerDatos() {
-            var RadioArchivoValor = RadioArchivo.value
-            var RadioNexusValor = RadioNexusVar.value
+            NotificacionText.innerText = "Cargando los datos por favor espere..."
+            for (let index = 0; index < 5; index++) {
+                try {
+                    var RadioArchivoValor = RadioArchivo.value
+                    var RadioNexusValor = RadioNexusVar.value
 
-            //Define el Valor del radio al cargar la página
-            if (RadioNexusValor = "radioNexus") {
-                RadioValorSelected = RadioNexusValor
-            } else if (RadioArchivoValor = "radioLocalJson") {
-                RadioValorSelected = RadioArchivoValor
-            }
+                    //Define el Valor del radio al cargar la página
+                    if (RadioNexusValor = "radioNexus") {
+                        RadioValorSelected = RadioNexusValor
+                    } else if (RadioArchivoValor = "radioLocalJson") {
+                        RadioValorSelected = RadioArchivoValor
+                    }
 
-            // Inicializa Firebase si no esta inicializado
-            const app = initializeApp(firebaseConfig);
-            lastUpdated()
-            const db = getFirestore(app);
-            const colRef = collection(db, "data");
-            const docsSnap = await getDocs(colRef);
-            docsSnap.forEach(doc => {
+                    // Inicializa Firebase si no esta inicializado
+                    const app = initializeApp(firebaseConfig);
+                    lastUpdated()
+                    const db = getFirestore(app);
+                    enableIndexedDbPersistence(db)
+                        .catch((err) => {
+                            if (err.code == 'failed-precondition') {
+                                console.log("El modo Offline es solo con una ventana abierta!" + err.code)
+                                toastr.warning("El modo Offline es solo con una ventana abierta!")
 
-                //agrega las categorias al dropdown
-                for (const key in doc.data().tipo) {
-                    const element = doc.data().tipo[key];
-                    var daySelect = document.getElementById('dropdownCategoriaProductos');
-                    daySelect.options[daySelect.options.length] = new Option(element, element);
-                    arrayDeCategoriaFlipping.push(doc.data().tipo[key])
-                }
-                //guarda la categoria de crafteo en un array
-                for (const key in doc.data().crafting) {
-                    const elementCategoryCraft = doc.data().crafting[key];
-                    arrayDeCategoriaCrafteo.push(elementCategoryCraft)
-                }
-                //guarda el json de los productos agregados
+                            } else if (err.code == 'unimplemented') {
+                                console.log("No funciona el modo Offline en este navegador!" + err.code)
+                            }
+                        });
+                    const colRef = collection(db, "data");
+                    const docsSnap = await getDocs(colRef);
+                    docsSnap.forEach(doc => {
 
-              
-                    var count = 0
-                    for (const key in doc.data().infoProducts) {
-                        var urlNormal = doc.data().infoProducts[key].url
-                        var urlProductos = obtenerUrlConServer(urlNormal, dropdownServidor.value)
-                        var NombreEspañol = doc.data().infoProducts[key].traduccion
-                        var categoria = doc.data().infoProducts[key].categoria
-                        var expansion = doc.data().infoProducts[key].expansion
-                        var nombreUnicoProduct = doc.data().infoProducts[key].nombreUnico
-                        var ExpansionValue = dropdownExpansion.value
+                        //agrega las categorias al dropdown
+                        for (const key in doc.data().tipo) {
+                            const element = doc.data().tipo[key];
+                            var daySelect = document.getElementById('dropdownCategoriaProductos');
+                            daySelect.options[daySelect.options.length] = new Option(element, element);
+                            arrayDeCategoriaFlipping.push(doc.data().tipo[key])
+                        }
+                        //guarda la categoria de crafteo en un array
+                        for (const key in doc.data().crafting) {
+                            const elementCategoryCraft = doc.data().crafting[key];
+                            arrayDeCategoriaCrafteo.push(elementCategoryCraft)
+                        }
+                        //guarda el json de los productos agregados
 
-                        if (dropdownServidor.value == "Pagle-alliance") {
-                            precioActualizado = doc.data().infoProducts[key].servidor.pagle.precioActualizado
-                            fechaActualizada = doc.data().infoProducts[key].servidor.pagle.FechaActualizada
 
-                        } else if (dropdownServidor.value == "Whitemane-horde") {
-                            precioActualizado = doc.data().infoProducts[key].servidor.whitemane.precioActualizado
-                            fechaActualizada = doc.data().infoProducts[key].servidor.whitemane.FechaActualizada
+                        var count = 0
+                        for (const key in doc.data().infoProducts) {
+                            var urlNormal = doc.data().infoProducts[key].url
+                            var urlProductos = obtenerUrlConServer(urlNormal, dropdownServidor.value)
+                            var NombreEspañol = doc.data().infoProducts[key].traduccion
+                            var categoria = doc.data().infoProducts[key].categoria
+                            var expansion = doc.data().infoProducts[key].expansion
+                            var nombreUnicoProduct = doc.data().infoProducts[key].nombreUnico
+                            var ExpansionValue = dropdownExpansion.value
+
+                            if (dropdownServidor.value == "Pagle-alliance") {
+                                precioActualizado = doc.data().infoProducts[key].servidor.pagle.precioActualizado
+                                fechaActualizada = doc.data().infoProducts[key].servidor.pagle.FechaActualizada
+
+                            } else if (dropdownServidor.value == "Whitemane-horde") {
+                                precioActualizado = doc.data().infoProducts[key].servidor.whitemane.precioActualizado
+                                fechaActualizada = doc.data().infoProducts[key].servidor.whitemane.FechaActualizada
+
+                            }
+                            //guarda en un nuevo array toda la mercancia traida de la base de datos
+                            infoProductosArray.push(doc.data().infoProducts[key])
+                            count = count + 1
 
                         }
-                        //guarda en un nuevo array toda la mercancia traida de la base de datos
-                        infoProductosArray.push(doc.data().infoProducts[key])
-                        count = count + 1
-                        
-                    }
-               
-            })
-            NotificacionText.innerText = "Seleccione un producto para cargar la lista!"
+
+                        NotificacionText.innerText = "Seleccione un producto para cargar la lista!"
+                    }).catch(function (reason) {
+                        console.log(reason)
+                        toastr.error("Error al cargar los datos!", "Mensaje:")
+                    });
+
+                } catch (error) {
+
+                }
+
+            }
+
         }
 
         //Abre los URL de los productos trae sus datos en una tablas (Funcion principal)
