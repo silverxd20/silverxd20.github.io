@@ -147,7 +147,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-app.js";
         import { getFirestore } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js"
-        import { collection, getDocs, addDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js";
+        import { collection, getDocs, addDoc, doc, setDoc, updateDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js";
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -194,7 +194,9 @@
         //variables nuevas
         var btnBuscar = document.getElementById("btnBuscar")
         var corsurl = "https://api.codetabs.com/v1/proxy?quest="
-        var urlBusquedaWowHeadEspañol = "https://www.wowhead.com/wotlk/es/search/suggestions-template?q="
+        var urlBusquedaWowHeadClassicEspañol = "https://es.classic.wowhead.com/search/suggestions-template?q="
+        var urlBusquedaWowHeadTbcEspañol = "https://es.tbc.wowhead.com/search/suggestions-template?q="
+        var urlBusquedaWowHeadWotlkEspañol = "https://www.wowhead.com/wotlk/es/search/suggestions-template?q="
         var urlNexusProducto = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/"
         var urlNexusCrafting = "https://api.nexushub.co/wow-classic/v1/crafting/pagle-alliance/"
         var nombreConGuion = ""
@@ -209,6 +211,7 @@
         var agregadoConExito = false
 
         leerDatos()
+        console.log(selectExpansion.value)
         inputTxtDeBusqueda.focus();
         spinnerBuscar.setAttribute("style", "display:none;")
         spinnerGuardar.style.display = "none"
@@ -216,7 +219,6 @@
         btnAgregar.addEventListener('click', function () {
             //agregarProducto()
             var NameClickedEspañol = productBusqueda.value
-            spinnerGuardar.setAttribute("style", "display:inline")
             for (const key in arrayProductoBuscado) {
                 if (arrayProductoBuscado[key].name == NameClickedEspañol) {
                     desactivarTodo()
@@ -239,7 +241,13 @@
             inputTxtDeBusqueda.disabled = true
             btnBuscar.disabled = true
             btnAgregar.disabled = true
-            buscaObjeto()
+            if (selectExpansion.value == "Wotlk") {
+                buscaObjeto(urlBusquedaWowHeadWotlkEspañol)
+            } else if (selectExpansion.value == "Tbc") {
+                buscaObjeto(urlBusquedaWowHeadTbcEspañol)
+            } else if (selectExpansion.value == "Classic"){
+                buscaObjeto(urlBusquedaWowHeadClassicEspañol)
+            }
         });
 
         //cuando presionas enter en el input del nro recalcula tambien
@@ -250,7 +258,13 @@
                 inputTxtDeBusqueda.disabled = true
                 btnBuscar.disabled = true
                 btnAgregar.disabled = true
-                buscaObjeto()
+                if (selectExpansion.value == "Wotlk") {
+                    buscaObjeto(urlBusquedaWowHeadWotlkEspañol)
+                } else if (selectExpansion.value == "Tbc") {
+                    buscaObjeto(urlBusquedaWowHeadTbcEspañol)
+                } else if (selectExpansion.value == "Classic"){
+                    buscaObjeto(urlBusquedaWowHeadClassicEspañol)
+                }
             }
         });
 
@@ -266,6 +280,15 @@
                 const app = initializeApp(firebaseConfig);
             }
             const db = getFirestore(app);
+            enableIndexedDbPersistence(db)
+                .catch((err) => {
+                    if (err.code == 'failed-precondition') {
+                        console.log("El modo Offline es solo con una ventana abierta!" + err.code)
+                        toastr.warning("El modo Offline es solo con una ventana abierta!", "Mensaje:")
+                    } else if (err.code == 'unimplemented') {
+                        console.log("No funciona el modo Offline en este navegador!" + err.code)
+                    }
+                });
             const colRef = collection(db, "data");
             const docsSnap = await getDocs(colRef);
             docsSnap.forEach(doc => {
@@ -382,28 +405,28 @@
                             console.log(reason)
                             activarTodo()
                             spinnerGuardar.setAttribute("style", "display:none")
-                            alert("Hay campos vacíos, debe llenarlos todos antes de enviar.")                            
+                            alert("Hay campos vacíos, debe llenarlos todos antes de enviar.")
                         });
 
                     }
-                    if (agregadoConExito == true) {                       
+                    if (agregadoConExito == true) {
                         break
                     }
-                } catch (error) {                  
-                        console.log(error)
-                        toastr.error("Error al subir el producto, intente de nuevo!", "Mensaje:")
-                        spinnerGuardar.setAttribute("style", "display:none")
-                        activarTodo()                   
+                } catch (error) {
+                    console.log(error)
+                    toastr.error("Error al subir el producto, intente de nuevo!", "Mensaje:")
+                    spinnerGuardar.setAttribute("style", "display:none")
+                    activarTodo()
                 }
             }
         }
 
-        async function buscaObjeto() {
+        async function buscaObjeto(urlBusqueda) {
             for (let index = 0; index < 5; index++) {
                 try {
                     $(productBusqueda).empty();
                     var nombreEspañolProducto = inputTxtDeBusqueda.value
-                    const respuesta = await fetch(corsurl + urlBusquedaWowHeadEspañol + nombreEspañolProducto)
+                    const respuesta = await fetch(corsurl + urlBusqueda + nombreEspañolProducto)
                     const json = await respuesta.json()
                     //recorre el json que da el url de busqueda de wowhead
 
@@ -445,53 +468,62 @@
                         btnBuscar.disabled = false
                         btnAgregar.disabled = false
                         spinnerBuscar.setAttribute("style", "display:none")
-                        toastr.error("No se pudo hacer la busqueda, intente de nuevo!", "Mensaje:")
+                        toastr.error("No se puede hacer la busqueda, intente de nuevo!", "Mensaje:")
                     }
                 }
             }
         }
 
         async function buscarProductoEnNexus(urlNexusProducto, urlNexusCrafting, nombreEspañol) {
-            Promise.all([
-                fetch(urlNexusProducto),
-                fetch(urlNexusCrafting)
-            ]).then(async ([aa, bb]) => {
-                const a = await aa.json();
-                const b = await bb.json();
-                return [a, b]
-            })
-                .then((responseText) => {
-                    console.log(responseText)
-                    nombreConGuion = responseText[0].uniqueName
-                    // verfifica si el array "createdBy" contiene algo
-                    if (typeof responseText[1].createdBy != "undefined" && responseText[1].createdBy != null && responseText[1].createdBy.length != null && responseText[1].createdBy.length > 0) {
-                        //receta por defecto
-                        categoryDefault = responseText[1].createdBy[0].category
-
-                        var recetaArrayIndex = responseText[1].createdBy[0].recipes.length
-                        //verifica si usa receta
-                        if (recetaArrayIndex > 0) {
-                            recipes = responseText[1].createdBy[0].recipes
-                        } else {
-                            recipes = "No"
-                        }
-                        requiredSkill = responseText[1].createdBy[0].requiredSkill
-                    } else {
-                        console.log("No tiene receta!")
-                        recipes = "No"
-                        requiredSkill = 0
-                    }
-                    var arrayComponente = ""
-
-                    try {
-                        arrayComponente = responseText[1].createdBy[0].reagents
-                    } catch (error) {
-                        arrayComponente["n/a"]
-                    }
-                    console.log(arrayComponentes);
-                    agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponente)
+            spinnerGuardar.setAttribute("style", "display:inline")
+            try {
+                Promise.all([
+                    fetch(urlNexusProducto),
+                    fetch(urlNexusCrafting)
+                ]).then(async ([aa, bb]) => {
+                    const a = await aa.json();
+                    const b = await bb.json();
+                    return [a, b]
                 })
+                    .then((responseText) => {
+                        console.log(responseText)
+                        nombreConGuion = responseText[0].uniqueName
+                        // verfifica si el array "createdBy" contiene algo
+                        if (typeof responseText[1].createdBy != "undefined" && responseText[1].createdBy != null && responseText[1].createdBy.length != null && responseText[1].createdBy.length > 0) {
+                            //receta por defecto
+                            categoryDefault = responseText[1].createdBy[0].category
 
+                            var recetaArrayIndex = responseText[1].createdBy[0].recipes.length
+                            //verifica si usa receta
+                            if (recetaArrayIndex > 0) {
+                                recipes = responseText[1].createdBy[0].recipes
+                            } else {
+                                recipes = "No"
+                            }
+                            requiredSkill = responseText[1].createdBy[0].requiredSkill
+                        } else {
+                            console.log("No tiene receta!")
+                            recipes = "No"
+                            requiredSkill = 0
+                        }
+                        var arrayComponente = ""
+
+                        try {
+                            arrayComponente = responseText[1].createdBy[0].reagents
+                        } catch (error) {
+                            arrayComponente["n/a"]
+                        }
+                        console.log(arrayComponentes);
+                        agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponente)
+                    }).catch(function (reason) {
+                        console.log(reason)
+                        spinnerGuardar.setAttribute("style", "display:none")
+                        toastr.error("No se puede subir los datos en este momento!", "Mensaje:")
+                        activarTodo()
+                    });
+            } catch (error) {
+                console.log("cayo aqui por: " + error)
+            }
         }
 
         function desactivarTodo() {
