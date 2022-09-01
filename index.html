@@ -102,12 +102,21 @@
         }
 
         tr:nth-child(even) {
-            background-color: rgb(51, 51, 51)
+            background-color: #333333
         }
 
         th {
             background-color: #091e4d;
             color: white;
+        }
+        #spinnerCargandoDatoAdicional {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s ease infinite;
+            display: inline;
         }
 
         #progressBar,
@@ -149,8 +158,57 @@
             margin-top: 5px;
         }
 
-        #modalConentID {
-            width: 620px;
+        #modalConentID  {
+            width: 635px;
+        }  
+        #bIdComp {
+            margin-bottom: 15px;
+        }
+
+        #TituloDatosAdicionales {
+            border-radius: 22px;
+            background-color: #4e4e4e;
+            width: fit-content;
+            padding-left: 15px;
+            padding-right: 10px;
+            margin-top: -12px;
+            justify-content: center;
+            text-align: center;
+            color: bisque;
+        }
+
+        #divtitulo {
+            margin-left: 200px;
+            width: 157px;
+            height: 27px;
+            left: 188px;
+            top: 68px;
+
+            background: #4E4E4E;
+            border-radius: 90px;
+        }
+
+        #divBase {
+            box-sizing: border-box;
+            width: 95%;
+            height: 126px;
+            left: calc(50% - 342px/2);
+            top: calc(50% - 126px/2 + 0.5px);
+            margin-top: 25px;
+            background: #242424;
+            border: 1px solid #000000;
+            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+            border-radius: 15px;
+        }
+
+        #divDatosAdicionales {
+            width: 100%;
+            height: 81px;
+            left: 115px;
+            top: 109px;
+            color: bisque;
+            margin-top: 12px;
+            margin-left: 20px;            
         }
     </style>
 
@@ -251,6 +309,24 @@
                         </table>
                         <h5 id="txtInvertido"></h5>
                         <h5 id="txtGananciaAprox"></h5>
+                    </div>
+                    <!---------------------------------------------------------------------------->
+                    <div class="d-flex justify-content-center">
+                        <div id="divBase">
+                            <div id="divtitulo">
+                                <div id="TituloDatosAdicionales">Datos adicionales</div> <br>
+                            </div>
+                            <div id="divDatosAdicionales">
+                                <b  id="bIdComp">- Precio de venta:  </b>
+                                <b  id="bIdPrecioDeVenta">0</b>
+                                <br>
+                                <b id="bIdComp">- Precio promedio:  </b>                                
+                                <b id="bIdPrecioPromedio"></b>
+                                <br>
+                                <b id="bIdComp">- Cantidad en subasta:  </b>
+                                <b id="bIdCantidadPublicada"></b>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -368,7 +444,6 @@
     </div>
     </div>
 
-
     <script type="module">
         //firestore imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-app.js";
@@ -422,6 +497,9 @@
         var imgModalProducto = document.getElementById("imgModalProducto")
         var RadioArchivo = document.getElementById("radioCheckArchivo")
         var RadioNexusVar = document.getElementById("radioCheckNexus")
+        var bIdCantidadPublicada = document.getElementById("bIdCantidadPublicada")
+        var bIdPrecioPromedio = document.getElementById("bIdPrecioPromedio")
+        var bIdPrecioDeVenta = document.getElementById("bIdPrecioDeVenta")
         var positivoNegativo = ""
         var RadioValorSelected = ""
         var multiplicaCantidadPorPrecioSimple = 0
@@ -432,6 +510,7 @@
         var arrayDeCategoriaCrafteo = []
         var reagentesTotales = []
         var ladoDelTabId = 0
+        var corsurl = "https://api.codetabs.com/v1/proxy?quest="
         toastr.options = {
             "closeButton": false,
             "debug": false,
@@ -612,8 +691,11 @@
 
         //eveto cuando se cierra el modal de los componentes
         $("#modalComponentes").on("hide.bs.modal", function () {
+            console.log("cerrado")
             multiplicaCantidadPorPrecioSimple = 0
             inputCantidadComp.value = 1
+            bIdCantidadPublicada.innerText = ""
+            bIdPrecioPromedio.innerText = ""
         });
 
         //variables del html principal
@@ -646,7 +728,7 @@
             var sumaDeComponentes = 0
             var multiplicaCantidadPorPrecio = 0
             var ganancia = 0
-            for (let i = 0; i <= 4; i++) {
+
                 try {
                     var precioComponenteSumados = 0
                     var precio = 0
@@ -761,12 +843,16 @@
                             //coloca la imagen en el titulo
                             imgModalProducto.src = iconoImg
                             nombreTituloActualEnComponenteModal = NombreEspañol
+                            var nombreUrlProductoUnico = nombreUnicoProducto
                             //coloca el nombre en el titulo
                             tituloModalNombreProducto.innerText = NombreEspañol
 
                             //pinta los datos en la tabla de los componentes para 1 producto
                             var numeroEnInput = inputCantidadComp.value
                             recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue)
+                            
+                            //Muestra los datos adicionales
+                            traerDatosAdicionales(precioSimple, nombreUrlProductoUnico)
 
                             //cuando presionas enter en el input del nro recalcula tambien
                             inputCantidadComp.addEventListener('keydown', function (event) {
@@ -793,19 +879,18 @@
                         tablaCrafting.appendChild(fila);
                     }
 
-
                     // filtra la tabla por mayor % cada vez q se agregan a la tabla
                     sortTableCrafting()
-
-                    break
+   
                 } catch (error) {
                     console.log(error)
                 }
-            }
+            
         }
 
         //Seleccion del dropdown de productos
         function SeleccionListaCategoriaCrafteo() {
+
             if (dropdownProductosValue != "Seleccionar Profesion") {
                 var dropdownProductosValue = document.getElementById("dropdownCategoriaProductos").value
                 var dropdownExpansionValue = dropdownExpansion.value
@@ -824,9 +909,10 @@
                     var expansion = infoProductosArray[key].expansion
                     var nombreUnicoProducto = infoProductosArray[key].nombreUnico
                     var crafteoComponente = infoProductosArray[key].craftingComponentes
-
+                    
                     //trae solo los productos en la categoria seleccionada
                     if (infoProductosArray[key].craftingCategory == dropdownProductosValue) {
+                        
                         if (dropdownServidor.value == "Pagle-alliance") {
                             precioActualizado = infoProductosArray[key].servidor.pagle.precioActualizado
                             fechaActualizada = infoProductosArray[key].servidor.pagle.FechaActualizada
@@ -943,6 +1029,29 @@
             }
         }
 
+        async function traerDatosAdicionales(precioVentaLocal, nameUnicoProducto) {            
+            for (let index = 0; index < 4; index++) {
+                var urlDatosAdicionales = "https://api.nexushub.co/wow-classic/v1/items/"+dropdownServidor.value+"/"+nameUnicoProducto
+                console.log(urlDatosAdicionales)
+                try {
+                    bIdPrecioDeVenta.innerText = PlataOro(precioVentaLocal)
+
+                    const respuesta = await fetch(corsurl + urlDatosAdicionales)
+                    const json = await respuesta.json()
+                    console.log(json.stats.current)
+                    bIdPrecioPromedio.innerText = PlataOro(json.stats.current.marketValue / 10000)
+                    console.log(PlataOro(json.stats.current.marketValue / 10000))
+                    bIdCantidadPublicada.innerText = json.stats.current.quantity
+                    console.log(json.stats.current.quantity)
+                    break
+                } catch (error) {
+
+                }
+
+            }
+
+        }
+
         //.............................Funciones de Flipping...............................................
 
         //LEE LOS DATOS DE FIREBASE
@@ -979,9 +1088,7 @@
                 }
                 //guarda el json de los productos agregados
 
-                const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms))
-
-                const loop = async () => {
+              
                     var count = 0
                     for (const key in doc.data().infoProducts) {
                         var urlNormal = doc.data().infoProducts[key].url
@@ -1004,10 +1111,9 @@
                         //guarda en un nuevo array toda la mercancia traida de la base de datos
                         infoProductosArray.push(doc.data().infoProducts[key])
                         count = count + 1
-                        await wait(250)
+                        
                     }
-                }
-                loop()
+               
             })
             NotificacionText.innerText = "Seleccione un producto para cargar la lista!"
         }
@@ -1609,7 +1715,6 @@
                 //si es positivo y es plata
                 var precioMinimo = parseFloat(PrecioFloat).toFixed(4) * 100
                 var precioMin = precioMinimo.toString().split(" ")
-                console.log(precioMin)
                 if (parseInt(precioMin[0]) == 100) {
                     precioMinimo = PrecioFloat
                 }
@@ -1915,7 +2020,6 @@
 
             LimpiarTablaVerificacion()
 
-            var corsurl = "https://api.codetabs.com/v1/proxy?quest="
             var Url = "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/" + uniqueName + "/prices"
             const respuesta = await fetch(corsurl + Url)
             const jsonResultado = await respuesta.json()
