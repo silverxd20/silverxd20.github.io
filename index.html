@@ -943,6 +943,14 @@
 
         //Funcion que recalcula los datos en el modal de componentes
         function recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioProductoIndividual, server) {
+            //Precio viales en el npc
+            var vialNpcPrice = [
+                "vial emplomado",
+                "vial imbuido",
+                "vial vacío",
+                "vial de cristal",
+                "vial encantado"
+            ]
             for (const key in infoProductosArray) {
                 if (infoProductosArray[key].traduccion == nombreTituloActualEnComponenteModal) {
                     var arrayComponentes = infoProductosArray[key].craftingComponentes
@@ -978,6 +986,10 @@
 
                         //crea el precio del componente
                         var td = document.createElement('td');
+                        if(vialNpcPrice.includes(nameEspañolComp)){
+                            precioComp = vialPriceNpc(nameEspañolComp)  
+                            console.log(precioComp)                          
+                        }
                         td.innerText = PlataOro(precioComp)
                         td.setAttribute("style", "font-weight:bold");
                         fila.appendChild(td);
@@ -1700,7 +1712,7 @@
                 }
                 positivoNegativo = true
 
-            } else if (PrecioFloat > 0.001) {
+            } else if (PrecioFloat < 0.0099) {
                 //si es positivo y es cobre
                 var precioMinimo = PrecioFloat * 10000 + " Cobre"
                 positivoNegativo = true
@@ -2165,6 +2177,29 @@
             navigator.clipboard.writeText(NombreEspañol);
             toastr.success(NombreEspañol, "Nombre copiado: ")
         }
+        
+        //pone el precio de vial del npc y no el de subasta
+        function vialPriceNpc(nameVial) {
+            var vialPrice = 0
+            if (nameVial == "vial imbuido") {
+                vialPrice = 19000 / 10000
+                vialPrice = vialPrice / 5
+            }else if(nameVial == "vial vacío"){
+                vialPrice = 19 / 10000
+                vialPrice = vialPrice / 5
+            }else if(nameVial == "vial emplomado"){
+                vialPrice = 190 / 10000
+                vialPrice = vialPrice / 5
+            }else if(nameVial == "vial de cristal"){
+                vialPrice = 2300 / 10000
+                vialPrice = vialPrice / 5
+            }else if(nameVial == "vial encantado"){
+                vialPrice = 47500 / 10000
+                vialPrice = vialPrice / 5
+            }
+            return vialPrice;
+        }
+    
     </script>
 </body>
 
