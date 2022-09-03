@@ -944,12 +944,20 @@
         //Funcion que recalcula los datos en el modal de componentes
         function recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioProductoIndividual, server) {
             //Precio viales en el npc
-            var vialNpcPrice = [
+            var vialNames = [
                 "vial emplomado",
                 "vial imbuido",
                 "vial vacío",
                 "vial de cristal",
                 "vial encantado"
+            ]
+            //Precio viales en el npc
+            var papiroNames = [
+                "papiro ligero",
+                "papiro en blanco",
+                "papiro pesado",
+                "papiro resilente",
+                "papiro común"
             ]
             for (const key in infoProductosArray) {
                 if (infoProductosArray[key].traduccion == nombreTituloActualEnComponenteModal) {
@@ -967,7 +975,6 @@
                             var precioComp = arrayComponentes[llave].precioActualWhitemane / 10000
                         }
                         var cantidadComp = arrayComponentes[llave].cantidad * parseInt(numeroEnInput)
-
                         //agrega los datos a a tabla
                         var fila = document.createElement('tr');
 
@@ -978,6 +985,19 @@
                         fila.appendChild(div_caption);
                         fila.appendChild(img);
 
+                               //Comprueba si viene un vial de alquimia o un papiro de inscripcion
+                        //y le coloca su precio de npc en lugar de la subasta
+                        if(vialNames.includes(nameEspañolComp)){
+                            precioComp = vialPriceNpc(nameEspañolComp)  
+
+                        }else if(papiroNames.includes(nameEspañolComp)){
+                            if(nameEspañolComp == "papiro en blanco"){
+                                nameEspañolComp = "papiro común"
+                            }
+                            precioComp = papiroPriceNpc(nameEspañolComp)
+                        } 
+
+
                         //crea el nombre
                         var td = document.createElement('td');
                         td.innerText = nameEspañolComp
@@ -986,10 +1006,6 @@
 
                         //crea el precio del componente
                         var td = document.createElement('td');
-                        if(vialNpcPrice.includes(nameEspañolComp)){
-                            precioComp = vialPriceNpc(nameEspañolComp)  
-                            console.log(precioComp)                          
-                        }
                         td.innerText = PlataOro(precioComp)
                         td.setAttribute("style", "font-weight:bold");
                         fila.appendChild(td);
@@ -2177,29 +2193,47 @@
             navigator.clipboard.writeText(NombreEspañol);
             toastr.success(NombreEspañol, "Nombre copiado: ")
         }
-        
+
         //pone el precio de vial del npc y no el de subasta
         function vialPriceNpc(nameVial) {
             var vialPrice = 0
             if (nameVial == "vial imbuido") {
                 vialPrice = 19000 / 10000
                 vialPrice = vialPrice / 5
-            }else if(nameVial == "vial vacío"){
+            } else if (nameVial == "vial vacío") {
                 vialPrice = 19 / 10000
                 vialPrice = vialPrice / 5
-            }else if(nameVial == "vial emplomado"){
+            } else if (nameVial == "vial emplomado") {
                 vialPrice = 190 / 10000
                 vialPrice = vialPrice / 5
-            }else if(nameVial == "vial de cristal"){
+            } else if (nameVial == "vial de cristal") {
                 vialPrice = 2300 / 10000
                 vialPrice = vialPrice / 5
-            }else if(nameVial == "vial encantado"){
+            } else if (nameVial == "vial encantado") {
                 vialPrice = 47500 / 10000
                 vialPrice = vialPrice / 5
             }
             return vialPrice;
         }
-    
+
+
+        //Pone el preco de los papiros de inscripcion al de NPC
+        function papiroPriceNpc(papiroName) {
+            var papiroPrice = 0
+            if (papiroName == "papiro ligero") {
+                papiroPrice = 14 / 10000
+                console.log(papiroPrice)
+            } else if (papiroName == "papiro en blanco") {
+                papiroPrice = 119 / 10000
+            } else if (papiroName == "papiro pesado") {
+                papiroPrice = 1188 / 10000
+            } else if (papiroName == "papiro resilente") {
+                papiroPrice = 4750 / 10000
+            } else if (papiroName == "papiro común") {
+                papiroPrice = 119 / 10000
+            }
+            return papiroPrice;
+        }
     </script>
 </body>
 
