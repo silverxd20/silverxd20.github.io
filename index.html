@@ -730,6 +730,22 @@
             var sumaDeComponentes = 0
             var multiplicaCantidadPorPrecio = 0
             var ganancia = 0
+            //Precio viales en el npc
+            var vialNames = [
+                "vial emplomado",
+                "vial imbuido",
+                "vial vacío",
+                "vial de cristal",
+                "vial encantado"
+            ]
+            //Precio viales en el npc
+            var papiroNames = [
+                "papiro ligero",
+                "papiro en blanco",
+                "papiro pesado",
+                "papiro resilente",
+                "papiro común"
+            ]
 
             try {
                 var precioComponenteSumados = 0
@@ -737,21 +753,51 @@
                 var precioSimple = 0
 
                 for (const key in crafteoComponente) {
+                     //................PAGLE........................
                     if (dropdownServidorValue == "Pagle-alliance") {
                         precio = precioActualizado
                         precioSimple = precio / 10000
-                        // multiplica de una vez el precio x la cantidad de componentes en server Pagle
-                        multiplicaCantidadPorPrecio = crafteoComponente[key].precioActualPagle * crafteoComponente[key].cantidad
+                        //Comprueba si viene un vial de alquimia o un papiro de inscripcion para pagle
+                        //y le coloca su precio de npc en lugar de la subasta
+                        console.log(crafteoComponente[key].nombreEnEspañol)
+                        if (vialNames.includes(crafteoComponente[key].nombreEnEspañol)) {
+                           var precioComp = vialPriceNpc(crafteoComponente[key].nombreEnEspañol) * 10000
+                            multiplicaCantidadPorPrecio = precioComp * crafteoComponente[key].cantidad
 
+                        } else if (papiroNames.includes(crafteoComponente[key].nombreEnEspañol)) {
+                            var precioComp = papiroPriceNpc(crafteoComponente[key].nombreEnEspañol) * 10000
+                            multiplicaCantidadPorPrecio = precioComp * crafteoComponente[key].cantidad
+                        }else{
+                            // multiplica de una vez el precio x la cantidad de componentes en server Pagle
+                            multiplicaCantidadPorPrecio = crafteoComponente[key].precioActualPagle * crafteoComponente[key].cantidad
+
+                        }
+
+                        //................WHITEMANE........................
                     } else if (dropdownServidorValue == "Whitemane-horde") {
                         precio = precioActualizado
                         precioSimple = precio / 10000
-                        // multiplica de una vez el precio x la cantidad de componentes en server Whitemane
+                       
+                      //Comprueba si viene un vial de alquimia o un papiro de inscripcion para whitemane
+                        //y le coloca su precio de npc en lugar de la subasta
+                        console.log(crafteoComponente[key].nombreEnEspañol)
+                        if (vialNames.includes(crafteoComponente[key].nombreEnEspañol)) {
+                           var precioComp = vialPriceNpc(crafteoComponente[key].nombreEnEspañol) * 10000
+                            multiplicaCantidadPorPrecio = precioComp * crafteoComponente[key].cantidad
+
+                        } else if (papiroNames.includes(crafteoComponente[key].nombreEnEspañol)) {
+                            var precioComp = papiroPriceNpc(crafteoComponente[key].nombreEnEspañol) * 10000
+                            multiplicaCantidadPorPrecio = precioComp * crafteoComponente[key].cantidad
+                        }else{
+                            // multiplica de una vez el precio x la cantidad de componentes en server Whitemane
                         multiplicaCantidadPorPrecio = crafteoComponente[key].precioActualWhitemane * crafteoComponente[key].cantidad
+
+                        }
                     }
                     //suma el resultado anterior con precio nuevo
                     sumaDeComponentes = sumaDeComponentes + multiplicaCantidadPorPrecio
                 }
+                console.log("SumaComp: "+sumaDeComponentes)
 
                 //El valor de la inversion al sumar todos los componentes
                 var multiplicaCantidadPorPrecioSimple = sumaDeComponentes / 10000
@@ -812,7 +858,7 @@
                     var porcentajeGanancia = gananciaEstimada / multiplicaCantidadPorPrecioSimple * 100
                     if (porcentajeGanancia.toFixed(2) < 0) {
 
-                        td.setAttribute("style", "color:red");;
+                        td.setAttribute("style", "color:red");
                     } else if (porcentajeGanancia.toFixed(2) > 0) {
                         //color verde si es mayor a 0%
                         td.setAttribute("style", "color:#00af1d");
@@ -959,6 +1005,7 @@
                 "papiro resilente",
                 "papiro común"
             ]
+
             for (const key in infoProductosArray) {
                 if (infoProductosArray[key].traduccion == nombreTituloActualEnComponenteModal) {
                     var arrayComponentes = infoProductosArray[key].craftingComponentes
@@ -985,17 +1032,17 @@
                         fila.appendChild(div_caption);
                         fila.appendChild(img);
 
-                               //Comprueba si viene un vial de alquimia o un papiro de inscripcion
+                        //Comprueba si viene un vial de alquimia o un papiro de inscripcion
                         //y le coloca su precio de npc en lugar de la subasta
-                        if(vialNames.includes(nameEspañolComp)){
-                            precioComp = vialPriceNpc(nameEspañolComp)  
+                        if (vialNames.includes(nameEspañolComp)) {
+                            precioComp = vialPriceNpc(nameEspañolComp)
 
-                        }else if(papiroNames.includes(nameEspañolComp)){
-                            if(nameEspañolComp == "papiro en blanco"){
+                        } else if (papiroNames.includes(nameEspañolComp)) {
+                            if (nameEspañolComp == "papiro en blanco") {
                                 nameEspañolComp = "papiro común"
                             }
                             precioComp = papiroPriceNpc(nameEspañolComp)
-                        } 
+                        }
 
 
                         //crea el nombre
@@ -1728,7 +1775,7 @@
                 }
                 positivoNegativo = true
 
-            } else if (PrecioFloat < 0.0099) {
+            } else if (PrecioFloat < 0.01 && PrecioFloat > 0.0001) {
                 //si es positivo y es cobre
                 var precioMinimo = PrecioFloat * 10000 + " Cobre"
                 positivoNegativo = true
