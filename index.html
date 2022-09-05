@@ -1565,6 +1565,7 @@
             return countValue
         }
 
+        //leer el json subido y lo procesa para subirlo a firestore
         async function leerJsonSubido(url) {
             const db = getFirestore(app);
             const Ref = doc(db, "data", "datos");
@@ -1584,137 +1585,176 @@
                     console.log("Archivo escaneado (2/4)")
                     var fechaUltimoScan = respuestaArchivoJson.FechaUltimoScan //Fecha ultimo escaneo
                     server = respuestaArchivoJson.servidor.toString()
-                    console.log("servidor: " + server)
-                    //Recorre todos los productos del archivo json
-                    for (const key in respuestaArchivoJson.Productos) {
+                    //console.log("servidor: " + server)
 
-                        var nombreNormalJson = respuestaArchivoJson.Productos[key].nombre //Nombre
-                        var nombreSinAcentoMinusculasJson = nombreNormalJson
-                        for (let index = 0; index < infoProductosArray.length; index++) {
+                    for (const llaveInfoProd in infoProductosArray) {
 
-                            var NombreEspañolBaseDatosMinuscula = infoProductosArray[index].traduccion
-                            //Si el nombre existe en nuestra BD entonces guarda solo ese producto en un nuevo objeto json
+                        var idProducto = infoProductosArray[llaveInfoProd].id  //el id del producto sacado del archivo json local
+                        //console.log(idProducto)
+                        var urlNormal = infoProductosArray[llaveInfoProd].url
+                        var urlProductos = obtenerUrlConServer(urlNormal, dropdownServidorValue)
+                        var urlCrafting = infoProductosArray[llaveInfoProd].urlCrafting
+                        var NombreEspañol = infoProductosArray[llaveInfoProd].traduccion
+                        var nivelProfesionRequerido = infoProductosArray[llaveInfoProd].nivelUsoProfesion
+                        var receta = infoProductosArray[llaveInfoProd].receta
+                        var iconProductoBuscado = infoProductosArray[llaveInfoProd].icono
+                        var categoria = infoProductosArray[llaveInfoProd].categoria
+                        var categoryDefault = infoProductosArray[llaveInfoProd].categoryDefault
+                        var expansion = infoProductosArray[llaveInfoProd].expansion
+                        var craftingComponent = infoProductosArray[llaveInfoProd].craftingComponentes
+                        var nombreUnicoProducto = infoProductosArray[llaveInfoProd].nombreUnico
+                        var craftingCategory = infoProductosArray[llaveInfoProd].craftingCategory
+                        var arrayCraftingFinal = []
 
-                            if (NombreEspañolBaseDatosMinuscula == nombreSinAcentoMinusculasJson) {
-                                var urlNormal = infoProductosArray[index].url
-                                var urlProductos = obtenerUrlConServer(urlNormal, dropdownServidorValue)
-                                var urlCrafting = infoProductosArray[index].urlCrafting
-                                var NombreEspañol = infoProductosArray[index].traduccion
-                                var nivelProfesionRequerido = infoProductosArray[index].nivelUsoProfesion
-                                var receta = infoProductosArray[index].receta
-                                var iconProductoBuscado = infoProductosArray[index].icono
-                                var categoria = infoProductosArray[index].categoria
-                                var categoryDefault = infoProductosArray[index].categoryDefault
-                                var expansion = infoProductosArray[index].expansion
-                                var craftingComponent = infoProductosArray[index].craftingComponentes
-                                var nombreUnicoProducto = infoProductosArray[index].nombreUnico
-                                var craftingCategory = infoProductosArray[index].craftingCategory
-                                var precioActualizado = respuestaArchivoJson.Productos[key].Precio //Precio
-                                var arrayCraftingFinal = []
+                        //Mira si el ID del producto en BD existe dentro del archivo json local
+                        if (JSON.stringify(respuestaArchivoJson.Productos).includes(idProducto) == true) {
 
-                                if (craftingComponent.length != 0) {
+                            if (craftingComponent.length != 0) {
 
-                                    for (const key in craftingComponent) {
-                                        var precioActualPagleComp = craftingComponent[key].precioActualPagle
-                                        var precioActualWhitemaneComp = craftingComponent[key].precioActualWhitemane
-                                        var itemId = craftingComponent[key].itemId
-                                        componenteNombreUnico = craftingComponent[key].nombreUnico
-                                        amount = craftingComponent[key].cantidad
-                                        var iconoImg = craftingComponent[key].icono
+                                for (const key in craftingComponent) {
+                                    var precioActualPagleComp = craftingComponent[key].precioActualPagle
+                                    var precioActualWhitemaneComp = craftingComponent[key].precioActualWhitemane
+                                    var itemId = craftingComponent[key].itemId
+                                    componenteNombreUnico = craftingComponent[key].nombreUnico
+                                    amount = craftingComponent[key].cantidad
+                                    var iconoImg = craftingComponent[key].icono
 
-                                        for (const llave in respuestaArchivoJson.Productos) {
+                                    for (const llave in respuestaArchivoJson.Productos) {
 
-                                            var name = respuestaArchivoJson.Productos[llave].nombre.toString().toLowerCase()
-                                            var nameEspañol = NombreEspañol.toString().toLowerCase()
-                                            if (itemId == llave) {
-                                                if (server == "Pagle") {
-                                                    precioActualPagleComp = respuestaArchivoJson.Productos[llave].Precio
-                                                    precioActualWhitemaneComp = precioActualWhitemaneComp
-                                                    console.log("precio pagle del archivo nuevo: " + precioActualPagleComp)
-                                                    console.log("precio anterior whitemane: " + precioActualWhitemaneComp)
+                                        var name = respuestaArchivoJson.Productos[llave].nombre.toString().toLowerCase()
+                                        var nameEspañol = NombreEspañol.toString().toLowerCase()
+                                        if (itemId == llave) {
+                                            if (server == "Pagle") {
+                                                precioActualPagleComp = respuestaArchivoJson.Productos[llave].Precio
+                                                precioActualWhitemaneComp = precioActualWhitemaneComp
 
-                                                } else if (server == "Whitemane") {
-                                                    precioActualWhitemaneComp = respuestaArchivoJson.Productos[llave].Precio
-                                                    precioActualPagleComp = precioActualPagleComp
-                                                    console.log("precio whitemane del archivo nuevo: " + precioActualWhitemaneComp)
-                                                    console.log("precio anterior Pagle: " + precioActualPagleComp)
-                                                }
-
-                                                console.log(NombreEspañol)
-                                                console.log(amount)
-
-                                                arrayCraftingFinal.push({
-                                                    "itemId": itemId,
-                                                    "precioActualPagle": precioActualPagleComp,
-                                                    "precioActualWhitemane": precioActualWhitemaneComp,
-                                                    "icono": iconoImg,
-                                                    "cantidad": amount,
-                                                    "nombreEnEspañol": name,
-                                                    "nombreUnico": componenteNombreUnico
-                                                })
+                                            } else if (server == "Whitemane") {
+                                                precioActualWhitemaneComp = respuestaArchivoJson.Productos[llave].Precio
+                                                precioActualPagleComp = precioActualPagleComp                                               
                                             }
+
+                                            //console.log(NombreEspañol)
+
+                                            arrayCraftingFinal.push({
+                                                "itemId": itemId,
+                                                "precioActualPagle": precioActualPagleComp,
+                                                "precioActualWhitemane": precioActualWhitemaneComp,
+                                                "icono": iconoImg,
+                                                "cantidad": amount,
+                                                "nombreEnEspañol": name,
+                                                "nombreUnico": componenteNombreUnico
+                                            })
                                         }
                                     }
                                 }
-                                console.log(arrayCraftingFinal)
-                                //si es pagle o whitemane pone un precio u otro
-                                if (server == "Pagle") {
-
-                                    precioPagle = respuestaArchivoJson.Productos[key].Precio
-                                    fechaPagle = respuestaArchivoJson.FechaUltimoScan
-
-                                    precioWhitemane = infoProductosArray[index].servidor.whitemane.precioActualizado
-                                    fechaWhitemane = infoProductosArray[index].servidor.whitemane.FechaActualizada
-
-                                } else if (server == "Whitemane") {
-
-                                    precioWhitemane = respuestaArchivoJson.Productos[key].Precio
-                                    fechaWhitemane = respuestaArchivoJson.FechaUltimoScan
-
-                                    precioPagle = infoProductosArray[index].servidor.pagle.precioActualizado
-                                    fechaPagle = infoProductosArray[index].servidor.pagle.FechaActualizada
-
+                            }
+                            //console.log(arrayCraftingFinal)
+                            //si es pagle o whitemane pone un precio u otro
+                            if (server == "Pagle") {
+                                try {
+                                    //Precio del archivo Local actualizado
+                                    precioPagle = respuestaArchivoJson.Productos[idProducto].Precio
+                                } catch (error) {
+                                    //Se queda con el mismo precio de la BD si no encuentra este producto en el archivo local
+                                    precioPagle = infoProductosArray[llaveInfoProd].servidor.pagle.precioActualizado
                                 }
+                                fechaPagle = respuestaArchivoJson.FechaUltimoScan
 
-                                infoProductosActualizadosJson.infoProducts[nombreUnicoProducto] = {
-                                    "url": urlProductos,
-                                    "traduccion": nombreNormalJson,
-                                    "urlCrafting": urlCrafting,
-                                    "icono": iconProductoBuscado,
-                                    "categoria": categoria,
-                                    "nivelUsoProfesion": nivelProfesionRequerido,
-                                    "receta": receta,
-                                    "categoryDefault": categoryDefault,
-                                    "nombreUnico": nombreUnicoProducto,
-                                    "craftingCategory": craftingCategory,
-                                    "expansion": expansion,
-                                    "craftingComponentes": arrayCraftingFinal,
-                                    "servidor": {
-                                        "pagle": {
-                                            "precioActualizado": precioPagle,
-                                            "FechaActualizada": fechaPagle
-                                        },
-                                        "whitemane": {
-                                            "precioActualizado": precioWhitemane,
-                                            "FechaActualizada": fechaWhitemane
-                                        }
-                                    }
-                                };
-                            } else {
+                                precioWhitemane = infoProductosArray[llaveInfoProd].servidor.whitemane.precioActualizado
+                                fechaWhitemane = infoProductosArray[llaveInfoProd].servidor.whitemane.FechaActualizada
+
+                            } else if (server == "Whitemane") {
+                                try {
+                                    //Precio del archivo Local actualizado
+                                    precioWhitemane = respuestaArchivoJson.Productos[idProducto].Precio
+                                } catch (error) {
+                                    //Se queda con el mismo precio de la BD si no encuentra este producto en el archivo local
+                                    precioWhitemane = infoProductosArray[llaveInfoProd].servidor.whitemane.precioActualizado                                    
+                                }
+                                fechaWhitemane = respuestaArchivoJson.FechaUltimoScan
+
+                                precioPagle = infoProductosArray[llaveInfoProd].servidor.pagle.precioActualizado
+                                fechaPagle = infoProductosArray[llaveInfoProd].servidor.pagle.FechaActualizada
 
                             }
+
+                            infoProductosActualizadosJson.infoProducts[nombreUnicoProducto] = {
+                                "id": idProducto,
+                                "url": urlProductos,
+                                "traduccion": NombreEspañol,
+                                "urlCrafting": urlCrafting,
+                                "icono": iconProductoBuscado,
+                                "categoria": categoria,
+                                "nivelUsoProfesion": nivelProfesionRequerido,
+                                "receta": receta,
+                                "categoryDefault": categoryDefault,
+                                "nombreUnico": nombreUnicoProducto,
+                                "craftingCategory": craftingCategory,
+                                "expansion": expansion,
+                                "craftingComponentes": arrayCraftingFinal,
+                                "servidor": {
+                                    "pagle": {
+                                        "precioActualizado": precioPagle,
+                                        "FechaActualizada": fechaPagle
+                                    },
+                                    "whitemane": {
+                                        "precioActualizado": precioWhitemane,
+                                        "FechaActualizada": fechaWhitemane
+                                    }
+                                }
+                            };
+                        }
+
+                        //en caso de no encontrarse el id en el archivo local json se queda igual a la BD
+                        else {
+
+                            //array de los componentes que ya estan en la base de datos
+                            var arrayCrafteoEnBD = infoProductosArray[llaveInfoProd].craftingComponentes
+
+                            //Conserva el mismo precio y fecha de pagle y whitemane de la BD
+                            var precioPagle = infoProductosArray[llaveInfoProd].servidor.pagle.precioActualizado
+                            var fechaPagle = infoProductosArray[llaveInfoProd].servidor.pagle.FechaActualizada
+
+                            var precioWhitemane = infoProductosArray[llaveInfoProd].servidor.whitemane.precioActualizado
+                            var fechaWhitemane = infoProductosArray[llaveInfoProd].servidor.whitemane.FechaActualizada
+
+                            infoProductosActualizadosJson.infoProducts[nombreUnicoProducto] = {
+                                "id": idProducto,
+                                "url": urlProductos,
+                                "traduccion": NombreEspañol,
+                                "urlCrafting": urlCrafting,
+                                "icono": iconProductoBuscado,
+                                "categoria": categoria,
+                                "nivelUsoProfesion": nivelProfesionRequerido,
+                                "receta": receta,
+                                "categoryDefault": categoryDefault,
+                                "nombreUnico": nombreUnicoProducto,
+                                "craftingCategory": craftingCategory,
+                                "expansion": expansion,
+                                "craftingComponentes": arrayCrafteoEnBD,
+                                "servidor": {
+                                    "pagle": {
+                                        "precioActualizado": precioPagle,
+                                        "FechaActualizada": fechaPagle
+                                    },
+                                    "whitemane": {
+                                        "precioActualizado": precioWhitemane,
+                                        "FechaActualizada": fechaWhitemane
+                                    }
+                                }
+                            };
                         }
                     }
 
+                    console.log("Nueva lista creada (3/4)")
                     console.log(infoProductosActualizadosJson)
-                    console.log("Nuevo array creado (3/4)")
 
                     //Ahora lo subimos a firestore
 
                     await setDoc(doc(db, "data", "datos"), infoProductosActualizadosJson).then(resp => {
 
-                        alert("Agregado correctamente!")
                         console.log("Se han guardado los datos (4/4)")
+                        alert("Agregado correctamente!")
                         window.location.reload(true);
                     }).catch(function (reason) {
                         console.log(reason)
@@ -1722,6 +1762,7 @@
                     });
                     break
                 } catch (error) {
+                    console.log(error)
                     if (indice == 4) {
                         toastr.error("Error al subir el archivo local, intentelo de nuevo!", "Mensaje")
                     }
