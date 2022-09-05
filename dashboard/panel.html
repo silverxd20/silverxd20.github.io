@@ -222,11 +222,11 @@
             for (const key in arrayProductoBuscado) {
                 if (arrayProductoBuscado[key].name == NameClickedEspañol) {
                     desactivarTodo()
-                    var id = arrayProductoBuscado[key].id
+                    var idProducto = arrayProductoBuscado[key].id
                     console.log(NameClickedEspañol)
-                    var urlNexusProductoAqui = urlNexusProducto + id
-                    var urlNexusCraftingAqui = urlNexusCrafting + id
-                    buscarProductoEnNexus(urlNexusProductoAqui, urlNexusCraftingAqui, NameClickedEspañol)
+                    var urlNexusProductoAqui = urlNexusProducto + idProducto
+                    var urlNexusCraftingAqui = urlNexusCrafting + idProducto
+                    buscarProductoEnNexus(urlNexusProductoAqui, urlNexusCraftingAqui, NameClickedEspañol, idProducto)
                 }
             }
         });
@@ -316,7 +316,7 @@
             //console.log(infoProductosArray)
         }
 
-        async function agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponentes) {
+        async function agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponentes, idProducto) {
             agregadoConExito = false
             // Inicializa Firebase si no esta inicializado
             if (!firebase.apps.length) {
@@ -363,6 +363,7 @@
                         await setDoc(doc(db, "data", "datos"), {
                             "infoProducts": {
                                 [unicoNombre]: {
+                                    "id": idProducto,
                                     "url": urlNexusProducto,
                                     "urlCrafting": urlNexusCrafting,
                                     "icono": iconProductoBuscado[indexSelectedBusqueda],
@@ -474,7 +475,7 @@
             }
         }
 
-        async function buscarProductoEnNexus(urlNexusProducto, urlNexusCrafting, nombreEspañol) {
+        async function buscarProductoEnNexus(urlNexusProducto, urlNexusCrafting, nombreEspañol, idProduct) {
             spinnerGuardar.setAttribute("style", "display:inline")
             try {
                 Promise.all([
@@ -514,7 +515,7 @@
                             arrayComponente["n/a"]
                         }
                         console.log(arrayComponentes);
-                        agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponente)
+                        agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponente, idProduct)
                     }).catch(function (reason) {
                         console.log(reason)
                         spinnerGuardar.setAttribute("style", "display:none")
