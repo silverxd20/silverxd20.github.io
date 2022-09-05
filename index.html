@@ -342,6 +342,10 @@
                                 <br>
                                 <b id="bIdComp">- Cantidad en subasta: </b>
                                 <b id="bIdCantidadPublicada"></b>
+                                <br>
+                                <b id="bIdComp"></b>
+                                <b id="bIdUltimoEscaneo"></b>
+                                <img id="iconoModalId" src="icons/check.png" alt="">
                             </div>
                         </div>
                     </div>
@@ -554,6 +558,7 @@
         var tablaComponentes = document.getElementById('tablaComponentes')
         var divCharFlippng = document.querySelector(".graficaFlipping")
         var divCharCrafting = document.querySelector(".graficaCrafting")
+        var iconoModal = document.getElementById("iconoModalId")
         var tbody = document.createElement('tbody');
         var campoTextPrecioVentaID = document.getElementById("PventaId")
         var campoTextoValor = document.getElementById("PventaId").value
@@ -568,6 +573,7 @@
         var cantidades = 0
         var MismaVentana = false
         var chart = ""
+        var fechaEnModal = ""
 
             //-------------------------------eventos on click y change-------------------------------------
 
@@ -611,7 +617,7 @@
                 RadioArchivo.checked = true;
                 RadioValorSelected = RadioArchivo.value
                 btnSubir.style.visibility = "visible";
-                lastUpdated()
+                lastUpdated(fechaActualizada)
                 //Coloca la categoría de Crafting
                 for (const key in arrayDeCategoriaCrafteo) {
                     const element = arrayDeCategoriaCrafteo[key];
@@ -718,7 +724,7 @@
         var NombreProductoArray = new Array()
 
         //Carga la hora del ultimo escarneo
-        lastUpdated()
+        lastUpdated(fechaActualizada)
 
         //Inicia tratendo los datos y categorias del la base de datos
         leerDatos()
@@ -732,7 +738,7 @@
         //.............................Funciones de crafteo...............................................
         var namesito = ""
         var canti = 0
-        async function traerProductoCrafteo(urlProductos, key, infoProductosArray, idioma, NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta) {
+        async function traerProductoCrafteo(urlProductos, key, infoProductosArray, idioma, NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta, fechaActualizada) {
             var dropdownServidorValue = dropdownServidor.value
             var cantidadComponentes = 0
             var nameComponente = ""
@@ -904,7 +910,7 @@
 
                         //pinta los datos en la tabla de los componentes para 1 producto
                         var numeroEnInput = inputCantidadComp.value
-                        recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue, nombreUrlProductoUnico)
+                        recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue, nombreUrlProductoUnico, fechaActualizada)
 
                         //Muestra los datos adicionales
                         traerDatosAdicionales(precioSimple, nombreUrlProductoUnico)
@@ -914,7 +920,7 @@
                             if (event.key === 'Enter') {
                                 var inputNumberComp = inputCantidadComp.value
                                 LimpiarTablaComponentes()
-                                recalcularDatosComponentes(inputNumberComp, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue, nombreUrlProductoUnico)
+                                recalcularDatosComponentes(inputNumberComp, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue, nombreUrlProductoUnico, fechaActualizada)
                             }
                         });
 
@@ -922,7 +928,7 @@
                         document.getElementById('btnEnviarCantidadComp').addEventListener('click', function () {
                             var inputNumberComp = inputCantidadComp.value
                             LimpiarTablaComponentes()
-                            recalcularDatosComponentes(inputNumberComp, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue, nombreUrlProductoUnico)
+                            recalcularDatosComponentes(inputNumberComp, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue, nombreUrlProductoUnico, fechaActualizada)
                         });
                     }
 
@@ -978,17 +984,17 @@
                         }
                         if (dropdownProductosValue == infoProductosArray[key].craftingCategory && dropdownExpansionValue == infoProductosArray[key].expansion) {
 
-                            traerProductoCrafteo(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta)
+                            traerProductoCrafteo(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta, fechaActualizada)
 
                         } else if (dropdownProductosValue == infoProductosArray[key].craftingCategory && dropdownExpansionValue == "Todos") {
 
-                            traerProductoCrafteo(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta)
+                            traerProductoCrafteo(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta, fechaActualizada)
                         }
 
                     }
                 }
 
-                lastUpdated()
+                lastUpdated(fechaActualizada)
             } else {
                 NotificacionTextCrafteo.innerText = "Selecciona una profesión para cargar la lista!"
             }
@@ -1025,6 +1031,7 @@
             for (const key in infoProductosArray) {
                 if (infoProductosArray[key].traduccion == nombreTituloActualEnComponenteModal) {
                     var arrayComponentes = infoProductosArray[key].craftingComponentes
+                    var fechaEnModalTimeStamp = infoProductosArray[key].servidor.pagle.FechaActualizada
 
                     for (const llave in arrayComponentes) {
                         var idComp = arrayComponentes[llave].itemId
@@ -1121,6 +1128,20 @@
                 gananciaEnComp.setAttribute("style", "color: red")
                 gananciaEnComp.innerText = "La pérdida es = " + PlataOro(gananciaAprox)
             }
+
+            
+            //Pone la hora del último escaneo de este producto
+            var fechaAcual = lastUpdatedModalComp(fechaActualizada)
+            var fechaVieja = lastUpdatedModalComp(fechaEnModalTimeStamp)
+
+            if (fechaAcual == fechaVieja){
+                iconoModal.src = "icons/check.png"
+
+            }else if(fechaAcual != fechaVieja) {
+                iconoModal.src = "icons/warning.png"
+            }
+            document.getElementById("bIdUltimoEscaneo").innerText = lastUpdatedModalComp(fechaEnModalTimeStamp)
+
         }
 
         async function traerDatosAdicionales(precioVentaLocal, nameUnicoProducto) {
@@ -1138,6 +1159,7 @@
                 }
             }
         }
+
 
         //.............................Funciones de Flipping...............................................
 
@@ -1158,7 +1180,7 @@
 
                     // Inicializa Firebase si no esta inicializado
                     const app = initializeApp(firebaseConfig);
-                    lastUpdated()
+                    lastUpdated(fechaActualizada)
                     const db = getFirestore(app);
                     enableIndexedDbPersistence(db)
                         .catch((err) => {
@@ -1440,7 +1462,7 @@
                     }
                 }
                 loop()
-                lastUpdated()
+                lastUpdated(fechaActualizada)
             } else {
                 NotificacionText.innerText = "Seleccione un producto para cargar la lista!"
             }
@@ -1493,7 +1515,7 @@
             } else {
                 NotificacionText.innerText = "Seleccione un producto para cargar la lista!"
             }
-            lastUpdated()
+            lastUpdated(fechaActualizada)
         }
 
         //Seleccion del dropdown de productos
@@ -1543,7 +1565,7 @@
                     }
                 }
                 loop()
-                lastUpdated()
+                lastUpdated(fechaActualizada)
             } else {
                 NotificacionText.innerText = "Seleccione un producto para cargar la lista!"
                 LimpiarTabla()
@@ -1630,7 +1652,7 @@
 
                                             } else if (server == "Whitemane") {
                                                 precioActualWhitemaneComp = respuestaArchivoJson.Productos[llave].Precio
-                                                precioActualPagleComp = precioActualPagleComp                                               
+                                                precioActualPagleComp = precioActualPagleComp
                                             }
 
                                             //console.log(NombreEspañol)
@@ -1669,7 +1691,7 @@
                                     precioWhitemane = respuestaArchivoJson.Productos[idProducto].Precio
                                 } catch (error) {
                                     //Se queda con el mismo precio de la BD si no encuentra este producto en el archivo local
-                                    precioWhitemane = infoProductosArray[llaveInfoProd].servidor.whitemane.precioActualizado                                    
+                                    precioWhitemane = infoProductosArray[llaveInfoProd].servidor.whitemane.precioActualizado
                                 }
                                 fechaWhitemane = respuestaArchivoJson.FechaUltimoScan
 
@@ -1962,15 +1984,34 @@
             return mesEspañol
         }
 
+        function lastUpdatedModalComp(fechaActual) {
+
+            const d = new Date(fechaActual * 1000);
+            var Dia = d.toString().split(" ")[2]
+            var Mes = mesEnEspañol(d.toString().split(" ")[1])
+            var Año = d.toString().split(" ")[3]
+            var fechaCompleta = "Fecha: " + Dia + " de " + Mes + " del " + Año
+
+            var hora = hora24a12(d.getHours())
+            var minuto = minutosConCero(d.getMinutes())
+            var ultimoScanHora = "- Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1]
+
+            var escaneo = ultimoScanHora + " - " + fechaCompleta;
+
+            fechaEnModal = escaneo
+            return fechaEnModal;
+        }
+
         //Fecha de la ultima actualización
-        function lastUpdated() {
+        async function lastUpdated(fechaActual) {
             for (let count = 0; count < 5; count++) {
 
                 try {
+                    var fechaParaRetornar = 0
+
                     //Si el proveeedor es del archivo pone la fecha del archivo
                     if (RadioValorSelected == "radioLocalJson") {
-
-                        const d = new Date(fechaActualizada * 1000);
+                        const d = new Date(fechaActual * 1000);
                         var Dia = d.toString().split(" ")[2]
                         var Mes = mesEnEspañol(d.toString().split(" ")[1])
                         var Año = d.toString().split(" ")[3]
@@ -1978,28 +2019,31 @@
 
                         var hora = hora24a12(d.getHours())
                         var minuto = minutosConCero(d.getMinutes())
-                        var ultimoScanHora = "Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1]
+                        var ultimoScanHora = "- Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1]
 
                         var escaneo = document.getElementById("lastUpdated").innerHTML = ultimoScanHora + " - " + fechaCompleta;
+
+                        fechaEnModal = hora[0] + ":" + minuto + " " + hora[1] + " - " + fechaCompleta;
 
                     } else if (RadioValorSelected == "radioNexus") {
 
                         //si el proveedor es de nexus entonces usa esa fecha
                         var corsurl = "https://api.codetabs.com/v1/proxy?quest="
-                        var resultDate = fetch(corsurl + "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/scroll-of-agility-iv")
-                            .then(resultDate => resultDate.json())
-                            .then(function (fecha) {
-                                const d = new Date(fecha.stats.lastUpdated);
-                                var Dia = d.toString().split(" ")[2]
-                                var Mes = mesEnEspañol(d.toString().split(" ")[1])
-                                var Año = d.toString().split(" ")[3]
-                                var fechaCompleta = "Fecha: " + Dia + " de " + Mes + " del " + Año
+                        const respuesta = await fetch(corsurl + "https://api.nexushub.co/wow-classic/v1/items/pagle-alliance/scroll-of-agility-iv")
+                        const jsonResultado = await respuesta.json()
 
-                                var hora = hora24a12(d.getHours())
-                                var minuto = minutosConCero(d.getMinutes())
-                                var ultimoScanHora = "Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1]
-                                var escaneo = document.getElementById("lastUpdated").innerHTML = ultimoScanHora + " - " + fechaCompleta;
-                            })
+                        const d = new Date(jsonResultado.stats.lastUpdated);
+                        var Dia = d.toString().split(" ")[2]
+                        var Mes = mesEnEspañol(d.toString().split(" ")[1])
+                        var Año = d.toString().split(" ")[3]
+                        var fechaCompleta = "Fecha: " + Dia + " de " + Mes + " del " + Año
+                        var fechaAqui = "Fecha: " + Dia + " de " + Mes + " del " + Año
+
+                        var hora = hora24a12(d.getHours())
+                        var minuto = minutosConCero(d.getMinutes())
+                        var ultimoScanHora = "- Último escaneo: " + hora[0] + ":" + minuto + " " + hora[1]
+
+                        var escaneo = document.getElementById("lastUpdated").innerHTML = ultimoScanHora + " - " + fechaCompleta;
                     }
                     break
                 } catch (error) {
