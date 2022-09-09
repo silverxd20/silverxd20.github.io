@@ -574,6 +574,7 @@
         var MismaVentana = false
         var chart = ""
         var fechaEnModal = ""
+        var modalVisible = false
 
             //-------------------------------eventos on click y change-------------------------------------
 
@@ -649,12 +650,33 @@
         //Click al cerrar el modal
         document.getElementById("cerrarModalId").addEventListener("click", function (params) {
             MismaVentana = false
-            chart.clearAnnotations()
-            chart.destroy()
-            document.getElementById("iframeId").src = ""
+            modalVisible = false
+            try {
+                chart.clearAnnotations()
+                chart.destroy()
+                console.log("destruido")
+            } catch (error) {
+
+            }
             ventanaTituloId.innerText = ""
             precioTituloId.innerText = ""
         })
+
+        //eveto cuando se cierra el modal de los componentes
+        $("#modalComponentes").on("hide.bs.modal", function () {
+            modalVisible = false
+            try {
+                chart.clearAnnotations()
+                chart.destroy()
+                console.log("destruido")
+            } catch (error) {
+
+            }
+            multiplicaCantidadPorPrecioSimple = 0
+            inputCantidadComp.value = 1
+            bIdCantidadPublicada.innerText = ""
+            bIdPrecioPromedio.innerText = ""
+        });
 
         //cuando cambia el dropdown select producto
         document.getElementById('dropdownCategoriaProductos').addEventListener('change', function () {
@@ -703,16 +725,6 @@
         //cuando haces click en el boton subir archivo
         document.getElementById('BtnSubirArchivo').addEventListener('click', function () {
             subirArchivoJson()
-        });
-
-        //eveto cuando se cierra el modal de los componentes
-        $("#modalComponentes").on("hide.bs.modal", function () {
-            chart.clearAnnotations()
-            chart.destroy();
-            multiplicaCantidadPorPrecioSimple = 0
-            inputCantidadComp.value = 1
-            bIdCantidadPublicada.innerText = ""
-            bIdPrecioPromedio.innerText = ""
         });
 
         //variables del html principal
@@ -1026,6 +1038,7 @@
             var urlDatosDeGrafica = "https://api.nexushub.co/wow-classic/v1/items/" + dropdownServidor.value + "/" + nombreProductoUnico + "/prices"
             console.log(urlDatosDeGrafica)
             //trae los datos del historia de 7 dias para ponerlos en la gráfica
+            modalVisible = true
             obtenerDatosDeGrafica(urlDatosDeGrafica)
 
             for (const key in infoProductosArray) {
@@ -1129,15 +1142,15 @@
                 gananciaEnComp.innerText = "La pérdida es = " + PlataOro(gananciaAprox)
             }
 
-            
+
             //Pone la hora del último escaneo de este producto
             var fechaAcual = lastUpdatedModalComp(fechaActualizada)
             var fechaVieja = lastUpdatedModalComp(fechaEnModalTimeStamp)
 
-            if (fechaAcual == fechaVieja){
+            if (fechaAcual == fechaVieja) {
                 iconoModal.src = "icons/check.png"
 
-            }else if(fechaAcual != fechaVieja) {
+            } else if (fechaAcual != fechaVieja) {
                 iconoModal.src = "icons/warning.png"
             }
             document.getElementById("bIdUltimoEscaneo").innerText = lastUpdatedModalComp(fechaEnModalTimeStamp)
@@ -2223,6 +2236,7 @@
             divCharFlippng.id = "chart"
             divCharCrafting.id = "SinUso"
             //trae los datos del historia de 7 dias para ponerlos en la gráfica
+            modalVisible = true
             obtenerDatosDeGrafica(Url)
 
             for (var index = 0; index < jsonResultado.data.length; index++) {
@@ -2399,90 +2413,111 @@
             var colorPrecioGrafica = "#7fff00"
             var colorCantidadFrafica = "#0088d6"
 
-            //Consulta el historial de precio de  dias
-            const respuesta = await fetch(urlDatosDeGrafica)
-            const json = await respuesta.json()
+            for (let index = 0; index < 4; index++) {
 
-            for (const key in json.data) {
-                var precioMinimo = parseInt(json.data[key].minBuyout) / 10000
-                var cantidadPublicada = json.data[key].quantity
-                var fechaDePublicacion = json.data[key].scannedAt
+                //Consulta el historial de precio de  dias
+                const respuesta = await fetch(urlDatosDeGrafica)
+                const json = await respuesta.json()
 
-                //Pone los datos en un array
-                arrayPrecioEnGrafica.push(precioMinimo)
-                arrayCantidadEnGrafica.push(cantidadPublicada)
-                arrayFechaEnGrafica.push(fechaDePublicacion)
-            }
+                for (const key in json.data) {
+                    var precioMinimo = parseInt(json.data[key].minBuyout) / 10000
+                    var cantidadPublicada = json.data[key].quantity
+                    var fechaDePublicacion = json.data[key].scannedAt
 
-            //imprime los datos en la grafica
-            var options = {
-                series: [{
-                    name: "Precio",
-                    data: arrayPrecioEnGrafica
-                },
-                {
-                    name: "Cantidad",
-                    data: arrayCantidadEnGrafica
-                }],
-                labels: arrayFechaEnGrafica,
-                chart: {
-                    height: 350,
-                    type: 'line',
-                    foreColor: "#ffe4c4"
-                },
-                stroke: {
-                    width: [2.5, 2.5]
-                },
-                colors: [colorPrecioGrafica, colorCantidadFrafica],
-                title: {
-                    text: 'Gráfico de precio y cantidad',
-                },
-                noData: {
-                    text: 'Cargando datos...'
-                },
+                    //Pone los datos en un array
+                    arrayPrecioEnGrafica.push(precioMinimo)
+                    arrayCantidadEnGrafica.push(cantidadPublicada)
+                    arrayFechaEnGrafica.push(fechaDePublicacion)
+                }
 
-                xaxis: {
-                    type: 'datetime',
-                },
-                yaxis: [
-                    {
-                        axisTicks: {
-                            show: true
-                        },
-                        axisBorder: {
-                            show: true,
-                            color: colorPrecioGrafica
-                        },
-                        labels: {
-                            style: {
-                                colors: colorPrecioGrafica
-                            }
-                        },
-
+                //imprime los datos en la grafica
+                var options = {
+                    series: [{
+                        name: "Precio",
+                        data: arrayPrecioEnGrafica
                     },
                     {
-                        opposite: true,
-                        axisTicks: {
-                            show: true
-                        },
-                        axisBorder: {
-                            show: true,
-                            color: colorCantidadFrafica
-                        },
-                        labels: {
-                            style: {
-                                colors: colorCantidadFrafica
+                        name: "Cantidad",
+                        data: arrayCantidadEnGrafica
+                    }],
+                    labels: arrayFechaEnGrafica,
+                    chart: {
+                        height: 350,
+                        type: 'line',
+                        foreColor: "#ffe4c4",
+                        events: {
+                            Mounted: function (chartContext, config) {
+                                if (modalVisible == false) {
+                                    console.log("Montado desde el evento Mounted")
+                                    chart.clearAnnotations()
+                                    chart.destroy()
+                                    console.log("Destruido desde el event Mounted")
+                                }
                             }
+                        }
+                    },
+                    stroke: {
+                        width: [2.5, 2.5]
+                    },
+                    colors: [colorPrecioGrafica, colorCantidadFrafica],
+                    title: {
+                        text: 'Gráfico de precio y cantidad',
+                    },
+                    noData: {
+                        text: 'Cargando datos...'
+                    },
+
+                    xaxis: {
+                        type: 'datetime',
+                    },
+                    yaxis: [
+                        {
+                            axisTicks: {
+                                show: true
+                            },
+                            axisBorder: {
+                                show: true,
+                                color: colorPrecioGrafica
+                            },
+                            labels: {
+                                style: {
+                                    colors: colorPrecioGrafica
+                                }
+                            },
+
                         },
+                        {
+                            opposite: true,
+                            axisTicks: {
+                                show: true
+                            },
+                            axisBorder: {
+                                show: true,
+                                color: colorCantidadFrafica
+                            },
+                            labels: {
+                                style: {
+                                    colors: colorCantidadFrafica
+                                }
+                            },
 
-                    }
-                ]
-            };
+                        }
+                    ]
+                };
+                //Destruye algun chart si esta vivo aun
+                try {
+                    chart.clearAnnotations()
+                    chart.destroy()
+                    //console.log("destruido")
+                } catch (error) {
+                    //console.log("No hay chart vivos")
+                }
 
-            chart = new ApexCharts(document.querySelector("#chart"), options);
-            chart.render();
+                chart = new ApexCharts(document.querySelector("#chart"), options);
+                chart.render();
+                break
+            }
         }
-
     </script>
 </body>
 
