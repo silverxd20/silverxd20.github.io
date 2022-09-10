@@ -1158,7 +1158,7 @@
         }
 
         async function traerDatosAdicionales(precioVentaLocal, nameUnicoProducto) {
-            for (let index = 0; index < 4; index++) {
+            for (let index = 0; index < 3; index++) {
                 var urlDatosAdicionales = "https://api.nexushub.co/wow-classic/v1/items/" + dropdownServidor.value + "/" + nameUnicoProducto
                 try {
                     bIdPrecioDeVenta.innerText = PlataOro(precioVentaLocal)
@@ -1179,7 +1179,7 @@
         //LEE LOS DATOS DE FIREBASE
         async function leerDatos() {
             NotificacionText.innerText = "Cargando los datos por favor espere..."
-            for (let index = 0; index < 5; index++) {
+            for (let index = 0; index < 3; index++) {
                 try {
                     var RadioArchivoValor = RadioArchivo.value
                     var RadioNexusValor = RadioNexusVar.value
@@ -1221,10 +1221,7 @@
                             const elementCategoryCraft = doc.data().crafting[key];
                             arrayDeCategoriaCrafteo.push(elementCategoryCraft)
                         }
-                        //guarda el json de los productos agregados
 
-
-                        var count = 0
                         for (const key in doc.data().infoProducts) {
                             var urlNormal = doc.data().infoProducts[key].url
                             var urlProductos = obtenerUrlConServer(urlNormal, dropdownServidor.value)
@@ -1245,8 +1242,6 @@
                             }
                             //guarda en un nuevo array toda la mercancia traida de la base de datos
                             infoProductosArray.push(doc.data().infoProducts[key])
-                            count = count + 1
-
                         }
 
                         NotificacionText.innerText = "Seleccione un producto para cargar la lista!"
@@ -1266,7 +1261,7 @@
         //Abre los URL de los productos trae sus datos en una tablas (Funcion principal)
         async function traerProductoDatos(urlProductos, indice, array, idioma, NombreEspañol, nombreUnicoProducto, precioActual) {
 
-            for (let i = 0; i <= 4; i++) {
+            for (let i = 0; i <= 3; i++) {
                 try {
                     var corsurl = "https://api.codetabs.com/v1/proxy?quest="
                     //abre el url
@@ -1424,9 +1419,6 @@
                 } catch (error) {
                     console.log(error)
                     console.log(urlProductos)
-                    setTimeout(function () {
-                        console.log("vuelta: " + i)
-                    }, 1000)
                 }
             }
         }
