@@ -1655,10 +1655,12 @@
                                     var iconoImg = craftingComponent[key].icono
                                     var nombreEnEspañolComp = craftingComponent[key].nombreEnEspañol
 
+                                    //mira si el ID del componente existe en el archivo json local
                                     if (respuestaArchivoJson.Productos.hasOwnProperty(itemId)) {
-
+                                        //Nombre del componente encontrado dentro del archivo json
                                         var name = respuestaArchivoJson.Productos[itemId].nombre.toString().toLowerCase()
 
+                                        //precio del componente segun el servidor
                                         if (server == "Pagle") {
                                             precioActualPagleComp = respuestaArchivoJson.Productos[itemId].Precio
                                             precioActualWhitemaneComp = precioActualWhitemaneComp
@@ -1668,7 +1670,7 @@
                                             precioActualPagleComp = precioActualPagleComp
                                         }
 
-                                        //console.log(NombreEspañol)                                            
+                                        //agrega los datos del componente al array
                                         arrayCraftingFinal.push({
                                             "itemId": itemId,
                                             "precioActualPagle": precioActualPagleComp,
@@ -1680,7 +1682,8 @@
                                         })
                                     }else{
 
-                                        console.log("no se encontró: "+ itemId)
+                                        //En caso de no encontrar el componente lo deja igual como en la BD
+                                        console.log("No se encontró: "+ itemId + ", Nombre: "+nombreEnEspañolComp)
                                         arrayCraftingFinal.push({
                                             "itemId": itemId,
                                             "precioActualPagle": precioActualPagleComp,
