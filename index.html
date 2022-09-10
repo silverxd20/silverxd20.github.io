@@ -1668,8 +1668,18 @@
                                                 precioActualPagleComp = precioActualPagleComp
                                             }
 
-                                            //console.log(NombreEspañol)
-
+                                            //console.log(NombreEspañol)                                            
+                                            arrayCraftingFinal.push({
+                                                "itemId": itemId,
+                                                "precioActualPagle": precioActualPagleComp,
+                                                "precioActualWhitemane": precioActualWhitemaneComp,
+                                                "icono": iconoImg,
+                                                "cantidad": amount,
+                                                "nombreEnEspañol": name,
+                                                "nombreUnico": componenteNombreUnico
+                                            })
+                                        }else{
+                                            //si no consigue el componente lo deja igual como esta en la BD
                                             arrayCraftingFinal.push({
                                                 "itemId": itemId,
                                                 "precioActualPagle": precioActualPagleComp,
