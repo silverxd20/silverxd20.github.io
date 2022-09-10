@@ -1607,7 +1607,7 @@
             var amount = 0
             var componenteNombreUnico = ""
 
-            for (let indice = 0; indice < 5; indice++) {
+            for (let indice = 0; indice < 3; indice++) {
 
                 try {
                     var dropdownProductosValue = document.getElementById("dropdownCategoriaProductos").value
@@ -1642,7 +1642,7 @@
                         var arrayCraftingFinal = []
 
                         //Mira si el ID del producto en BD existe dentro del archivo json local
-                        if (JSON.stringify(respuestaArchivoJson.Productos).includes(idProducto) == true) {
+                        if (respuestaArchivoJson.Productos.hasOwnProperty(idProducto) == true) {
 
                             if (craftingComponent.length != 0) {
 
@@ -1653,32 +1653,43 @@
                                     componenteNombreUnico = craftingComponent[key].nombreUnico
                                     amount = craftingComponent[key].cantidad
                                     var iconoImg = craftingComponent[key].icono
+                                    var nombreEnEspañolComp = craftingComponent[key].nombreEnEspañol
 
-                                    for (const llave in respuestaArchivoJson.Productos) {
+                                    if (respuestaArchivoJson.Productos.hasOwnProperty(itemId)) {
 
-                                        var name = respuestaArchivoJson.Productos[llave].nombre.toString().toLowerCase()
-                                        var nameEspañol = NombreEspañol.toString().toLowerCase()
-                                        if (itemId == llave) {
-                                            if (server == "Pagle") {
-                                                precioActualPagleComp = respuestaArchivoJson.Productos[llave].Precio
-                                                precioActualWhitemaneComp = precioActualWhitemaneComp
+                                        var name = respuestaArchivoJson.Productos[itemId].nombre.toString().toLowerCase()
 
-                                            } else if (server == "Whitemane") {
-                                                precioActualWhitemaneComp = respuestaArchivoJson.Productos[llave].Precio
-                                                precioActualPagleComp = precioActualPagleComp
-                                            }
+                                        if (server == "Pagle") {
+                                            precioActualPagleComp = respuestaArchivoJson.Productos[itemId].Precio
+                                            precioActualWhitemaneComp = precioActualWhitemaneComp
 
-                                            //console.log(NombreEspañol)                                            
-                                            arrayCraftingFinal.push({
-                                                "itemId": itemId,
-                                                "precioActualPagle": precioActualPagleComp,
-                                                "precioActualWhitemane": precioActualWhitemaneComp,
-                                                "icono": iconoImg,
-                                                "cantidad": amount,
-                                                "nombreEnEspañol": name,
-                                                "nombreUnico": componenteNombreUnico
-                                            })
+                                        } else if (server == "Whitemane") {
+                                            precioActualWhitemaneComp = respuestaArchivoJson.Productos[itemId].Precio
+                                            precioActualPagleComp = precioActualPagleComp
                                         }
+
+                                        //console.log(NombreEspañol)                                            
+                                        arrayCraftingFinal.push({
+                                            "itemId": itemId,
+                                            "precioActualPagle": precioActualPagleComp,
+                                            "precioActualWhitemane": precioActualWhitemaneComp,
+                                            "icono": iconoImg,
+                                            "cantidad": amount,
+                                            "nombreEnEspañol": name,
+                                            "nombreUnico": componenteNombreUnico
+                                        })
+                                    }else{
+
+                                        console.log("no se encontró: "+ itemId)
+                                        arrayCraftingFinal.push({
+                                            "itemId": itemId,
+                                            "precioActualPagle": precioActualPagleComp,
+                                            "precioActualWhitemane": precioActualWhitemaneComp,
+                                            "icono": iconoImg,
+                                            "cantidad": amount,
+                                            "nombreEnEspañol": nombreEnEspañolComp,
+                                            "nombreUnico": componenteNombreUnico
+                                        })
                                     }
                                 }
                             }
@@ -1789,7 +1800,7 @@
 
                         console.log("Se han guardado los datos (4/4)")
                         alert("Agregado correctamente!")
-                        window.location.reload(true);
+                        //window.location.reload(true);
                     }).catch(function (reason) {
                         console.log(reason)
 
