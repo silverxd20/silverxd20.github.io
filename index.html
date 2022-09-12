@@ -887,11 +887,16 @@
                     var fila = document.createElement('tr');
 
                     //la imagen del producto
-                    var div_caption = document.createElement('div');
-                    var img = document.createElement('img');
-                    img.src = iconoImg;
-                    fila.appendChild(div_caption);
-                    fila.appendChild(img);
+                    var td = document.createElement('td');
+                    td.innerHTML = `
+                    <div id="container">
+                        <img id="imgModalProducto" src="`+ iconoImg+ `" alt="">
+                        <div id="divTextCircularId">
+                            <div id="txtCantidadPorStackId">`+CantidadPorCreacion+`</div>
+                        </div>
+                    </div>
+                    `;
+                    fila.appendChild(td);
 
                     //crea el nombre
                     var td = document.createElement('td');
@@ -2277,7 +2282,7 @@
             var rows = Array.from(tablaCrafting.querySelectorAll(`tr`));
             // but ignore the heading row:
             rows = rows.slice(1);
-            var posicion = 8
+            var posicion = 7
             // set up the queryselector for getting the indicated
             // column from a row, so we can compare using its value:
             var qs = `td:nth-child(${posicion})`;
