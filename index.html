@@ -1340,7 +1340,7 @@
         //Abre los URL de los productos trae sus datos en una tablas (Funcion principal)
         async function traerProductoDatos(urlProductos, indice, array, idioma, NombreEspañol, nombreUnicoProducto, precioActual) {
 
-            for (let i = 0; i <= 3; i++) {
+            for (let i = 0; i <= 4; i++) {
                 try {
                     var corsurl = "https://api.codetabs.com/v1/proxy?quest="
                     //abre el url
@@ -1358,10 +1358,10 @@
                         //Si el radio es del archivo deja ese precio
                         var precioMinimo = precioActual / 10000
                     }
-                    var precioPromedio = await json.stats.current.marketValue / 10000
+                    var precioPromedio = json.stats.current.marketValue / 10000
                     var gananciaEstimada = gananciaPromedia(precioMinimo, precioPromedio).toFixed(4)
                     var porcentajeGanancia = gananciaEstimada / precioMinimo * 100
-                    var cantidades = await json.stats.current.quantity
+                    var cantidades = json.stats.current.quantity
 
                     //Verifica si el idioma es español
                     if (idioma == "Español") {
