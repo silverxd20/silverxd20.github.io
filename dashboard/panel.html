@@ -316,7 +316,7 @@
             //console.log(infoProductosArray)
         }
 
-        async function agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponentes, idProducto) {
+        async function agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponentes, idProducto, CantidadPorCreacion) {
             agregadoConExito = false
             // Inicializa Firebase si no esta inicializado
             if (!firebase.apps.length) {
@@ -346,6 +346,7 @@
                     "precioActualWhitemane": 0,
                     "icono": iconoImg,
                     "cantidad": amount,
+                    "CantidadPorCreacion": CantidadPorCreacion,
                     "nombreEnEspañol": "Sin datos aún",
                     "nombreUnico": componenteNombreUnico
                 })
@@ -494,6 +495,10 @@
                             //receta por defecto
                             categoryDefault = responseText[1].createdBy[0].category
 
+                            //Cantidad de productos que se crean en stack
+                            var CantidadPorCreacion = responseText[1].createdBy[0].amount[0]
+                            console.log(CantidadPorCreacion)
+
                             var recetaArrayIndex = responseText[1].createdBy[0].recipes.length
                             //verifica si usa receta
                             if (recetaArrayIndex > 0) {
@@ -515,7 +520,7 @@
                             arrayComponente["n/a"]
                         }
                         console.log(arrayComponentes);
-                        agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponente, idProduct)
+                        agregarProducto(urlNexusProducto, urlNexusCrafting, nombreEspañol, nombreConGuion, arrayComponente, idProduct, CantidadPorCreacion)
                     }).catch(function (reason) {
                         console.log(reason)
                         spinnerGuardar.setAttribute("style", "display:none")
