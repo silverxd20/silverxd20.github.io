@@ -8,18 +8,18 @@
     <title>Precio de productos Wow</title>
     <link rel="icon" href="https://findicons.com/files/icons/679/nx10/128/world_of_warcraft.png">
     <!-- filestack Libreria -->
-    <script src="https://static.filestackapi.com/filestack-js/3.x.x/filestack.min.js"></script>
+    <script async src="https://static.filestackapi.com/filestack-js/3.x.x/filestack.min.js"></script>
     <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- JavaScript Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
     <!--jquery 3-->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script async src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!--Toastr-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <!--Grafica-->
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script defer async src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 
 <body>
@@ -576,14 +576,14 @@
         var fechaEnModal = ""
         var modalVisible = false
 
-            //-------------------------------eventos on click y change-------------------------------------
+        //-------------------------------eventos on click y change-------------------------------------
 
-            //Abre el panel para agregar productos
-            < document.addEventListener('keydown', function (event) {
-                if (event.ctrlKey && event.key === 'z') {
-                    window.open("dashboard/panel.html", "_blank");
-                }
-            });
+        //Abre el panel para agregar productos
+        document.addEventListener('keydown', function (event) {
+            if (event.ctrlKey && event.key === 'z') {
+                window.open("dashboard/panel.html", "_blank");
+            }
+        });
 
         //click en la tab de flipping
         try {
@@ -1646,6 +1646,7 @@
                                     amount = craftingComponent[key].cantidad
                                     var iconoImg = craftingComponent[key].icono
                                     var nombreEnEspañolComp = craftingComponent[key].nombreEnEspañol
+                                    var CantidadPorCreacion = craftingComponent[key].CantidadPorCreacion
 
                                     //mira si el ID del componente existe en el archivo json local
                                     if (respuestaArchivoJson.Productos.hasOwnProperty(itemId)) {
@@ -1669,19 +1670,21 @@
                                             "precioActualWhitemane": precioActualWhitemaneComp,
                                             "icono": iconoImg,
                                             "cantidad": amount,
+                                            "CantidadPorCreacion": CantidadPorCreacion,
                                             "nombreEnEspañol": name,
                                             "nombreUnico": componenteNombreUnico
                                         })
-                                    }else{
+                                    } else {
 
                                         //En caso de no encontrar el componente lo deja igual como en la BD
-                                        console.log("No se encontró: "+ itemId + ", Nombre: "+nombreEnEspañolComp)
+                                        console.log("No se encontró: " + itemId + ", Nombre: " + nombreEnEspañolComp)
                                         arrayCraftingFinal.push({
                                             "itemId": itemId,
                                             "precioActualPagle": precioActualPagleComp,
                                             "precioActualWhitemane": precioActualWhitemaneComp,
                                             "icono": iconoImg,
                                             "cantidad": amount,
+                                            "CantidadPorCreacion": CantidadPorCreacion,
                                             "nombreEnEspañol": nombreEnEspañolComp,
                                             "nombreUnico": componenteNombreUnico
                                         })
