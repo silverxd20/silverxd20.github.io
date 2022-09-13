@@ -943,6 +943,9 @@
                     td = document.createElement('td');
                     var gananciaEstimada = gananciaPromedia(valorInvertidoEntreCantCreada, precioSimple).toFixed(4)
                     var porcentajeGanancia = gananciaEstimada / valorInvertidoEntreCantCreada * 100
+                    if (porcentajeGanancia.toString() == "NaN") {
+                        porcentajeGanancia = -100
+                    }
                     if (porcentajeGanancia.toFixed(2) < 0) {
 
                         td.setAttribute("style", "color:red");
