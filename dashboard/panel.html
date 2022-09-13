@@ -210,8 +210,13 @@
         var indexSelectedBusqueda = 0
         var agregadoConExito = false
 
+        //variable de tooltip
+        var urlTooltipsP1 = "https://nether.wowhead.com/tooltip/item/"
+        var urlTooltipsP2 = "?dataEnv=8&locale=6"
+        var tooltipInfoProduct = ""
+
         leerDatos()
-        console.log(selectExpansion.value)
+
         inputTxtDeBusqueda.focus();
         spinnerBuscar.setAttribute("style", "display:none;")
         spinnerGuardar.style.display = "none"
@@ -223,7 +228,6 @@
                 if (arrayProductoBuscado[key].name == NameClickedEspañol) {
                     desactivarTodo()
                     var idProducto = arrayProductoBuscado[key].id
-                    console.log(NameClickedEspañol)
                     var urlNexusProductoAqui = urlNexusProducto + idProducto
                     var urlNexusCraftingAqui = urlNexusCrafting + idProducto
                     buscarProductoEnNexus(urlNexusProductoAqui, urlNexusCraftingAqui, NameClickedEspañol, idProducto)
@@ -376,6 +380,7 @@
                                     "nombreUnico": unicoNombre,
                                     "expansion": selectExpansion.value,
                                     "craftingCategory": selectCategoriaCrafting.value,
+                                    "tooltipInfo": tooltipInfoProduct,
                                     "craftingComponentes": arrayCraftingFinal,
                                     "servidor": {
                                         "pagle": {
@@ -481,15 +486,19 @@
             try {
                 Promise.all([
                     fetch(urlNexusProducto),
-                    fetch(urlNexusCrafting)
-                ]).then(async ([aa, bb]) => {
+                    fetch(urlNexusCrafting),
+                    fetch(urlTooltipsP1+idProduct+urlTooltipsP2)
+                ]).then(async ([aa, bb, cc]) => {
                     const a = await aa.json();
                     const b = await bb.json();
-                    return [a, b]
+                    const c = await cc.json();
+                    return [a, b, c]
                 })
                     .then((responseText) => {
                         console.log(responseText)
                         nombreConGuion = responseText[0].uniqueName
+                        tooltipInfoProduct = responseText[2].tooltip //El tooltip de la info del producto
+
                         // verfifica si el array "createdBy" contiene algo
                         if (typeof responseText[1].createdBy != "undefined" && responseText[1].createdBy != null && responseText[1].createdBy.length != null && responseText[1].createdBy.length > 0) {
                             //receta por defecto
