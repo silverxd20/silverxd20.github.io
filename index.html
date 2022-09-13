@@ -963,10 +963,21 @@
 
                     //crea si usa receta o no
                     var td = document.createElement('td');
+                    var HayReceta = ""
                     if (receta != "No") {
-                        td.innerText = "Si"
+                        HayReceta = "Si"
+                        td.innerText = HayReceta
                     } else {
                         td.innerText = receta
+                    }
+
+                    td.setAttribute("style", "cursor: pointer; border: red")
+                    
+                    td.onclick = function (evt) {
+                        var UrlWowheadReceta = "https://www.wowhead.com/wotlk/es/item="
+                        if(HayReceta == "Si"){
+                            window.open(UrlWowheadReceta + receta[0], "_blank");
+                        }
                     }
                     fila.appendChild(td);
 
