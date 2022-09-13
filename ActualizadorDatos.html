@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <input id="botonBuscar" type="button" value="Buscar"><br><br><br>
+    <input id="btnActualizar" type="button" value="Actualizar">
+
+    <script type="module">
+        //firestore imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js"
+        import { collection, getDocs, addDoc, doc, setDoc, updateDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/9.9.2/firebase-firestore.js";
+
+        //variables
+        var infoProductosArray = []
+        var precioActualizado = 0
+        var fechaActualizada = 0
+        var btnBuscar = document.getElementById("botonBuscar")
+        var btnActualizar = document.getElementById("btnActualizar")
+        var corsurl = "https://api.codetabs.com/v1/proxy?quest="
+        var urlInfoProductosP1 = "https://nether.wowhead.com/tooltip/item/"
+        var urlInfoProductosP2 = "?dataEnv=8&locale=6" 
+        var tooltipString = ""
+        var totalArrayBD = 0
+        var conteo = 0
+        var infoProductosActualizadosJson = { "infoProducts": {} }
+
+        //Click al btn buscar
+        btnBuscar.addEventListener("click", function (params) {
+            traerNuevoDatoAmount()
+        })
+
+        //Click al btn actualizar datos
+        btnActualizar.addEventListener("click", function (params) {
+            ActualizarDatos()
+        })
+
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4a33fFr6SgUAXjZ6FeFB_XDGL6SKuCuY",
+            authDomain: "wowprices-74a82.firebaseapp.com",
+            projectId: "wowprices-74a82",
+            storageBucket: "wowprices-74a82.appspot.com",
+            messagingSenderId: "380944707410",
+            appId: "1:380944707410:web:2f229f9fbf99d96e39148b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        leerDatos()
+
+        async function leerDatos() {
+            enableIndexedDbPersistence(db)
+                .catch((err) => {
+                    if (err.code == 'failed-precondition') {
+                        console.log("El modo Offline es solo con una ventana abierta!" + err.code)
+                        toastr.warning("El modo Offline es solo con una ventana abierta!")
+
+                    } else if (err.code == 'unimplemented') {
+                        console.log("No funciona el modo Offline en este navegador!" + err.code)
+                    }
+                });
+            const colRef = collection(db, "data");
+            const docsSnap = await getDocs(colRef);
+            docsSnap.forEach(doc => {
+
+                for (const key in doc.data().infoProducts) {
+                    var urlNormal = doc.data().infoProducts[key].url
+                    var urlProductos = obtenerUrlConServer(urlNormal, "Pagle")
+                    var NombreEspañol = doc.data().infoProducts[key].traduccion
+                    var categoria = doc.data().infoProducts[key].categoria
+                    var expansion = doc.data().infoProducts[key].expansion
+                    var nombreUnicoProduct = doc.data().infoProducts[key].nombreUnico
+
+                    if ("Pagle-alliance" == "Pagle-alliance") {
+                        precioActualizado = doc.data().infoProducts[key].servidor.pagle.precioActualizado
+                        fechaActualizada = doc.data().infoProducts[key].servidor.pagle.FechaActualizada
+
+                    } else if ("dropdownServidor.value" == "Whitemane-horde") {
+                        precioActualizado = doc.data().infoProducts[key].servidor.whitemane.precioActualizado
+                        fechaActualizada = doc.data().infoProducts[key].servidor.whitemane.FechaActualizada
+
+                    }
+                    //guarda en un nuevo array toda la mercancia traida de la base de datos
+                    infoProductosArray.push(doc.data().infoProducts[key])
+                }
+            })
+            alert("Datos traidos!")
+            console.log(infoProductosArray)
+            totalArrayBD = infoProductosArray.length
+            console.log("Total: " + totalArrayBD)
+
+        }
+
+        async function traerNuevoDatoAmount() {
+
+            const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
+            const loop = async () => {
+                for (const key in infoProductosArray) {
+                    var idProducto = infoProductosArray[key].id  //el id del producto sacado del archivo json local
+                    var urlNormal = infoProductosArray[key].url
+                    var urlProductos = obtenerUrlConServer(urlNormal, "Pagle")
+                    var urlCrafting = infoProductosArray[key].urlCrafting
+                    var NombreEspañol = infoProductosArray[key].traduccion
+                    var nivelProfesionRequerido = infoProductosArray[key].nivelUsoProfesion
+                    var receta = infoProductosArray[key].receta
+                    var iconProductoBuscado = infoProductosArray[key].icono
+                    var categoria = infoProductosArray[key].categoria
+                    var categoryDefault = infoProductosArray[key].categoryDefault
+                    var expansion = infoProductosArray[key].expansion
+                    var craftingComponent = infoProductosArray[key].craftingComponentes
+                    var nombreUnicoProducto = infoProductosArray[key].nombreUnico
+                    var craftingCategory = infoProductosArray[key].craftingCategory
+                    var arrayCraftingFinal = []
+
+                    //solicitud fetch (PONER EL URL DE LO NUEVO QUE SE QUIERE AGREGAR)
+                    var urlCrafting = infoProductosArray[key].urlCrafting
+                    const respuesta = await fetch(corsurl + urlInfoProductosP1 + idProducto + urlInfoProductosP2)
+                    const json = await respuesta.json()
+                    tooltipString = json.tooltip
+                    console.log("Producto: " + NombreEspañol)
+
+                   /* if (arrayComponentes.length > 0) {
+
+                        conteo = conteo + 1
+                        for (const key in craftingComponent) {
+                            //console.log("Cantidad por creación: " + CantidadPorCreacion)
+                            console.log("Dentro: " + conteo + "/" + totalArrayBD)
+                            var precioActualPagleComp = craftingComponent[key].precioActualPagle
+                            var precioActualWhitemaneComp = craftingComponent[key].precioActualWhitemane
+                            var itemId = craftingComponent[key].itemId
+                            var componenteNombreUnico = craftingComponent[key].nombreUnico
+                            var amount = craftingComponent[key].cantidad
+                            var iconoImg = craftingComponent[key].icono
+                            var nombreEnEspañolComp = craftingComponent[key].nombreEnEspañol
+                            var CantidadPorCreacion = craftingComponent[key].cantidadPorCreacion
+
+                            //agrega los datos del componente al array
+                            arrayCraftingFinal.push({
+                                "itemId": itemId,
+                                "precioActualPagle": precioActualPagleComp,
+                                "precioActualWhitemane": precioActualWhitemaneComp,
+                                "icono": iconoImg,
+                                "cantidad": amount,
+                                "cantidadPorCreacion": CantidadPorCreacion,
+                                "nombreEnEspañol": nombreEnEspañolComp,
+                                "nombreUnico": componenteNombreUnico
+                            })
+                        }
+                        console.log(arrayCraftingFinal)
+                    } else {
+                        conteo = conteo + 1
+                        console.log("No tiene crafteo en posicion: " + conteo + "/" + totalArrayBD)
+                    }*/
+
+                    var precioPagle = infoProductosArray[key].servidor.pagle.precioActualizado
+                    var fechaPagle = infoProductosArray[key].servidor.pagle.FechaActualizada
+
+                    var precioWhitemane = infoProductosArray[key].servidor.whitemane.precioActualizado
+                    var fechaWhitemane = infoProductosArray[key].servidor.whitemane.FechaActualizada
+
+                    infoProductosActualizadosJson.infoProducts[nombreUnicoProducto] = {
+                        "id": idProducto,
+                        "url": urlProductos,
+                        "traduccion": NombreEspañol,
+                        "urlCrafting": urlCrafting,
+                        "icono": iconProductoBuscado,
+                        "categoria": categoria,
+                        "nivelUsoProfesion": nivelProfesionRequerido,
+                        "receta": receta,
+                        "categoryDefault": categoryDefault,
+                        "nombreUnico": nombreUnicoProducto,
+                        "craftingCategory": craftingCategory,
+                        "tooltipInfo": tooltipString,
+                        "expansion": expansion,
+                        "craftingComponentes": craftingComponent,
+                        "servidor": {
+                            "pagle": {
+                                "precioActualizado": precioPagle,
+                                "FechaActualizada": fechaPagle
+                            },
+                            "whitemane": {
+                                "precioActualizado": precioWhitemane,
+                                "FechaActualizada": fechaWhitemane
+                            }
+                        }
+                    };
+                    var size = Object.keys(infoProductosActualizadosJson.infoProducts).length;
+                    console.log("Nro en json: " + size)
+                    console.log(infoProductosActualizadosJson)
+                    await wait(250)
+                }
+                var size = Object.keys(infoProductosActualizadosJson.infoProducts).length;
+                console.log("Nro en json: " + size)
+
+                console.log("Fin!")
+                console.log(infoProductosActualizadosJson)
+            }
+            loop()
+        }
+
+        async function ActualizarDatos() {
+            //Ahora lo subimos a firestore
+            try {
+                await setDoc(doc(db, "data", "datos"), infoProductosActualizadosJson).then(resp => {
+
+                    alert("Actualizado correctamente!")
+                }).catch(function (reason) {
+                    console.log(reason)
+
+                });
+
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        function obtenerUrlConServer(urlNormal, serverSelected) {
+            var urlSplit = urlNormal.split("/")
+            var serverFaccionSplit = urlSplit[6].toString().split("-")
+            var urlProductosConServerSelect = urlSplit[0] + "//" + urlSplit[2] + "/" + urlSplit[3] + "/" + urlSplit[4] + "/" + urlSplit[5] + "/" + serverSelected + "/" + urlSplit[7]
+            return urlProductosConServerSelect
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,256 @@
+body {
+    background-color: #242424;
+}
+
+
+.tooltiptext {
+    visibility: hidden;
+    margin-left: 65px;
+    padding-left: 20px;
+    background-color: #080d21;
+    color: bisque;
+    width: 320px;
+    font-size: 12px;
+    font-family: Verdana, "Open Sans", Arial, "Helvetica Neue", Helvetica, sans-serif;
+    border-radius: 6px;
+    padding: 5px 0;
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+#trCraftId,
+#trFlippingId {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+#divTablaId,
+#divTabCraft {
+    background-color: #242424;
+    margin-top: -11px;
+}
+
+#titulo,
+#PventaLabel,
+#idiomaLabel,
+#lastUpdated,
+#servidorLabel,
+#monedaId,
+#letras,
+#lastFecha,
+h5 {
+    color: bisque;
+}
+
+#ventanaTitulo {
+    color: bisque;
+    margin-left: 10px;
+}
+
+#idContenedor {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.columnas {
+    border-radius: 10px;
+}
+
+#BtnSubirArchivo {
+    visibility: hidden;
+}
+
+.row {
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+#txtNotificacion,
+#NotificacionTextCrafteo,
+h4 {
+    color: wheat;
+    margin-top: 15px;
+    text-align: center;
+}
+
+#modalContent,
+#divContenidoComponenteModalId {
+    background-color: #242424;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 8px;
+    color: burlywood
+}
+
+tr:nth-child(even) {
+    background-color: #333333
+}
+
+th {
+    background-color: #091e4d;
+    color: white;
+}
+
+#spinnerCargandoDatoAdicional {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border-left-color: #09f;
+    animation: spin 1s ease infinite;
+    display: inline;
+}
+
+#progressBar,
+#progressBarCraft {
+    width: 100%;
+    margin-bottom: 0px;
+    height: 10px;
+    background-color: green;
+}
+
+.modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: rgb(51, 51, 51);
+}
+
+#divForm {
+    margin-top: 10px;
+    padding-left: 5px;
+}
+
+#txtInvertido {
+    margin-top: 15px;
+    text-align: center;
+}
+
+#txtGananciaAprox {
+    text-align: center;
+}
+
+#PventaId {
+    width: 120px;
+    margin-left: 37px;
+    text-align: center;
+}
+
+#btnCambiar {
+    margin-top: 5px;
+}
+
+#modalConentID {
+    width: 635px;
+}
+
+#bIdComp {
+    margin-bottom: 15px;
+}
+
+#TituloDatosAdicionales {
+    border-radius: 22px;
+    background-color: #4e4e4e;
+    width: fit-content;
+    padding-left: 15px;
+    padding-right: 10px;
+    margin-top: -12px;
+    justify-content: center;
+    text-align: center;
+    color: bisque;
+}
+
+#divtitulo {
+    margin-left: 200px;
+    width: 157px;
+    height: 27px;
+    left: 188px;
+    top: 68px;
+
+    background: #4E4E4E;
+    border-radius: 90px;
+}
+
+#divBase {
+    box-sizing: border-box;
+    width: 95%;
+    height: 155px;
+    left: calc(50% - 342px/2);
+    top: calc(50% - 126px/2 + 0.5px);
+    margin-top: 25px;
+    background: #242424;
+    border: 1px solid #000000;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 15px;
+}
+
+#divDatosAdicionales {
+    width: 100%;
+    height: 81px;
+    left: 115px;
+    top: 109px;
+    color: bisque;
+    margin-top: 12px;
+    margin-left: 20px;
+}
+
+@import url(https://fonts.googleapis.com/css?family=Roboto);
+
+body {
+    font-family: Roboto, sans-serif;
+}
+
+#chart {
+    max-width: 500px;
+    margin: 35px auto;
+    background-color: #333333;
+
+}
+
+#container {
+    height: 55px;
+    width: 55px;
+    position: relative;
+}
+
+#imgModalProducto {
+    z-index: 50;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+}
+
+#txtCantidadPorStackId {
+    z-index: 80;
+    position: absolute;
+    color: #f8f8f8;
+    font-size: 18px;
+    font-weight: bold;
+    top: -3px;
+    right: 5.5px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+    
+}
+
+#divTextCircularId {
+    position: absolute;
+    z-index: 50;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    top: 34px;
+    opacity: 0.85;
+    right: 0px;
+    background-color: rgb(46, 46, 46)
+}

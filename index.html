@@ -20,500 +20,266 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <!--Grafica-->
     <script defer async src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!--CSS del Tooltip de informacion de producto-->
+    <link rel="stylesheet" href="css/styleTooltipInfoProducto.css">
+    <!--CSS de todos los estilos de la app-->
+    <link rel="stylesheet" href="css/stylePrincipalApp.css">
 </head>
 
 <body>
-    <!-- ************** Stylos CSS *********************-->
-    <style>
-        body {
-            background-color: #242424;
-        }
+  
 
-        #trCraftId,
-        #trFlippingId {
-            position: sticky;
-            top: 0;
-            z-index: 999;
-        }
+    <section>
+        <!-- ************************** HTML MODAL *************************** -->
 
-        #divTablaId,
-        #divTabCraft {
-            background-color: #242424;
-            margin-top: -11px;
-        }
+        <div class="modal fade" id="staticBackdrop" id="Modal" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div id="modalContent" class="modal-content">
+                    <div class="modal-header">
+                        <img id="imgVentanita" src="" alt="">
+                        <h5 class="modal-title" id="ventanaTitulo"></h5><br>
+                        <h5 class="" id="precioTitulo"></h5>
+                        <button id="cerrarModalId" type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
 
-        #titulo,
-        #PventaLabel,
-        #idiomaLabel,
-        #lastUpdated,
-        #servidorLabel,
-        #monedaId,
-        #letras,
-        #lastFecha,
-        h5 {
-            color: bisque;
-        }
+                        <!-- Todo dentro de la ventanita -->
 
-        #ventanaTitulo {
-            color: bisque;
-            margin-left: 10px;
-        }
+                        <!--Tabs de titulo ventanita-->
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a href="#DiaDeVentaTabHref" class="nav-link active" id="DiaDeVentaTabId"
+                                    data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab"
+                                    aria-controls="home" aria-selected="true">Dias de
+                                    venta</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="graficasTab" data-bs-toggle="tab" data-bs-target="#profile"
+                                    type="button" role="tab" aria-controls="profile" aria-selected="false">Gráficas de
+                                    análisis</button>
+                            </li>
+                        </ul>
 
-        #idContenedor {
-            margin-left: 5px;
-            margin-right: 5px;
-        }
-
-        .columnas {
-            border-radius: 10px;
-        }
-
-        #BtnSubirArchivo {
-            visibility: hidden;
-        }
-
-        .row {
-            margin-top: 10px;
-            margin-bottom: 5px;
-        }
-
-        #txtNotificacion,
-        #NotificacionTextCrafteo,
-        h4 {
-            color: wheat;
-            margin-top: 15px;
-            text-align: center;
-        }
-
-        #modalContent,
-        #divContenidoComponenteModalId {
-            background-color: #242424;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 8px;
-            color: burlywood
-        }
-
-        tr:nth-child(even) {
-            background-color: #333333
-        }
-
-        th {
-            background-color: #091e4d;
-            color: white;
-        }
-
-        #spinnerCargandoDatoAdicional {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border-left-color: #09f;
-            animation: spin 1s ease infinite;
-            display: inline;
-        }
-
-        #progressBar,
-        #progressBarCraft {
-            width: 100%;
-            margin-bottom: 0px;
-            height: 10px;
-            background-color: green;
-        }
-
-        .modal-header {
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            background-color: rgb(51, 51, 51);
-        }
-
-        #divForm {
-            margin-top: 10px;
-            padding-left: 5px;
-        }
-
-        #txtInvertido {
-            margin-top: 15px;
-            text-align: center;
-        }
-
-        #txtGananciaAprox {
-            text-align: center;
-        }
-
-        #PventaId {
-            width: 120px;
-            margin-left: 37px;
-            text-align: center;
-        }
-
-        #btnCambiar {
-            margin-top: 5px;
-        }
-
-        #modalConentID {
-            width: 635px;
-        }
-
-        #bIdComp {
-            margin-bottom: 15px;
-        }
-
-        #TituloDatosAdicionales {
-            border-radius: 22px;
-            background-color: #4e4e4e;
-            width: fit-content;
-            padding-left: 15px;
-            padding-right: 10px;
-            margin-top: -12px;
-            justify-content: center;
-            text-align: center;
-            color: bisque;
-        }
-
-        #divtitulo {
-            margin-left: 200px;
-            width: 157px;
-            height: 27px;
-            left: 188px;
-            top: 68px;
-
-            background: #4E4E4E;
-            border-radius: 90px;
-        }
-
-        #divBase {
-            box-sizing: border-box;
-            width: 95%;
-            height: 155px;
-            left: calc(50% - 342px/2);
-            top: calc(50% - 126px/2 + 0.5px);
-            margin-top: 25px;
-            background: #242424;
-            border: 1px solid #000000;
-            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-            border-radius: 15px;
-        }
-
-        #divDatosAdicionales {
-            width: 100%;
-            height: 81px;
-            left: 115px;
-            top: 109px;
-            color: bisque;
-            margin-top: 12px;
-            margin-left: 20px;
-        }
-
-        @import url(https://fonts.googleapis.com/css?family=Roboto);
-
-        body {
-            font-family: Roboto, sans-serif;
-        }
-
-        #chart {
-            max-width: 500px;
-            margin: 35px auto;
-            background-color: #333333;
-
-        }
-
-        #container {
-            height: 55px;
-            width: 55px;
-            position: relative;
-        }
-
-        #imgModalProducto {
-            z-index: 50;
-            position: absolute;
-            left: 0;
-            top: 0;
-            border-radius: 10px;
-        }
-
-        #txtCantidadPorStackId {
-            z-index: 80;
-            position: absolute;
-            color: #f8f8f8;
-            font-size: 18px;
-            font-weight: bold;
-            top: -3px;
-            right: 5.5px;
-            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
-            
-        }
-
-        #divTextCircularId {
-            position: absolute;
-            z-index: 50;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            top: 34px;
-            opacity: 0.85;
-            right: 0px;
-            background-color: rgb(46, 46, 46)
-        }
-    </style>
-
-    <!-- ************************** HTML MODAL *************************** -->
-
-    <div class="modal fade" id="staticBackdrop" id="Modal" data-bs-backdrop="static" data-bs-keyboard="false"
-        tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div id="modalContent" class="modal-content">
-                <div class="modal-header">
-                    <img id="imgVentanita" src="" alt="">
-                    <h5 class="modal-title" id="ventanaTitulo"></h5><br>
-                    <h5 class="" id="precioTitulo"></h5>
-                    <button id="cerrarModalId" type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-
-                    <!-- Todo dentro de la ventanita -->
-
-                    <!--Tabs de titulo ventanita-->
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <a href="#DiaDeVentaTabHref" class="nav-link active" id="DiaDeVentaTabId"
-                                data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab"
-                                aria-controls="home" aria-selected="true">Dias de
-                                venta</a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="graficasTab" data-bs-toggle="tab" data-bs-target="#profile"
-                                type="button" role="tab" aria-controls="profile" aria-selected="false">Gráficas de
-                                análisis</button>
-                        </li>
-                    </ul>
-
-                    <!--contenidos de las tabs-->
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                            <div id="divForm" class="divForm d-flex justify-content-center">
-                                <form action="">
-                                    <div class="d-flex justify-content-center">
-                                        <h6 id="PventaLabel" for="fname">Precio de venta:</h6><br>
-                                    </div>
-                                    <input type="number" class="Pventa" id="PventaId" name="fname">
-                                    <b for="moneda" id="monedaId"></b>
-                                    <br>
-                                    <div class="d-flex justify-content-center">
-                                        <input class="btn btn-success" id="btnCambiar" type="button" value="Cambiar ▼">
-                                    </div>
-                                </form>
+                        <!--contenidos de las tabs-->
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <div id="divForm" class="divForm d-flex justify-content-center">
+                                    <form action="">
+                                        <div class="d-flex justify-content-center">
+                                            <h6 id="PventaLabel" for="fname">Precio de venta:</h6><br>
+                                        </div>
+                                        <input type="number" class="Pventa" id="PventaId" name="fname">
+                                        <b for="moneda" id="monedaId"></b>
+                                        <br>
+                                        <div class="d-flex justify-content-center">
+                                            <input class="btn btn-success" id="btnCambiar" type="button"
+                                                value="Cambiar ▼">
+                                        </div>
+                                    </form>
+                                </div>
+                                <br>
+                                <table id="tablaVerificacion" border="1">
+                                    <tr>
+                                        <th>Día</th>
+                                        <th>#</th>
+                                        <th>Precio alcanzado</th>
+                                        <th>Hora</th>
+                                    </tr>
+                                </table>
                             </div>
-                            <br>
-                            <table id="tablaVerificacion" border="1">
+                            <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                                <!-----------------------GRAFICA DE ANALISIS Flipping------------------------>
+                                <div class="graficaFlipping"></div>
+                            </div>
+                        </div>
+
+                        <!-- FIN DE Todo dentro de la ventanita -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- *************** HTML MODAL COMPONENTES DE CRAFTEO ****************** -->
+        <div class="modal fade" id="modalComponentes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div id="modalConentID" class="modal-content">
+                    <div class="modal-header">
+                        <div id="container">
+                            <img id="imgModalProducto" src="" alt="">
+                            <div id="divTextCircularId">
+                                <div id="txtCantidadPorStackId">1</div>
+                            </div>
+                        </div>
+                        <h5 class="modal-title" id="tituloModalNombreProducto">mt</h5>
+                        <input type="number" min="1" oninput="this.value|=0" id="inputCantidadComp" value="1">
+                        <input type="button" id="btnEnviarCantidadComp" value=">">
+                    </div>
+                    <!--Contenido de la tabla de componentes-->
+                    <div id="divContenidoComponenteModalId" class="modal-body">
+                        <div>
+                            <h4>Componentes</h4>
+                        </div>
+                        <div id="divTablaComponente">
+                            <table id="tablaComponentes" border="1">
                                 <tr>
-                                    <th>Día</th>
-                                    <th>#</th>
-                                    <th>Precio alcanzado</th>
-                                    <th>Hora</th>
+                                    <th>Img</th>
+                                    <th>Nombre</th>
+                                    <th>Precio de compra</th>
+                                    <th>hasta el 5%</th>
+                                    <th>Cantidad</th>
                                 </tr>
                             </table>
+                            <h5 id="txtInvertido"></h5>
+                            <h5 id="txtGananciaAprox"></h5>
                         </div>
-                        <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                            <!-----------------------GRAFICA DE ANALISIS Flipping------------------------>
-                            <div class="graficaFlipping"></div>
+                        <!---------------------------------------------------------------------------->
+                        <div class="d-flex justify-content-center">
+                            <div id="divBase">
+                                <div id="divtitulo">
+                                    <div id="TituloDatosAdicionales">Datos adicionales</div> <br>
+                                </div>
+                                <div id="divDatosAdicionales">
+                                    <b id="bIdComp">- Precio Individual: </b>
+                                    <b id="bIdPrecioIndividual">0</b>
+                                    <br>
+                                    <b id="bIdComp">- x1 Precio de venta: </b>
+                                    <b id="bIdPrecioDeVenta">0</b>
+                                    <br>
+                                    <b id="bIdComp">- Precio promedio: </b>
+                                    <b id="bIdPrecioPromedio"></b>
+                                    <br>
+                                    <b id="bIdComp">- Cantidad en subasta: </b>
+                                    <b id="bIdCantidadPublicada"></b>
+                                    <br>
+                                    <b id="bIdComp"></b>
+                                    <b id="bIdUltimoEscaneo"></b>
+                                    <img id="iconoModalId" src="icons/check.png" alt="">
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- FIN DE Todo dentro de la ventanita -->
+                        <!--------------------GRAFICA DE ANALISIS crafting------------------------>
+                        <div class="graficaCrafting"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- *************** HTML MODAL COMPONENTES DE CRAFTEO ****************** -->
-    <div class="modal fade" id="modalComponentes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div id="modalConentID" class="modal-content">
-                <div class="modal-header">
-                    <div id="container">
-                        <img id="imgModalProducto" src="" alt="">
-                        <div id="divTextCircularId">
-                            <div id="txtCantidadPorStackId">1</div>
+        <!-- ************************* HTML PRINCIPAL *************************** -->
+        <div id="idDivOpacity">
+            <div class="d-flex justify-content-center">
+                <h1 id="titulo">Protuctos en subasta (Wow TBC)</h1>
+            </div>
+            <div id="idContenedor">
+
+                <div class="row align-items-center">
+                    <!-- Columna 1 del row* -->
+                    <div class="columnas col-8">
+                        <b id="servidorLabel">Servidor:</b>
+                        <select id="dropdownServidor">
+                            <option value="Pagle-alliance">Pagle Alianza</option>
+                            <option value="Whitemane-horde">Whitemane Horda</option>
+                        </select>
+
+                        <b id="idiomaLabel">Expansion:</b>
+                        <select id="dropdownExpansion">
+                            <option value="Todos">Todos</option>
+                            <option value="Classic">Classic</option>
+                            <option value="Tbc">Tbc</option>
+                            <option value="Wotlk">Wotlk</option>
+                        </select>
+
+                        <b id="idiomaLabel">Categoría:</b>
+                        <select id="dropdownCategoriaProductos">
+                        </select>
+                    </div>
+                    <!-- Columna 2 del row* -->
+                    <div class="columnas col-4">
+                        <b id="letras" id="servidorLabel">Selecciona el proveedor de precios:</b><br>
+                        <div id="divDatosOnline" class="form-check">
+                            <input id="radioCheckNexus" class="form-check-input" type="radio" value="radioNexus"
+                                name="flexRadioDisabled" id="flexRadioDisabled" checked>
+                            <label id="letras" class="form-check-label" for="flexRadioDisabled">
+                                Datos Online
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input id="radioCheckArchivo" class="form-check-input" type="radio" value="radioLocalJson"
+                                name="flexRadioDisabled">
+                            <label id="letras" class="form-check-label" for="flexRadioCheckedDisabled">
+                                Datos de escaneo Local
+                            </label>
+                            <button id="BtnSubirArchivo" type="button" class="btn btn-primary">Subir Archivo</button>
                         </div>
                     </div>
-                    <h5 class="modal-title" id="tituloModalNombreProducto">mt</h5>
-                    <input type="number" min="1" oninput="this.value|=0" id="inputCantidadComp" value="1">
-                    <input type="button" id="btnEnviarCantidadComp" value=">">
+                    <p id="lastUpdated"></p>
                 </div>
-                <!--Contenido de la tabla de componentes-->
-                <div id="divContenidoComponenteModalId" class="modal-body">
-                    <div>
-                        <h4>Componentes</h4>
-                    </div>
-                    <div id="divTablaComponente">
-                        <table id="tablaComponentes" border="1">
-                            <tr>
-                                <th>Img</th>
+            </div>
+
+            <!--------------Tabs titulo---------------->
+            <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="flippingTab" data-bs-toggle="tab" data-bs-target="#flipping"
+                        type="button" role="tab" aria-controls="home" aria-selected="true">Flipping</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="crafteoTab" data-bs-toggle="tab" data-bs-target="#crafteo"
+                        type="button" role="tab" aria-controls="profile" aria-selected="false">Crafteo</button>
+                </li>
+            </ul>
+
+            <!-------------------Contenido de las tabs principales-------------->
+            <div class="tab-content">
+                <!--Tab de Flipping-->
+                <div class="tab-pane fade show active" id="flipping" role="tabpanel" aria-labelledby="flippingTab">
+                    <progress id="progressBar" value="0%" max="100"></progress>
+                    <div id="divTablaId">
+                        <table id="productos" border="1">
+                            <tr id="trFlippingId">
+                                <th>Imagen</th>
                                 <th>Nombre</th>
-                                <th>Precio de compra</th>
-                                <th>hasta el 5%</th>
+                                <th>Precio Compra</th>
+                                <th>Compra hasta el 15%</th>
+                                <th>Precio de venta</th>
+                                <th>Ganancia Aproximada</th>
+                                <th id="porcentaje">%</th>
                                 <th>Cantidad</th>
+                                <th>Herramientas</th>
                             </tr>
                         </table>
-                        <h5 id="txtInvertido"></h5>
-                        <h5 id="txtGananciaAprox"></h5>
                     </div>
-                    <!---------------------------------------------------------------------------->
-                    <div class="d-flex justify-content-center">
-                        <div id="divBase">
-                            <div id="divtitulo">
-                                <div id="TituloDatosAdicionales">Datos adicionales</div> <br>
-                            </div>
-                            <div id="divDatosAdicionales">
-                                <b id="bIdComp">- Precio Individual: </b>
-                                <b id="bIdPrecioIndividual">0</b>
-                                <br>
-                                <b id="bIdComp">- x1 Precio de venta: </b>
-                                <b id="bIdPrecioDeVenta">0</b>
-                                <br>
-                                <b id="bIdComp">- Precio promedio: </b>
-                                <b id="bIdPrecioPromedio"></b>
-                                <br>
-                                <b id="bIdComp">- Cantidad en subasta: </b>
-                                <b id="bIdCantidadPublicada"></b>
-                                <br>
-                                <b id="bIdComp"></b>
-                                <b id="bIdUltimoEscaneo"></b>
-                                <img id="iconoModalId" src="icons/check.png" alt="">
-                            </div>
-                        </div>
+                    <div>
+                        <h4 id="txtNotificacion"></h4>
                     </div>
-
-                    <!--------------------GRAFICA DE ANALISIS crafting------------------------>
-                    <div class="graficaCrafting"></div>
+                </div>
+                <!--Tab de Crafting-->
+                <div class="tab-pane" id="crafteo" role="tabpanel" aria-labelledby="crafteoTab">
+                    <progress id="progressBarCraft" value="0%" max="100"></progress>
+                    <div id="divTabCraft">
+                        <table id="crafteoTabla" border="1">
+                            <tr id="trCraftId">
+                                <th>Imagen</th>
+                                <th>Nombre</th>
+                                <th>Inversión de crafteo</th>
+                                <th>Precio Individual</th>
+                                <th>Precio de venta x1</th>
+                                <th>Ganancia</th>
+                                <th>%</th>
+                                <th>Nivel</th>
+                                <th>Receta</th>
+                                <th>Componentes</th>
+                            </tr>
+                        </table>
+                    </div>
+                    <h4 id="txtNotificacionCrafteo"></h4>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- ************************* HTML PRINCIPAL *************************** -->
-    <div id="idDivOpacity">
-        <div class="d-flex justify-content-center">
-            <h1 id="titulo">Protuctos en subasta (Wow TBC)</h1>
         </div>
-        <div id="idContenedor">
-
-            <div class="row align-items-center">
-                <!-- Columna 1 del row* -->
-                <div class="columnas col-8">
-                    <b id="servidorLabel">Servidor:</b>
-                    <select id="dropdownServidor">
-                        <option value="Pagle-alliance">Pagle Alianza</option>
-                        <option value="Whitemane-horde">Whitemane Horda</option>
-                    </select>
-
-                    <b id="idiomaLabel">Expansion:</b>
-                    <select id="dropdownExpansion">
-                        <option value="Todos">Todos</option>
-                        <option value="Classic">Classic</option>
-                        <option value="Tbc">Tbc</option>
-                        <option value="Wotlk">Wotlk</option>
-                    </select>
-
-                    <b id="idiomaLabel">Categoría:</b>
-                    <select id="dropdownCategoriaProductos">
-                    </select>
-                </div>
-                <!-- Columna 2 del row* -->
-                <div class="columnas col-4">
-                    <b id="letras" id="servidorLabel">Selecciona el proveedor de precios:</b><br>
-                    <div id="divDatosOnline" class="form-check">
-                        <input id="radioCheckNexus" class="form-check-input" type="radio" value="radioNexus"
-                            name="flexRadioDisabled" id="flexRadioDisabled" checked>
-                        <label id="letras" class="form-check-label" for="flexRadioDisabled">
-                            Datos Online
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input id="radioCheckArchivo" class="form-check-input" type="radio" value="radioLocalJson"
-                            name="flexRadioDisabled">
-                        <label id="letras" class="form-check-label" for="flexRadioCheckedDisabled">
-                            Datos de escaneo Local
-                        </label>
-                        <button id="BtnSubirArchivo" type="button" class="btn btn-primary">Subir Archivo</button>
-                    </div>
-                </div>
-                <p id="lastUpdated"></p>
-            </div>
-        </div>
-
-        <!--------------Tabs titulo---------------->
-        <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="flippingTab" data-bs-toggle="tab" data-bs-target="#flipping"
-                    type="button" role="tab" aria-controls="home" aria-selected="true">Flipping</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="crafteoTab" data-bs-toggle="tab" data-bs-target="#crafteo" type="button"
-                    role="tab" aria-controls="profile" aria-selected="false">Crafteo</button>
-            </li>
-        </ul>
-
-        <!-------------------Contenido de las tabs principales-------------->
-        <div class="tab-content">
-            <!--Tab de Flipping-->
-            <div class="tab-pane fade show active" id="flipping" role="tabpanel" aria-labelledby="flippingTab">
-                <progress id="progressBar" value="0%" max="100"></progress>
-                <div id="divTablaId">
-                    <table id="productos" border="1">
-                        <tr id="trFlippingId">
-                            <th>Imagen</th>
-                            <th>Nombre</th>
-                            <th>Precio Compra</th>
-                            <th>Compra hasta el 15%</th>
-                            <th>Precio de venta</th>
-                            <th>Ganancia Aproximada</th>
-                            <th id="porcentaje">%</th>
-                            <th>Cantidad</th>
-                            <th>Herramientas</th>
-                        </tr>
-                    </table>
-                </div>
-                <div>
-                    <h4 id="txtNotificacion"></h4>
-                </div>
-            </div>
-            <!--Tab de Crafting-->
-            <div class="tab-pane" id="crafteo" role="tabpanel" aria-labelledby="crafteoTab">
-                <progress id="progressBarCraft" value="0%" max="100"></progress>
-                <div id="divTabCraft">
-                    <table id="crafteoTabla" border="1">
-                        <tr id="trCraftId">
-                            <th>Imagen</th>
-                            <th>Nombre</th>
-                            <th>Inversión de crafteo</th>
-                            <th>Precio Individual</th>
-                            <th>Precio de venta x1</th>
-                            <th>Ganancia</th>
-                            <th>%</th>
-                            <th>Nivel</th>
-                            <th>Receta</th>
-                            <th>Componentes</th>
-                        </tr>
-                    </table>
-                </div>
-                <h4 id="txtNotificacionCrafteo"></h4>
-            </div>
-        </div>
-    </div>
-    </div>
+    </section>
 
     <script type="module">
         //firestore imports
@@ -625,6 +391,11 @@
         var chart = ""
         var fechaEnModal = ""
         var modalVisible = false
+
+        //Variables del tooltips
+        var divDentroToolTip = document.getElementById("dentro")
+        var _MOUSEOVER_IN_PROGRESS = false;
+        var tooltipString = ""
 
         //-------------------------------eventos on click y change-------------------------------------
 
@@ -800,13 +571,17 @@
         //.............................Funciones de crafteo...............................................
         var namesito = ""
         var canti = 0
-        async function traerProductoCrafteo(urlProductos, key, infoProductosArray, idioma, NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta, fechaActualizada, CantidadPorCreacion, valorInvertidoEntreCantCreada) {
+        var tooltipInfoProductoArray = []
+
+        //Funcion que muestra o quita el tooltip de la info del producto
+        async function traerProductoCrafteo(urlProductos, key, infoProductosArray, idioma, NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta, fechaActualizada, CantidadPorCreacion, valorInvertidoEntreCantCreada, tooltipInfoProducto) {
             var dropdownServidorValue = dropdownServidor.value
             var cantidadComponentes = 0
             var nameComponente = ""
             var sumaDeComponentes = 0
             var multiplicaCantidadPorPrecio = 0
             var ganancia = 0
+
             //Precio viales en el npc
             var vialNames = [
                 "vial emplomado",
@@ -883,20 +658,32 @@
                 var gananciaSimple = ganancia // ejemp : transforma 29000 -> 2.90
 
                 if (nivelProfesionRequerido != 0) {
+                    var idImagenes = "dentro" + key //el Id de la imagen con su key para ponerlo en el innerHTML
+
                     //agrega los datos a a tabla
                     var fila = document.createElement('tr');
 
-                    //la imagen del producto
+                    //Pone la imagen del producto
                     var td = document.createElement('td');
                     td.innerHTML = `
                     <div id="container">
-                        <img id="imgModalProducto" src="`+ iconoImg+ `" alt="">
+                        <img id="imgModalProducto" src="`+ iconoImg + `" alt="">
                         <div id="divTextCircularId">
-                            <div id="txtCantidadPorStackId">`+CantidadPorCreacion+`</div>
+                            <div id="txtCantidadPorStackId">`+ CantidadPorCreacion + `</div>
                         </div>
+                        <span id="`+ idImagenes +`" class="tooltiptext"></span>
                     </div>
                     `;
+                    //cuando le pasa el raton sobre la imagen
+                    td.onmouseenter = function () {
+                        document.getElementById(idImagenes).style.visibility = "visible";
+                        document.getElementById(idImagenes).innerHTML = tooltipInfoProductoArray[key]
+                     }
+                     td.onmouseleave = function (){
+                        document.getElementById(idImagenes).style.visibility = "hidden";
+                     }
                     fila.appendChild(td);
+
 
                     //crea el nombre
                     var td = document.createElement('td');
@@ -972,10 +759,10 @@
                     }
 
                     td.setAttribute("style", "cursor: pointer; border: red")
-                    
+
                     td.onclick = function (evt) {
                         var UrlWowheadReceta = "https://www.wowhead.com/wotlk/es/item="
-                        if(HayReceta == "Si"){
+                        if (HayReceta == "Si") {
                             window.open(UrlWowheadReceta + receta[0], "_blank");
                         }
                     }
@@ -1059,11 +846,12 @@
                     var nombreUnicoProducto = infoProductosArray[key].nombreUnico
                     var crafteoComponente = infoProductosArray[key].craftingComponentes
                     var CantidadPorCreacionLentgh = infoProductosArray[key].craftingComponentes.length
+                    var tooltipInfoProducto = infoProductosArray[key].tooltipInfo
+                    tooltipInfoProductoArray.push(tooltipInfoProducto)
 
-                    
                     //trae solo los productos en la categoria seleccionada
                     if (infoProductosArray[key].craftingCategory == dropdownProductosValue) {
-                        if(CantidadPorCreacionLentgh > 0){
+                        if (CantidadPorCreacionLentgh > 0) {
                             var CantidadPorCreacion = infoProductosArray[key].craftingComponentes[0].cantidadPorCreacion
                         }
 
@@ -1077,11 +865,11 @@
                         }
                         if (dropdownProductosValue == infoProductosArray[key].craftingCategory && dropdownExpansionValue == infoProductosArray[key].expansion) {
 
-                            traerProductoCrafteo(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta, fechaActualizada, CantidadPorCreacion)
+                            traerProductoCrafteo(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta, fechaActualizada, CantidadPorCreacion, tooltipInfoProducto)
 
                         } else if (dropdownProductosValue == infoProductosArray[key].craftingCategory && dropdownExpansionValue == "Todos") {
 
-                            traerProductoCrafteo(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta, fechaActualizada, CantidadPorCreacion)
+                            traerProductoCrafteo(urlProductos, key, infoProductosArray, "Español", NombreEspañol, nombreUnicoProducto, precioActualizado, crafteoComponente, iconoImg, nivelProfesionRequerido, receta, fechaActualizada, CantidadPorCreacion, tooltipInfoProducto)
                         }
 
                     }
@@ -1133,12 +921,12 @@
                         var nameEspañolComp = arrayComponentes[llave].nombreEnEspañol
                         var cantidadPorCreacion = parseInt(arrayComponentes[llave].cantidadPorCreacion)
                         if (cantidadPorCreacion >= 10) {
-                            divTextCircularId.setAttribute("style","height:24px; width:24px; top:32px; right:0px;")
-                            txtCantidadPorStackId.setAttribute("style","top:-1px; right:3px;")
+                            divTextCircularId.setAttribute("style", "height:24px; width:24px; top:32px; right:0px;")
+                            txtCantidadPorStackId.setAttribute("style", "top:-1px; right:3px;")
                             txtCantidadPorStackId.innerText = cantidadPorCreacion
-                        }else{
-                            divTextCircularId.setAttribute("style","height:20px; width:20px; top:35px; right:0px;")
-                            txtCantidadPorStackId.setAttribute("style","top:-3.5px; right:5.5px;")
+                        } else {
+                            divTextCircularId.setAttribute("style", "height:20px; width:20px; top:35px; right:0px;")
+                            txtCantidadPorStackId.setAttribute("style", "top:-3.5px; right:5.5px;")
                             txtCantidadPorStackId.innerText = cantidadPorCreacion
                         }
 
@@ -1158,7 +946,7 @@
                         img.src = iconoComp;
                         fila.appendChild(div_caption);
                         fila.appendChild(img);
-                        
+
 
                         //Comprueba si viene un vial de alquimia o un papiro de inscripcion
                         //y le coloca su precio de npc en lugar de la subasta
@@ -1265,7 +1053,6 @@
                 }
             }
         }
-
 
         //.............................Funciones de Flipping...............................................
 
