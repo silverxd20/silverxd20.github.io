@@ -392,11 +392,6 @@
         var fechaEnModal = ""
         var modalVisible = false
 
-        //Variables del tooltips
-        var divDentroToolTip = document.getElementById("dentro")
-        var _MOUSEOVER_IN_PROGRESS = false;
-        var tooltipString = ""
-
         //-------------------------------eventos on click y change-------------------------------------
 
         //Abre el panel para agregar productos
@@ -1511,6 +1506,7 @@
                         var craftingComponent = infoProductosArray[llaveInfoProd].craftingComponentes
                         var nombreUnicoProducto = infoProductosArray[llaveInfoProd].nombreUnico
                         var craftingCategory = infoProductosArray[llaveInfoProd].craftingCategory
+                        var productoTooltip = infoProductosArray[llaveInfoProd].tooltipInfo
                         var arrayCraftingFinal = []
 
                         //Mira si el ID del producto en BD existe dentro del archivo json local
@@ -1613,6 +1609,7 @@
                                 "categoryDefault": categoryDefault,
                                 "nombreUnico": nombreUnicoProducto,
                                 "craftingCategory": craftingCategory,
+                                "tooltipInfo": productoTooltip,
                                 "expansion": expansion,
                                 "craftingComponentes": arrayCraftingFinal,
                                 "servidor": {
@@ -1671,9 +1668,9 @@
 
                     console.log("Nueva lista creada (3/4)")
                     console.log(infoProductosActualizadosJson)
+                    //console.log("Modo seguro")
 
                     //Ahora lo subimos a firestore
-
                     await setDoc(doc(db, "data", "datos"), infoProductosActualizadosJson).then(resp => {
 
                         console.log("Se han guardado los datos (4/4)")
