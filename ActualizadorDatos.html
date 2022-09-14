@@ -27,7 +27,7 @@
         var btnActualizar = document.getElementById("btnActualizar")
         var corsurl = "https://api.codetabs.com/v1/proxy?quest="
         var urlInfoProductosP1 = "https://nether.wowhead.com/tooltip/item/"
-        var urlInfoProductosP2 = "?dataEnv=8&locale=6" 
+        var urlInfoProductosP2 = "?dataEnv=8&locale=6"
         var tooltipString = ""
         var totalArrayBD = 0
         var conteo = 0
@@ -131,38 +131,38 @@
                     tooltipString = json.tooltip
                     console.log("Producto: " + NombreEspañol)
 
-                   /* if (arrayComponentes.length > 0) {
-
-                        conteo = conteo + 1
-                        for (const key in craftingComponent) {
-                            //console.log("Cantidad por creación: " + CantidadPorCreacion)
-                            console.log("Dentro: " + conteo + "/" + totalArrayBD)
-                            var precioActualPagleComp = craftingComponent[key].precioActualPagle
-                            var precioActualWhitemaneComp = craftingComponent[key].precioActualWhitemane
-                            var itemId = craftingComponent[key].itemId
-                            var componenteNombreUnico = craftingComponent[key].nombreUnico
-                            var amount = craftingComponent[key].cantidad
-                            var iconoImg = craftingComponent[key].icono
-                            var nombreEnEspañolComp = craftingComponent[key].nombreEnEspañol
-                            var CantidadPorCreacion = craftingComponent[key].cantidadPorCreacion
-
-                            //agrega los datos del componente al array
-                            arrayCraftingFinal.push({
-                                "itemId": itemId,
-                                "precioActualPagle": precioActualPagleComp,
-                                "precioActualWhitemane": precioActualWhitemaneComp,
-                                "icono": iconoImg,
-                                "cantidad": amount,
-                                "cantidadPorCreacion": CantidadPorCreacion,
-                                "nombreEnEspañol": nombreEnEspañolComp,
-                                "nombreUnico": componenteNombreUnico
-                            })
-                        }
-                        console.log(arrayCraftingFinal)
-                    } else {
-                        conteo = conteo + 1
-                        console.log("No tiene crafteo en posicion: " + conteo + "/" + totalArrayBD)
-                    }*/
+                    /* if (arrayComponentes.length > 0) {
+ 
+                         conteo = conteo + 1
+                         for (const key in craftingComponent) {
+                             //console.log("Cantidad por creación: " + CantidadPorCreacion)
+                             console.log("Dentro: " + conteo + "/" + totalArrayBD)
+                             var precioActualPagleComp = craftingComponent[key].precioActualPagle
+                             var precioActualWhitemaneComp = craftingComponent[key].precioActualWhitemane
+                             var itemId = craftingComponent[key].itemId
+                             var componenteNombreUnico = craftingComponent[key].nombreUnico
+                             var amount = craftingComponent[key].cantidad
+                             var iconoImg = craftingComponent[key].icono
+                             var nombreEnEspañolComp = craftingComponent[key].nombreEnEspañol
+                             var CantidadPorCreacion = craftingComponent[key].cantidadPorCreacion
+ 
+                             //agrega los datos del componente al array
+                             arrayCraftingFinal.push({
+                                 "itemId": itemId,
+                                 "precioActualPagle": precioActualPagleComp,
+                                 "precioActualWhitemane": precioActualWhitemaneComp,
+                                 "icono": iconoImg,
+                                 "cantidad": amount,
+                                 "cantidadPorCreacion": CantidadPorCreacion,
+                                 "nombreEnEspañol": nombreEnEspañolComp,
+                                 "nombreUnico": componenteNombreUnico
+                             })
+                         }
+                         console.log(arrayCraftingFinal)
+                     } else {
+                         conteo = conteo + 1
+                         console.log("No tiene crafteo en posicion: " + conteo + "/" + totalArrayBD)
+                     }*/
 
                     var precioPagle = infoProductosArray[key].servidor.pagle.precioActualizado
                     var fechaPagle = infoProductosArray[key].servidor.pagle.FechaActualizada
@@ -233,6 +233,11 @@
             return urlProductosConServerSelect
         }
 
+        async function solicitadorDeDatosIndividual() {
+            var urlPrueba = ""
+            const respuesta = await fetch(corsurl + urlPrueba)
+            const json = await respuesta.json()
+        }
     </script>
 </body>
 

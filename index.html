@@ -190,7 +190,8 @@
                                         <div class="d-flex justify-content-center">
                                             <h6 id="PventaLabel" for="fname">Precio de promedio:</h6><br>
                                         </div>
-                                        <input type="number" class="Pventa" id="PventaIdComp" name="fname">
+                                        <input type="number" min="0" class="Pventa" id="PventaIdComp" name="fname"
+                                            value="0">
                                         <b for="moneda" id="monedaId"></b>
                                         <br>
                                         <div class="d-flex justify-content-center">
@@ -263,26 +264,49 @@
                             <button id="BtnSubirArchivo" type="button" class="btn btn-primary">Subir Archivo</button>
                         </div>
                     </div>
-                    <p id="lastUpdated"></p>
+                    <p id="lastUpdated">- Último escaneo: Esperando información...</p>
                 </div>
             </div>
 
             <!-- ******************Tabs titulo***************** -->
             <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="flippingTab" data-bs-toggle="tab" data-bs-target="#flipping"
-                        type="button" role="tab" aria-controls="home" aria-selected="true">Flipping</button>
+                    <button class="nav-link active" id="crafteoTab" data-bs-toggle="tab" data-bs-target="#crafteo"
+                        type="button" role="tab" aria-controls="profile" aria-selected="false">Crafteo</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="crafteoTab" data-bs-toggle="tab" data-bs-target="#crafteo"
-                        type="button" role="tab" aria-controls="profile" aria-selected="false">Crafteo</button>
+                    <button class="nav-link" id="flippingTab" data-bs-toggle="tab" data-bs-target="#flipping"
+                        type="button" role="tab" aria-controls="home" aria-selected="true">Flipping</button>
                 </li>
             </ul>
 
             <!-- ******************Contenido de las tabs principales****************** -->
             <div class="tab-content">
+                <!--Tab de Crafting-->
+                <div class="tab-pane fade show active" id="crafteo" role="tabpanel" aria-labelledby="crafteoTab">
+                    <progress id="progressBarCraft" value="0%" max="100"></progress>
+                    <div id="divTabCraft">
+                        <table id="crafteoTabla" border="1">
+                            <tr id="trCraftId">
+                                <th>Imagen</th>
+                                <th>Nombre</th>
+                                <th>Inversión de crafteo</th>
+                                <th>Precio Individual</th>
+                                <th>Precio de venta x1</th>
+                                <th>Ganancia</th>
+                                <th>%</th>
+                                <th>Nivel</th>
+                                <th>Receta</th>
+                                <th>Componentes</th>
+                            </tr>
+                        </table>
+                        <div>
+                            <h4 id="txtNotificacion"></h4>
+                        </div>
+                    </div>
+                </div>
                 <!--Tab de Flipping-->
-                <div class="tab-pane fade show active" id="flipping" role="tabpanel" aria-labelledby="flippingTab">
+                <div class="tab-pane" id="flipping" role="tabpanel" aria-labelledby="flippingTab">
                     <progress id="progressBar" value="0%" max="100"></progress>
                     <div id="divTablaId">
                         <table id="productos" border="1">
@@ -300,29 +324,8 @@
                         </table>
                     </div>
                     <div>
-                        <h4 id="txtNotificacion"></h4>
+                        <h4 id="txtNotificacionCrafteo">Seleccione una categoría para cargar la lista.</h4>
                     </div>
-                </div>
-                <!--Tab de Crafting-->
-                <div class="tab-pane" id="crafteo" role="tabpanel" aria-labelledby="crafteoTab">
-                    <progress id="progressBarCraft" value="0%" max="100"></progress>
-                    <div id="divTabCraft">
-                        <table id="crafteoTabla" border="1">
-                            <tr id="trCraftId">
-                                <th>Imagen</th>
-                                <th>Nombre</th>
-                                <th>Inversión de crafteo</th>
-                                <th>Precio Individual</th>
-                                <th>Precio de venta x1</th>
-                                <th>Ganancia</th>
-                                <th>%</th>
-                                <th>Nivel</th>
-                                <th>Receta</th>
-                                <th>Componentes</th>
-                            </tr>
-                        </table>
-                    </div>
-                    <h4 id="txtNotificacionCrafteo"></h4>
                 </div>
             </div>
         </div>
@@ -467,15 +470,22 @@
             }
         });
 
+        //Recalcula cuando presionas enter en el input dias de venta en Flipping
+        document.getElementById("PventaId").addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault()
+                cambiarPrecioVntaBtn()
+            }
+        });
         //click en la tab de flipping
         try {
             document.getElementById("flippingTab").addEventListener("click", function (params) {
-                ladoDelTabId = 0
+                ladoDelTabId = 1
                 if (RadioNexusVar.checked == true) {
 
                 } else {
                     RadioValorSelected = RadioArchivo.value
-                    console.log(RadioValorSelected)
+
                 }
                 //Limpia la tabla de categoria actual
                 $("#dropdownCategoriaProductos").empty();
@@ -493,7 +503,7 @@
         //click en la tab de crafteo
         try {
             document.getElementById("crafteoTab").addEventListener("click", function (params) {
-                ladoDelTabId = 1
+                ladoDelTabId = 0
                 //Limpia la tabla de categoria actual
                 $("#dropdownCategoriaProductos").empty();
                 divDatosOnline.style = "visibility: hidden;"
@@ -560,7 +570,7 @@
             precioTituloId.innerText = ""
         })
 
-        //eveto cuando se cierra el modal de los componentes
+        //evento cuando se cierra el modal de los componentes
         $("#modalComponentes").on("hide.bs.modal", function () {
             modalVisible = false
             vieneDeClickBtnCambiarEnComp = false
@@ -580,27 +590,27 @@
         //cuando cambia el dropdown select producto
         document.getElementById('dropdownCategoriaProductos').addEventListener('change', function () {
             if (ladoDelTabId == 0) {
-                SeleccionListaProducto()
-            } else if (ladoDelTabId == 1) {
                 SeleccionListaCategoriaCrafteo()
+            } else if (ladoDelTabId == 1) {
+                SeleccionListaProducto()
             }
         });
 
         //cuando cambia el dropdown de expansion
         document.getElementById('dropdownExpansion').addEventListener('change', function () {
             if (ladoDelTabId == 0) {
-                SeleccionListaExpansion()
-            } else if (ladoDelTabId == 1) {
                 SeleccionListaCategoriaCrafteo()
+            } else if (ladoDelTabId == 1) {
+                SeleccionListaExpansion()
             }
         });
 
         //cuando cambia el dropdown de servidor
         document.getElementById('dropdownServidor').addEventListener('change', function (event) {
             if (ladoDelTabId == 0) {
-                SeleccionListaServidor()
-            } else if (ladoDelTabId == 1) {
                 SeleccionListaCategoriaCrafteo()
+            } else if (ladoDelTabId == 1) {
+                SeleccionListaServidor()
             }
         });
 
@@ -639,17 +649,14 @@
         var urlNexusArray = []
         var NombreProductoArray = new Array()
 
-        //Carga la hora del ultimo escarneo
-        lastUpdated(fechaActualizada)
-
         //Inicia tratendo los datos y categorias del la base de datos
         leerDatos()
 
         //Inserta a todas las tablas el tbody
+        tablaCrafting.appendChild(cuerpoTablaCrafting)
         tablaVerificacion.appendChild(tbody);
         tablaComponentes.appendChild(cuerpoTablaComponentes)
         tablaDiasVentaComp.appendChild(cuerpoTablaDiasVentaEnComp)
-        tablaCrafting.appendChild(cuerpoTablaCrafting)
         tablaProducto.appendChild(cuerpoTablaFlipping);
 
         //.............................Funciones de crafteo...............................................
@@ -878,8 +885,9 @@
                         traerDatosAdicionales(precioSimple, nombreUrlProductoUnico)
 
                         //cuando presionas enter en el input del nro recalcula tambien
-                        inputCantidadComp.addEventListener('keydown', function (event) {
+                        document.getElementById("inputCantidadComp").addEventListener('keydown', function (event) {
                             if (event.key === 'Enter') {
+                                event.preventDefault()
                                 var inputNumberComp = inputCantidadComp.value
                                 LimpiarTablaComponentes()
                                 recalcularDatosComponentes(inputNumberComp, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue, nombreUrlProductoUnico, fechaActualizada, gananciaSimple, valorInvertidoEntreCantCreada)
@@ -918,7 +926,6 @@
                 var dropdownProductosValue = document.getElementById("dropdownCategoriaProductos").value
                 var dropdownExpansionValue = dropdownExpansion.value
                 var dropdownServidorValue = dropdownServidor.value
-                NotificacionTextCrafteo.innerText = ""
                 LimpiarTablaCrafting()
 
                 for (const key in infoProductosArray) {
@@ -964,7 +971,7 @@
 
                 lastUpdated(fechaActualizada)
             } else {
-                NotificacionTextCrafteo.innerText = "Selecciona una profesión para cargar la lista!"
+                // NotificacionTextCrafteo.innerText = "Selecciona una profesión para cargar la lista!"
             }
         }
 
@@ -1209,7 +1216,7 @@
                 }
             }
             if (vieneDeClickBtnCambiarEnComp == true) {
-            toastr.success("Datos cambiados!", "Mensaje")
+                toastr.success("Datos cambiados!", "Mensaje")
             }
         }
 
@@ -1230,9 +1237,14 @@
                         RadioValorSelected = RadioArchivoValor
                     }
 
+                    divDatosOnline.style = "visibility: hidden;"
+                    RadioArchivo.checked = true;
+                    RadioValorSelected = RadioArchivo.value
+                    btnSubir.style.visibility = "visible";
+
                     // Inicializa Firebase si no esta inicializado
                     const app = initializeApp(firebaseConfig);
-                    lastUpdated(fechaActualizada)
+
                     const db = getFirestore(app);
                     enableIndexedDbPersistence(db)
                         .catch((err) => {
@@ -1251,13 +1263,13 @@
                         //agrega las categorias al dropdown
                         for (const key in doc.data().tipo) {
                             const element = doc.data().tipo[key];
-                            var daySelect = document.getElementById('dropdownCategoriaProductos');
-                            daySelect.options[daySelect.options.length] = new Option(element, element);
                             arrayDeCategoriaFlipping.push(doc.data().tipo[key])
                         }
                         //guarda la categoria de crafteo en un array
                         for (const key in doc.data().crafting) {
                             const elementCategoryCraft = doc.data().crafting[key];
+                            var daySelect = document.getElementById('dropdownCategoriaProductos');
+                            daySelect.options[daySelect.options.length] = new Option(elementCategoryCraft, elementCategoryCraft);
                             arrayDeCategoriaCrafteo.push(elementCategoryCraft)
                         }
 
@@ -1283,7 +1295,8 @@
                             infoProductosArray.push(doc.data().infoProducts[key])
                         }
 
-                        NotificacionText.innerText = "Seleccione un producto para cargar la lista!"
+                        NotificacionText.innerText = "Seleccione una categoría para cargar la lista."
+                        lastUpdated(fechaActualizada)
                     }).catch(function (reason) {
                         console.log(reason)
                         toastr.error("Error al cargar los datos!", "Mensaje:")
@@ -1508,7 +1521,7 @@
                 loop()
                 lastUpdated(fechaActualizada)
             } else {
-                NotificacionText.innerText = "Seleccione un producto para cargar la lista!"
+                NotificacionText.innerText = "Seleccione una categoría para cargar la lista."
             }
         }
 
@@ -1557,7 +1570,7 @@
                 loop()
                 //Carga la hora del ultimo escarneo
             } else {
-                NotificacionText.innerText = "Seleccione un producto para cargar la lista!"
+                NotificacionText.innerText = "Seleccione una categoría para cargar la lista."
             }
             lastUpdated(fechaActualizada)
         }
@@ -1569,7 +1582,7 @@
             var dropdownServidorValue = dropdownServidor.value
             if (dropdownProductosValue != "Seleccionar") {
                 console.log("aqui en lista producto")
-                NotificacionText.innerText = ""
+                txtNotificacionCrafteo.innerText = ""
 
                 LimpiarTabla()
 
@@ -1611,7 +1624,7 @@
                 loop()
                 lastUpdated(fechaActualizada)
             } else {
-                NotificacionText.innerText = "Seleccione un producto para cargar la lista!"
+                txtNotificacionCrafteo.innerText = "Seleccione una categoría para cargar la lista."
                 LimpiarTabla()
             }
         }
@@ -1860,9 +1873,9 @@
             RadioValorSelected = RadioNexusVar.value
             btnSubir.style.visibility = "hidden";
             if (ladoDelTabId == 0) {
-                SeleccionListaServidor()
-            } else if (ladoDelTabId == 1) {
                 SeleccionListaCategoriaCrafteo()
+            } else if (ladoDelTabId == 1) {
+                SeleccionListaServidor()
             }
         }
 
@@ -1871,9 +1884,9 @@
             var RadioArchivoValor = RadioArchivo.value
             btnSubir.style.visibility = "visible";
             if (ladoDelTabId == 0) {
-                SeleccionListaServidor()
-            } else if (ladoDelTabId == 1) {
                 SeleccionListaCategoriaCrafteo()
+            } else if (ladoDelTabId == 1) {
+                SeleccionListaServidor()
             }
         }
 
@@ -2389,7 +2402,7 @@
         function cambiarPrecioVntaBtn() {
             campoTextprecioDeVentaID = document.getElementById("PventaId")
             campoTextprecioDeVentaID = campoTextprecioDeVentaID.value
-            SolicitarDatos(campoTextprecioDeVentaID, nombreUnico)
+            SolicitarDatos(campoTextprecioDeVentaID, tipoMonedaOroPlataBronce, nombreUnico)
         }
 
         //el Boton para hacer una nueva verificacion con otro precio de venta en componentes
@@ -2513,115 +2526,119 @@
             var colorCantidadFrafica = "#0088d6"
 
             for (let index = 0; index < 4; index++) {
+                try {
+                    //Consulta el historial de precio de  dias
+                    const respuesta = await fetch(corsurl + urlDatosDeGrafica)
+                    const json = await respuesta.json()
 
-                //Consulta el historial de precio de  dias
-                const respuesta = await fetch(corsurl+urlDatosDeGrafica)
-                const json = await respuesta.json()
+                    //habilita la tab de Días de venta si ya está cargado los datos de la gráfica
+                    document.getElementById("DiaDeVentaTabIdComp").disabled = false;
 
-                //habilita la tab de Días de venta si ya está cargado los datos de la gráfica
-                document.getElementById("DiaDeVentaTabIdComp").disabled = false;
+                    nameunicoDeProductoEnGrafic = json.uniqueName // nombre unico del producto del modal comp
+                    jsonDeSieteDiazHistorico = json // json de historial de 7 dias
 
-                nameunicoDeProductoEnGrafic = json.uniqueName // nombre unico del producto del modal comp
-                jsonDeSieteDiazHistorico = json // json de historial de 7 dias
-
-                for (const key in json.data) {
-                    var precioMinimo = parseInt(json.data[key].minBuyout) / 10000
-                    var cantidadPublicada = json.data[key].quantity
-                    var fechaDePublicacion = json.data[key].scannedAt
+                    for (const key in json.data) {
+                        var precioMinimo = parseInt(json.data[key].minBuyout) / 10000
+                        var cantidadPublicada = json.data[key].quantity
+                        var fechaDePublicacion = json.data[key].scannedAt
 
 
-                    //Pone los datos en un array
-                    arrayPrecioEnGrafica.push(precioMinimo)
-                    arrayCantidadEnGrafica.push(cantidadPublicada)
-                    arrayFechaEnGrafica.push(fechaDePublicacion)
-                }
+                        //Pone los datos en un array
+                        arrayPrecioEnGrafica.push(precioMinimo)
+                        arrayCantidadEnGrafica.push(cantidadPublicada)
+                        arrayFechaEnGrafica.push(fechaDePublicacion)
+                    }
 
-                //imprime los datos en la grafica
-                var options = {
-                    series: [{
-                        name: "Precio",
-                        data: arrayPrecioEnGrafica
-                    },
-                    {
-                        name: "Cantidad",
-                        data: arrayCantidadEnGrafica
-                    }],
-                    labels: arrayFechaEnGrafica,
-                    chart: {
-                        height: 350,
-                        type: 'line',
-                        foreColor: "#ffe4c4",
-                        events: {
-                            Mounted: function (chartContext, config) {
-                                if (modalVisible == false) {
-                                    console.log("Montado desde el evento Mounted")
-                                    chart.clearAnnotations()
-                                    chart.destroy()
-                                    console.log("Destruido desde el event Mounted")
-                                }
-                            }
-                        }
-                    },
-                    stroke: {
-                        width: [2.5, 2.5]
-                    },
-                    colors: [colorPrecioGrafica, colorCantidadFrafica],
-                    title: {
-                        text: 'Gráfico de precio y cantidad',
-                    },
-                    noData: {
-                        text: 'Cargando datos...'
-                    },
-
-                    xaxis: {
-                        type: 'datetime',
-                    },
-                    yaxis: [
-                        {
-                            axisTicks: {
-                                show: true
-                            },
-                            axisBorder: {
-                                show: true,
-                                color: colorPrecioGrafica
-                            },
-                            labels: {
-                                style: {
-                                    colors: colorPrecioGrafica
-                                }
-                            },
-
+                    //imprime los datos en la grafica
+                    var options = {
+                        series: [{
+                            name: "Precio",
+                            data: arrayPrecioEnGrafica
                         },
                         {
-                            opposite: true,
-                            axisTicks: {
-                                show: true
-                            },
-                            axisBorder: {
-                                show: true,
-                                color: colorCantidadFrafica
-                            },
-                            labels: {
-                                style: {
-                                    colors: colorCantidadFrafica
+                            name: "Cantidad",
+                            data: arrayCantidadEnGrafica
+                        }],
+                        labels: arrayFechaEnGrafica,
+                        chart: {
+                            height: 350,
+                            type: 'line',
+                            foreColor: "#ffe4c4",
+                            events: {
+                                Mounted: function (chartContext, config) {
+                                    if (modalVisible == false) {
+                                        console.log("Montado desde el evento Mounted")
+                                        chart.clearAnnotations()
+                                        chart.destroy()
+                                        console.log("Destruido desde el event Mounted")
+                                    }
                                 }
-                            },
+                            }
+                        },
+                        stroke: {
+                            width: [2.5, 2.5]
+                        },
+                        colors: [colorPrecioGrafica, colorCantidadFrafica],
+                        title: {
+                            text: 'Gráfico de precio y cantidad',
+                        },
+                        noData: {
+                            text: 'Cargando datos...'
+                        },
 
-                        }
-                    ]
-                };
-                //Destruye algun chart si esta vivo aun
-                try {
-                    chart.clearAnnotations()
-                    chart.destroy()
-                    //console.log("destruido")
+                        xaxis: {
+                            type: 'datetime',
+                        },
+                        yaxis: [
+                            {
+                                axisTicks: {
+                                    show: true
+                                },
+                                axisBorder: {
+                                    show: true,
+                                    color: colorPrecioGrafica
+                                },
+                                labels: {
+                                    style: {
+                                        colors: colorPrecioGrafica
+                                    }
+                                },
+
+                            },
+                            {
+                                opposite: true,
+                                axisTicks: {
+                                    show: true
+                                },
+                                axisBorder: {
+                                    show: true,
+                                    color: colorCantidadFrafica
+                                },
+                                labels: {
+                                    style: {
+                                        colors: colorCantidadFrafica
+                                    }
+                                },
+
+                            }
+                        ]
+                    };
+                    //Destruye algun chart si esta vivo aun
+                    try {
+                        chart.clearAnnotations()
+                        chart.destroy()
+                        //console.log("destruido")
+                    } catch (error) {
+                        //console.log("No hay chart vivos")
+                    }
+
+                    chart = new ApexCharts(document.querySelector("#chart"), options);
+                    chart.render();
+                    break
                 } catch (error) {
-                    //console.log("No hay chart vivos")
+                    console.log(error)
                 }
 
-                chart = new ApexCharts(document.querySelector("#chart"), options);
-                chart.render();
-                break
             }
         }
     </script>
