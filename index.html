@@ -27,7 +27,7 @@
 </head>
 
 <body>
-  
+
 
     <section>
         <!-- ************************** HTML MODAL *************************** -->
@@ -44,8 +44,6 @@
                             aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-
-                        <!-- Todo dentro de la ventanita -->
 
                         <!--Tabs de titulo ventanita-->
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -117,52 +115,102 @@
                         <input type="number" min="1" oninput="this.value|=0" id="inputCantidadComp" value="1">
                         <input type="button" id="btnEnviarCantidadComp" value=">">
                     </div>
-                    <!-- Contenido de la tabla de componentes -->
-                    <div id="divContenidoComponenteModalId" class="modal-body">
-                        <div>
-                            <h4>Componentes</h4>
-                        </div>
-                        <div id="divTablaComponente">
-                            <table id="tablaComponentes" border="1">
-                                <tr>
-                                    <th>Img</th>
-                                    <th>Nombre</th>
-                                    <th>Precio de compra</th>
-                                    <th>hasta el 5%</th>
-                                    <th>Cantidad</th>
-                                </tr>
-                            </table>
-                            <h5 id="txtInvertido"></h5>
-                            <h5 id="txtGananciaAprox"></h5>
-                        </div>
-                        <!-- ************************************************************************ -->
-                        <div class="d-flex justify-content-center">
-                            <div id="divBase">
-                                <div id="divtitulo">
-                                    <div id="TituloDatosAdicionales">Datos adicionales</div> <br>
-                                </div>
-                                <div id="divDatosAdicionales">
-                                    <b id="bIdComp">- Precio Individual: </b>
-                                    <b id="bIdPrecioIndividual">0</b>
-                                    <br>
-                                    <b id="bIdComp">- x1 Precio de venta: </b>
-                                    <b id="bIdPrecioDeVenta">0</b>
-                                    <br>
-                                    <b id="bIdComp">- Precio promedio: </b>
-                                    <b id="bIdPrecioPromedio"></b>
-                                    <br>
-                                    <b id="bIdComp">- Cantidad en subasta: </b>
-                                    <b id="bIdCantidadPublicada"></b>
-                                    <br>
-                                    <b id="bIdComp"></b>
-                                    <b id="bIdUltimoEscaneo"></b>
-                                    <img id="iconoModalId" src="icons/check.png" alt="">
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- ****************** GRAFICA DE ANALISIS crafting ****************** -->
-                        <div class="graficaCrafting"></div>
+                    <!-- Las tablas de componentes -->
+                    <div class="modal-body">
+
+                        <!--Tabla nombre Componentes-->
+                        <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a href="#ComponenteHref" class="nav-link active" id="componentesTab"
+                                    data-bs-toggle="tab" data-bs-target="#componentesTabId" type="button" role="tab"
+                                    aria-controls="profile" aria-selected="false">Componentes</a>
+                            </li>
+                            <!--Tabla nombre Días de venta-->
+                            <li class="nav-item" role="presentation">
+                                <a href="#DiaDeVentaTabHref" disabled class="nav-link" id="DiaDeVentaTabIdComp"
+                                    data-bs-toggle="tab" data-bs-target="#diasVentaTabCompId" type="button" role="tab"
+                                    aria-controls="home" aria-selected="true">Días de venta</a>
+                            </li>
+                        </ul>
+
+                        <!--contenido de las tabs de componentes-->
+                        <div class="tab-content">
+
+                            <div class="tab-pane active" id="componentesTabId" role="tabpanel"
+                                aria-labelledby="home-tab">
+                                <div id="divTablaComponente">
+                                    <table id="tablaComponentes" border="1">
+                                        <tr>
+                                            <th>Img</th>
+                                            <th>Nombre</th>
+                                            <th>Precio de compra</th>
+                                            <th>hasta el 5%</th>
+                                            <th>Cantidad</th>
+                                        </tr>
+                                    </table>
+                                    <h5 id="txtInvertido"></h5>
+                                    <h5 id="txtGananciaAprox"></h5>
+                                </div>
+
+                                <div class="d-flex justify-content-center">
+                                    <div id="divBase">
+                                        <div id="divtitulo">
+                                            <div id="TituloDatosAdicionales">Datos adicionales</div> <br>
+                                        </div>
+                                        <div id="divDatosAdicionales">
+                                            <b id="bIdComp">- Precio Individual: </b>
+                                            <b id="bIdPrecioIndividual">0</b>
+                                            <br>
+                                            <b id="bIdComp">- x1 Precio de venta: </b>
+                                            <b id="bIdPrecioDeVenta">0</b>
+                                            <br>
+                                            <b id="bIdComp">- Precio promedio: </b>
+                                            <b id="bIdPrecioPromedio"></b>
+                                            <br>
+                                            <b id="bIdComp">- Cantidad en subasta: </b>
+                                            <b id="bIdCantidadPublicada"></b>
+                                            <br>
+                                            <b id="bIdComp"></b>
+                                            <b id="bIdUltimoEscaneo"></b>
+                                            <img id="iconoModalId" src="icons/check.png" alt="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ****************** Grafica de analisis en crafting componente tab ****************** -->
+                                <div class="graficaCrafting"></div>
+                            </div>
+
+                            <!-------------------Contenido dias de venta Tab en comp------------------------>
+                            <div class="tab-pane" id="diasVentaTabCompId" role="tabpanel" aria-labelledby="profile-tab">
+
+                                <div id="divForm" class="divForm d-flex justify-content-center">
+                                    <form action="">
+                                        <div class="d-flex justify-content-center">
+                                            <h6 id="PventaLabel" for="fname">Precio de promedio:</h6><br>
+                                        </div>
+                                        <input type="number" class="Pventa" id="PventaIdComp" name="fname">
+                                        <b for="moneda" id="monedaId"></b>
+                                        <br>
+                                        <div class="d-flex justify-content-center">
+                                            <input class="btn btn-success" id="btnCambiarComp" type="button"
+                                                value="Cambiar ▼">
+                                        </div>
+                                    </form>
+                                </div>
+                                <br>
+                                <table id="tablaVerificacionComp" border="1">
+                                    <tr id="trDiasVenta">
+                                        <th>Día</th>
+                                        <th>#</th>
+                                        <th>Precio alcanzado</th>
+                                        <th>Hora</th>
+                                    </tr>
+                                </table>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -316,6 +364,7 @@
         var cuerpoTablaFlipping = document.createElement('tbody');
         var cuerpoTablaCrafting = document.createElement('tbody');
         var cuerpoTablaComponentes = document.createElement('tbody');
+        var cuerpoTablaDiasVentaEnComp = document.createElement('tbody')
         var divDatosOnline = document.getElementById("divDatosOnline")
         var divId = document.getElementById("divPassId")
         var btnEnviarCantidadComp = document.getElementById("btnEnviarCantidadComp")
@@ -371,12 +420,15 @@
         var txtCantidadPorStackId = document.getElementById("txtCantidadPorStackId")
         var tablaVerificacion = document.getElementById('tablaVerificacion');
         var tablaComponentes = document.getElementById('tablaComponentes')
+        var tablaDiasVentaComp = document.getElementById("tablaVerificacionComp")
         var divCharFlippng = document.querySelector(".graficaFlipping")
         var divCharCrafting = document.querySelector(".graficaCrafting")
         var divTextCircularId = document.getElementById("divTextCircularId")
         var iconoModal = document.getElementById("iconoModalId")
         var tbody = document.createElement('tbody');
         var campoTextprecioDeVentaID = document.getElementById("PventaId")
+        var campoTextprecioDeVentaIDEnComp = document.getElementById("PventaIdComp")
+        var campoTextprecioDeVentaIDEnCompValue = 0
         var campoTextoValor = document.getElementById("PventaId").value
         var precioDeVentaEnTablaNro = 0
         var tipoMonedaOroPlataBronce = ""
@@ -392,12 +444,26 @@
         var fechaEnModal = ""
         var modalVisible = false
 
+        //variable de ventana componentes
+        var precioPromedioEnComp = 0
+        var nameunicoDeProductoEnGrafic = ""
+        var jsonDeSieteDiazHistorico = ""
+        var vieneDeClickBtnCambiarEnComp = false
+
         //-------------------------------eventos on click y change-------------------------------------
 
         //Abre el panel para agregar productos
         document.addEventListener('keydown', function (event) {
             if (event.ctrlKey && event.key === 'z') {
                 window.open("dashboard/panel.html", "_blank");
+            }
+        });
+
+        //Recalcula cuando presionas enter en el input dias de venta en componentes
+        campoTextprecioDeVentaIDEnComp.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault()
+                cambiarPrecioVntaBtnComp()
             }
         });
 
@@ -445,12 +511,28 @@
         } catch (error) {
         }
 
-        //click en la tab de Dias de venta
+        //click en la tab de Dias de venta en Flipping
         try {
             document.getElementById("DiaDeVentaTabId").addEventListener("click", function (params) {
                 if (MismaVentana == true) {
                     precioTituloId.innerText = ""
                 }
+            })
+        } catch (error) {
+        }
+
+        //click en la tab de Dias de venta en componente
+        try {
+            document.getElementById("DiaDeVentaTabIdComp").addEventListener("click", function (params) {
+                SolicitarDatosDiaDeVentaCrafteo(nameunicoDeProductoEnGrafic, jsonDeSieteDiazHistorico)
+            })
+        } catch (error) {
+        }
+
+        //click en la tab de Componentes
+        try {
+            document.getElementById("componentesTab").addEventListener("click", function (params) {
+                vieneDeClickBtnCambiarEnComp = false
             })
         } catch (error) {
         }
@@ -481,6 +563,7 @@
         //eveto cuando se cierra el modal de los componentes
         $("#modalComponentes").on("hide.bs.modal", function () {
             modalVisible = false
+            vieneDeClickBtnCambiarEnComp = false
             try {
                 chart.clearAnnotations()
                 chart.destroy()
@@ -538,6 +621,11 @@
             cambiarPrecioVntaBtn()
         });
 
+        //cuando haces click en el boton cambiar de la ventanita de componente
+        document.getElementById('btnCambiarComp').addEventListener('click', function () {
+            cambiarPrecioVntaBtnComp()
+        });
+
         //cuando haces click en el boton subir archivo
         document.getElementById('BtnSubirArchivo').addEventListener('click', function () {
             subirArchivoJson()
@@ -560,6 +648,7 @@
         //Inserta a todas las tablas el tbody
         tablaVerificacion.appendChild(tbody);
         tablaComponentes.appendChild(cuerpoTablaComponentes)
+        tablaDiasVentaComp.appendChild(cuerpoTablaDiasVentaEnComp)
         tablaCrafting.appendChild(cuerpoTablaCrafting)
         tablaProducto.appendChild(cuerpoTablaFlipping);
 
@@ -653,7 +742,7 @@
                 var gananciaSimple = ganancia // ejemp : transforma 29000 -> 2.90
 
                 if (nivelProfesionRequerido != 0) {
-                    var idImagenes = "dentro" + key //el Id de la imagen con su key para ponerlo en el innerHTML
+                    var idImagenes = "dentro" + key //el Id de la imagen con su key/index para ponerlo en el innerHTML
 
                     //agrega los datos a a tabla
                     var fila = document.createElement('tr');
@@ -666,17 +755,17 @@
                         <div id="divTextCircularId">
                             <div id="txtCantidadPorStackId">`+ CantidadPorCreacion + `</div>
                         </div>
-                        <span id="`+ idImagenes +`" class="tooltiptext"></span>
+                        <span id="`+ idImagenes + `" class="tooltiptext"></span>
                     </div>
                     `;
                     //cuando le pasa el raton sobre la imagen
                     td.onmouseenter = function () {
                         document.getElementById(idImagenes).style.visibility = "visible";
                         document.getElementById(idImagenes).innerHTML = tooltipInfoProductoArray[key]
-                     }
-                     td.onmouseleave = function (){
+                    }
+                    td.onmouseleave = function () {
                         document.getElementById(idImagenes).style.visibility = "hidden";
-                     }
+                    }
                     fila.appendChild(td);
 
 
@@ -778,6 +867,9 @@
                         //coloca el nombre en el titulo
                         tituloModalNombreProducto.innerText = NombreEspañol
 
+                        //Al abrir pone la tab en componente
+                        $('a[href="#ComponenteHref"]').tab('show')
+
                         //pinta los datos en la tabla de los componentes para 1 producto
                         var numeroEnInput = inputCantidadComp.value
                         recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioSimple, dropdownServidorValue, nombreUrlProductoUnico, fechaActualizada, gananciaSimple, valorInvertidoEntreCantCreada)
@@ -875,6 +967,8 @@
                 NotificacionTextCrafteo.innerText = "Selecciona una profesión para cargar la lista!"
             }
         }
+
+        // ************** JS ventanita de crafteo *******************************
 
         //Funcion que recalcula los datos en el modal de componentes
         function recalcularDatosComponentes(numeroEnInput, multiplicaCantidadPorPrecioSimple, precioDeVenta, server, nombreProductoUnico, fechaActualizada, gananciaSimple, valorInvertidoEntreCantCreada) {
@@ -1046,6 +1140,76 @@
                 } catch (error) {
                     console.log(error)
                 }
+            }
+        }
+
+        async function SolicitarDatosDiaDeVentaCrafteo() {
+            /*  if (tipoMonedaOroPlataBronce == "Oro") {
+                  precioDeVentaEnTablaNro = precioDeVentaEnTablaNro * 10000
+              } else if (tipoMonedaOroPlataBronce == "Plata") {
+                  precioDeVentaEnTablaNro = precioDeVentaEnTablaNro * 100
+                  
+              } else if (tipoMonedaOroPlataBronce == "Cobre") {
+                  precioDeVentaEnTablaNro = precioDeVentaEnTablaNro * 10
+              }*/
+
+            LimpiarTablaVerificacionEnComp()
+
+            var urlDatosAdicionales = "https://api.nexushub.co/wow-classic/v1/items/" + dropdownServidor.value + "/" + nameunicoDeProductoEnGrafic
+            var precioPromedioEnComp = 0
+            //Viene desde la primera vez que se toca la tab dias de venta en comp
+            if (vieneDeClickBtnCambiarEnComp == false) {
+                try {
+                    const respuesta = await fetch(corsurl + urlDatosAdicionales)
+                    const jsonResp = await respuesta.json()
+                    precioPromedioEnComp = jsonResp.stats.current.marketValue
+                    campoTextprecioDeVentaIDEnComp.value = parseFloat(precioPromedioEnComp / 10000).toFixed(2)
+
+                } catch (error) {
+                    toastr.warning("Espere que cargue la gráfica para ver esta información.", "Mensaje")
+                }
+
+                //Si viene el click del boton de cambiar
+            } else if (vieneDeClickBtnCambiarEnComp == true) {
+
+                precioPromedioEnComp = campoTextprecioDeVentaIDEnComp.value * 10000
+            }
+
+            //pone el ID a las graficas del modal que se este abriendo flipping o crafting
+            divCharFlippng.id = "chart"
+            divCharCrafting.id = "SinUso"
+            //trae los datos del historia de 7 dias para ponerlos en la gráfica
+            modalVisible = true
+
+            for (var index = 0; index < jsonDeSieteDiazHistorico.data.length; index++) {
+
+                const d = new Date(jsonDeSieteDiazHistorico.data[index].scannedAt);
+                var hora = hora24a12(d.getHours())
+                var minuto = minutosConCero(d.getMinutes())
+                var horaMinutos = hora[0] + ":" + minuto + " " + hora[1]
+                var diaSemana = d.toString().split(" ")[0]
+                var precioCompra = jsonDeSieteDiazHistorico.data[index].minBuyout
+
+                if (precioCompra > precioPromedioEnComp) {
+                    //verifica si el dia de la semana es el mismo o ha cambiado
+                    if (diaSemana == diaSemanaAnterior) {
+                        //en caso que sea el mismo dia
+                        cantidades = cantidades + 1
+                        diaSemanaAnterior = diaSemana
+                        precioCompra = PlataOro(precioCompra / 10000)
+                        crearColumnaEnComp(diaSemana, cantidades, precioCompra, horaMinutos)
+
+                    } else {
+                        //cuando cambia a otro dia de la semana
+                        cantidades = 1
+                        diaSemanaAnterior = diaSemana
+                        precioCompra = PlataOro(precioCompra / 10000)
+                        crearColumnaEnComp(diaSemana, cantidades, precioCompra, horaMinutos)
+                    }
+                }
+            }
+            if (vieneDeClickBtnCambiarEnComp == true) {
+            toastr.success("Datos cambiados!", "Mensaje")
             }
         }
 
@@ -2188,17 +2352,67 @@
             tbody.appendChild(fila);
         }
 
+        //funcion que crea las columnas de la tabla
+        function crearColumnaEnComp(diaSemana, cantidades, precioCompra, Hora) {
+
+            //crea un TR
+            var fila = document.createElement('tr');
+
+            //agrega la columna Día
+            var td = document.createElement('td');
+            td.innerText = TraducirDiaSemana(diaSemana)
+            td.setAttribute("style", "font-weight:bold");
+            fila.appendChild(td);
+
+            //agrega la columna #
+            td = document.createElement('td');
+            td.innerText = cantidades
+            td.setAttribute("style", "font-weight:bold");
+            fila.appendChild(td);
+
+            //agrega la columna Precio Compra
+            td = document.createElement('td');
+            td.innerText = precioCompra
+            td.setAttribute("style", "font-weight:bold");
+            fila.appendChild(td);
+
+            //agrega la columna Hora
+            td = document.createElement('td');
+            td.innerText = Hora
+            td.setAttribute("style", "font-weight:bold");
+            fila.appendChild(td);
+            cuerpoTablaDiasVentaEnComp.appendChild(fila);
+        }
+
+
         //el Boton para hacer una nueva verificacion con otro precio de venta
         function cambiarPrecioVntaBtn() {
             campoTextprecioDeVentaID = document.getElementById("PventaId")
             campoTextprecioDeVentaID = campoTextprecioDeVentaID.value
-            SolicitarDatos(campoTextprecioDeVentaID, tipoMonedaOroPlataBronce, nombreUnico)
+            SolicitarDatos(campoTextprecioDeVentaID, nombreUnico)
         }
 
-        //Limpia la tabla
+        //el Boton para hacer una nueva verificacion con otro precio de venta en componentes
+        function cambiarPrecioVntaBtnComp() {
+            vieneDeClickBtnCambiarEnComp = true
+            SolicitarDatosDiaDeVentaCrafteo()
+        }
+
+        //Limpia la tabla en Flipping dias de venta
         function LimpiarTablaVerificacion() {
             var tableHeaderRowCount = 1;
             var table = document.getElementById('tablaVerificacion');
+            var rowCount = table.rows.length;
+            for (var i = tableHeaderRowCount; i < rowCount; i++) {
+                table.deleteRow(tableHeaderRowCount);
+            }
+        }
+
+        //Limpia la tabla en Componentes dias de venta
+        function LimpiarTablaVerificacionEnComp() {
+            var tableHeaderRowCount = 1;
+            cantidades = 0
+            var table = tablaDiasVentaComp
             var rowCount = table.rows.length;
             for (var i = tableHeaderRowCount; i < rowCount; i++) {
                 table.deleteRow(tableHeaderRowCount);
@@ -2301,13 +2515,20 @@
             for (let index = 0; index < 4; index++) {
 
                 //Consulta el historial de precio de  dias
-                const respuesta = await fetch(urlDatosDeGrafica)
+                const respuesta = await fetch(corsurl+urlDatosDeGrafica)
                 const json = await respuesta.json()
+
+                //habilita la tab de Días de venta si ya está cargado los datos de la gráfica
+                document.getElementById("DiaDeVentaTabIdComp").disabled = false;
+
+                nameunicoDeProductoEnGrafic = json.uniqueName // nombre unico del producto del modal comp
+                jsonDeSieteDiazHistorico = json // json de historial de 7 dias
 
                 for (const key in json.data) {
                     var precioMinimo = parseInt(json.data[key].minBuyout) / 10000
                     var cantidadPublicada = json.data[key].quantity
                     var fechaDePublicacion = json.data[key].scannedAt
+
 
                     //Pone los datos en un array
                     arrayPrecioEnGrafica.push(precioMinimo)

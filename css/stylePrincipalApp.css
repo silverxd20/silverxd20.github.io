@@ -20,7 +20,8 @@ body {
 }
 
 #trCraftId,
-#trFlippingId {
+#trFlippingId
+#trDiasVenta {
     position: sticky;
     top: 0;
     z-index: 999;
@@ -76,7 +77,8 @@ h4 {
 }
 
 #modalContent,
-#divContenidoComponenteModalId {
+#divContenidoComponenteModalId,
+#modalConentID {
     background-color: #242424;
 }
 
@@ -146,7 +148,7 @@ th {
     text-align: center;
 }
 
-#btnCambiar {
+#btnCambiar, #btnCambiarComp {
     margin-top: 5px;
 }
 
