@@ -921,9 +921,9 @@
 
         //Seleccion del dropdown de productos
         function SeleccionListaCategoriaCrafteo() {
-
-            if (dropdownProductosValue != "Seleccionar Profesion") {
-                var dropdownProductosValue = document.getElementById("dropdownCategoriaProductos").value
+            
+            var dropdownProductosValue = document.getElementById("dropdownCategoriaProductos").value
+            if (dropdownProductosValue != "Seleccionar profesion") {
                 var dropdownExpansionValue = dropdownExpansion.value
                 var dropdownServidorValue = dropdownServidor.value
                 LimpiarTablaCrafting()
@@ -968,10 +968,11 @@
 
                     }
                 }
-
+                NotificacionText.innerText = ""
                 lastUpdated(fechaActualizada)
             } else {
-                // NotificacionTextCrafteo.innerText = "Selecciona una profesión para cargar la lista!"
+                LimpiarTablaCrafting()
+                 NotificacionText.innerText = "Seleccione una categoría para cargar la lista."
             }
         }
 
