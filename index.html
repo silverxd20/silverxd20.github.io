@@ -1113,7 +1113,7 @@
             if (gananciaAprox > 0) {
                 //color verde si hay ganancia
                 gananciaEnComp.setAttribute("style", "color:#00af1d")
-                gananciaEnComp.innerText = "Ganancia aprox entre = " + PlataOroEspecial(totalConDescuento.toFixed(2)) + " a " + PlataOro(gananciaAprox)
+                gananciaEnComp.innerText = "Ganancia aprox entre = " + PlataOroEspecial(totalConDescuento) + " a " + PlataOro(gananciaAprox)
             } else if (gananciaAprox < 0) {
                 //color rojo si hay perdida
                 gananciaEnComp.setAttribute("style", "color: red")
@@ -1920,34 +1920,34 @@
             var PrecioFloat = nro
             if (PrecioFloat > 1) {
                 //si es positivo y es oro
-                var precioMinimo = parseFloat(PrecioFloat).toFixed(2) + " Oro"
+                var precioMinimo = roundDos(PrecioFloat) + " Oro"
                 positivoNegativo = true
 
             } else if (PrecioFloat > 0.01) {
                 //si es positivo y es plata
-                var precioMinimo = parseFloat(PrecioFloat).toFixed(4) * 100 + " Plata"
+                var precioMinimo = roundDos(Number.parseFloat(PrecioFloat).toFixed(4) * 100) + " Plata"
                 var precioMin = precioMinimo.split(" ")
                 if (precioMin[0] == 100) {
-                    precioMinimo = PrecioFloat + " Oro"
+                    precioMinimo = roundDos(PrecioFloat) + " Oro"
                 }
                 positivoNegativo = true
 
             } else if (PrecioFloat < 0.01 && PrecioFloat > 0.0001) {
                 //si es positivo y es cobre
-                var precioMinimo = PrecioFloat * 10000 + " Cobre"
+                var precioMinimo = roundDos(PrecioFloat) * 10000 + " Cobre"
                 positivoNegativo = true
             } else {
                 //aqui esto es negativo
-                precioMinimo = PrecioFloat * 100
+                precioMinimo = roundDos(PrecioFloat) * 100
                 positivoNegativo = false
 
                 if (precioMinimo < -100) {
                     //si esto es negativo y pasa de -100
-                    var precioMinimo = parseFloat(precioMinimo / 100).toFixed(2) + " Oro"
+                    var precioMinimo = roundDos(precioMinimo / 100) + " Oro"
 
                 } else {
                     //si esto es negativo y es menor a -100
-                    var precioMinimo = PrecioFloat * 100 + " Plata"
+                    var precioMinimo = roundDos(PrecioFloat) * 100 + " Plata"
                 }
             }
             return precioMinimo;
@@ -1959,36 +1959,40 @@
             var PrecioFloat = nro
             if (PrecioFloat > 1) {
                 //si es positivo y es oro
-                var precioMinimo = parseFloat(PrecioFloat).toFixed(2)
+                var precioMinimo = roundDos(PrecioFloat)
 
             } else if (PrecioFloat > 0.01) {
                 //si es positivo y es plata
-                var precioMinimo = parseFloat(PrecioFloat).toFixed(4) * 100
+                var precioMinimo = roundDos(Number.parseFloat(PrecioFloat).toFixed(4) * 100)
                 var precioMin = precioMinimo.toString().split(" ")
                 if (parseInt(precioMin[0]) == 100) {
-                    precioMinimo = PrecioFloat
+                    precioMinimo = roundDos(PrecioFloat)
                 }
                 positivoNegativo = true
 
             } else if (PrecioFloat > 0.001) {
                 //si es positivo y es cobre
-                var precioMinimo = PrecioFloat * 10000
+                var precioMinimo = roundDos(PrecioFloat) * 10000
                 positivoNegativo = true
             } else {
                 //aqui esto es negativo
-                precioMinimo = PrecioFloat * 100
+                precioMinimo = roundDos(PrecioFloat) * 100
                 positivoNegativo = false
 
                 if (precioMinimo < -100) {
                     //si esto es negativo y pasa de -100
-                    var precioMinimo = parseFloat(precioMinimo / 100).toFixed(2)
+                    var precioMinimo = roundDos(precioMinimo / 100)
 
                 } else {
                     //si esto es negativo y es menor a -100
-                    var precioMinimo = PrecioFloat * 100
+                    var precioMinimo = roundDos(PrecioFloat) * 100
                 }
             }
             return precioMinimo;
+        }
+
+        function roundDos(num){
+            return Math.round((num + Number.EPSILON) * 100) / 100
         }
 
         //Dice la ganancia si se publica al precio promedio
