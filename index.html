@@ -921,7 +921,7 @@
 
         //Seleccion del dropdown de productos
         function SeleccionListaCategoriaCrafteo() {
-            
+
             var dropdownProductosValue = document.getElementById("dropdownCategoriaProductos").value
             if (dropdownProductosValue != "Seleccionar profesion") {
                 var dropdownExpansionValue = dropdownExpansion.value
@@ -972,7 +972,7 @@
                 lastUpdated(fechaActualizada)
             } else {
                 LimpiarTablaCrafting()
-                 NotificacionText.innerText = "Seleccione una categoría para cargar la lista."
+                NotificacionText.innerText = "Seleccione una categoría para cargar la lista."
             }
         }
 
@@ -1311,7 +1311,7 @@
 
         }
 
-        //Abre los URL de los productos trae sus datos en una tablas (Funcion principal)
+        //Abre los URL de los productos trae sus datos en la tabla (Funcion principal)
         async function traerProductoDatos(urlProductos, indice, array, idioma, NombreEspañol, nombreUnicoProducto, precioActual) {
 
             for (let i = 0; i <= 4; i++) {
@@ -1526,7 +1526,7 @@
             }
         }
 
-        //Filtra la lista por el servidor elejido
+        //Filtra la lista por el servidor
         function SeleccionListaServidor() {
             var dropdownProductosValue = document.getElementById("dropdownCategoriaProductos").value
             var dropdownExpansionValue = dropdownExpansion.value
@@ -1920,7 +1920,7 @@
             var PrecioFloat = nro
             if (PrecioFloat > 1) {
                 //si es positivo y es oro
-                var precioMinimo = roundDos(PrecioFloat) + " Oro"
+                var precioMinimo = roundDos(Number.parseFloat(PrecioFloat)) + " Oro"
                 positivoNegativo = true
 
             } else if (PrecioFloat > 0.01) {
@@ -1928,17 +1928,17 @@
                 var precioMinimo = roundDos(Number.parseFloat(PrecioFloat).toFixed(4) * 100) + " Plata"
                 var precioMin = precioMinimo.split(" ")
                 if (precioMin[0] == 100) {
-                    precioMinimo = roundDos(PrecioFloat) + " Oro"
+                    precioMinimo = roundDos(Number.parseFloat(PrecioFloat)) + " Oro"
                 }
                 positivoNegativo = true
 
             } else if (PrecioFloat < 0.01 && PrecioFloat > 0.0001) {
                 //si es positivo y es cobre
-                var precioMinimo = roundDos(PrecioFloat) * 10000 + " Cobre"
+                var precioMinimo = roundDos(Number.parseFloat(PrecioFloat)) * 10000 + " Cobre"
                 positivoNegativo = true
             } else {
                 //aqui esto es negativo
-                precioMinimo = roundDos(PrecioFloat) * 100
+                precioMinimo = roundDos(Number.parseFloat(PrecioFloat)) * 100
                 positivoNegativo = false
 
                 if (precioMinimo < -100) {
@@ -1947,7 +1947,7 @@
 
                 } else {
                     //si esto es negativo y es menor a -100
-                    var precioMinimo = roundDos(PrecioFloat) * 100 + " Plata"
+                    var precioMinimo = roundDos(Number.parseFloat(PrecioFloat)) * 100 + " Plata"
                 }
             }
             return precioMinimo;
@@ -1991,7 +1991,7 @@
             return precioMinimo;
         }
 
-        function roundDos(num){
+        function roundDos(num) {
             return Math.round((num + Number.EPSILON) * 100) / 100
         }
 
